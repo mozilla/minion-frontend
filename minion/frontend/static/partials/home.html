@@ -1,0 +1,80 @@
+    <div class="container" ng-controller="HomeController">
+
+      <div ng-show="recentSitesAndPlans.length">
+        <h2>Recent Scans</h2>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Site</th>
+              <th>Plan</th>
+              <th>Last Run</th>
+              <th>State</th>
+              <th>High</th>
+              <th>Medium</th>
+              <th>Low</th>
+              <th>Info</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tr ng-repeat="e in recentSitesAndPlans.slice(0,3)">
+            <td><a href="{{e.site.url}}" target="_blank">{{e.site.url}}</a></td>
+            <td><a ng-href="#!/plan/{{e.plan.name}}">{{e.plan.name}}</a></td>
+            <td>{{e.plan.date | scan_datetime }}</td>
+            <td>{{e.plan.state || "-"}}</td>
+            <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-high">{{e.plan.high_count || "-"}}</span></td>
+            <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-medium">{{e.plan.medium_count || "-"}}</span></td>
+            <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-low">{{e.plan.low_count || "-"}}</span></<td></td>
+                                                                                                                                                 <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-info">{{e.plan.info_count || "-"}}</span></td>
+            <td>
+              <button class="btn btn-mini btn-primary" style="width: 60px" ng-class="{disabled: !e.plan.date}" type="button" ng-click="openScan(e.plan.scan_id)">Details</button>
+              <button class="btn btn-mini btn-primary" style="width: 60px" type="button" ng-click="startScan(e.site, e.plan)" ng-show="e.plan.manual && e.plan.state != 'STARTED'">Scan</button>
+              <button class="btn btn-mini btn-primary" style="width: 60px" type="button" ng-click="cancelScan()" ng-show="e.plan.manual && e.plan.state == 'STARTED'">Cancel</button>
+            </td>
+          </tr>
+        </table>
+        <ul class="icons" ng-show="recentSitesAndPlans.length > 3">
+          <li><i class="icon-double-angle-right"></i><a href="#">See the full history of scans for your sites</a></li>
+        </ul>
+      </div>
+
+      <p>&nbsp;</p>
+
+      <h2>All Your Sites & Scans</h2>
+
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Site</th>
+            <th>Plan</th>
+            <th>Last Run</th>
+            <th>State</th>
+            <th>High</th>
+            <th>Medium</th>
+            <th>Low</th>
+            <th>Info</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tr ng-repeat="e in sitesAndPlans">
+          <td><a href="{{e.label}}" target="_blank">{{e.label}}</a></td>
+          <td><a ng-href="#!/plan/{{e.plan.name}}">{{e.plan.name}}</a></td>
+          <td>{{e.plan.date | scan_datetime }}</td>
+          <td>{{e.plan.state || "-"}}</td>
+          <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-high">{{e.plan.high_count || "-"}}</span></td>
+          <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-medium">{{e.plan.medium_count || "-"}}</span></td>
+          <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-low">{{e.plan.low_count || "-"}}</span></<td></td>
+          <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-info">{{e.plan.info_count || "-"}}</span></td>
+          <td>
+            <button class="btn btn-mini btn-primary" style="width: 60px" ng-class="{disabled: !e.plan.date}" type="button" ng-click="openScan(e.plan.scan_id)">Details</button>
+            <button class="btn btn-mini btn-primary" style="width: 60px" type="button" ng-click="startScan(e.site, e.plan)" ng-show="e.plan.manual && e.plan.state != 'STARTED'">Scan</button>
+            <button class="btn btn-mini btn-primary" style="width: 60px" type="button" ng-click="cancelScan()" ng-show="e.plan.manual && e.plan.state == 'STARTED'">Cancel</button>
+          </td>
+        </tr>
+      </table>
+
+      <ul class="icons">
+        <li><i class="icon-double-angle-right"></i><a href="#">Request a new site to be added to Minion</a></li>
+        <li><i class="icon-double-angle-right"></i><a href="#">Invite a colleague to Minion</a></li>
+      </ul>
+
+    </div>

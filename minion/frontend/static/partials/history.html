@@ -1,0 +1,36 @@
+<div class="container" ng-controller="HomeController">
+
+  <h2>Scan History</h2>
+
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Site</th>
+        <th>Plan</th>
+        <th>Last Run</th>
+        <th>State</th>
+        <th>High</th>
+        <th>Medium</th>
+        <th>Low</th>
+        <th>Info</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tr ng-repeat="h in history">
+      <td><a href="{{h.site.url}}" target="_blank">{{h.site.url}}</a></td>
+      <td>{{h.plan.name}}</td>
+      <td>{{h.scan.date | scan_datetime }}</td>
+      <td>{{h.scan.state || "-"}}</td>
+      <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-high">{{h.scan.high || "-"}}</span></td>
+      <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-medium">{{h.scan.medium || "-"}}</span></td>
+      <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-low">{{h.scan.low || "-"}}</span></td>
+      <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-info">{{h.scan.info || "-"}}</span></td>
+      <td>
+        <button class="btn btn-mini btn-primary" style="width: 60px" ng-class="{disabled: !h.scan.date}" type="button" ng-click="openScan(h.scan.id)">Details</button>
+        <button class="btn btn-mini btn-primary" style="width: 60px" type="button" ng-click="startScan(h.site, h.plan)" ng-show="h.plan.manual && h.scan.state != 'STARTED'">Scan</button>
+        <button class="btn btn-mini btn-primary" style="width: 60px" type="button" ng-click="cancelScan()" ng-show="h.plan.manual && h.scan.state == 'STARTED'">Cancel</button>
+      </td>
+    </tr>
+  </table>
+
+</div>

@@ -1,0 +1,54 @@
+<div class="container" ng-controller="IssueController">
+
+  <h2>Issue Details</h2>
+
+  <table class="table table-bordered">
+    <tr>
+      <td><b>Summary</b></td>
+      <td ng-bind-html-unsafe="issue.Summary|link_bugs"></td>
+    </tr>
+    <tr>
+      <td><b>Severity</b></td>
+      <td>{{issue.Severity}}</td>
+    </tr>
+    <tr>
+      <td><b>Target</b></td>
+      <td><a href="{{scan.configuration.target}}">{{scan.configuration.target}}</a></td>
+    </tr>
+    <tr>
+      <td><b>Plan</b></td>
+      <td>{{scan.plan.name}}</td>
+    </tr>
+    <tr>
+      <td><b>Plugin</b></td>
+      <td>{{session.plugin.name}} {{session.plugin.version}}</td>
+    </tr>
+  </table>
+
+  <ul class="icons">
+    <li><i class="icon-double-angle-right"></i><a href="#">Request help with this issue</a></li>
+    <li><i class="icon-double-angle-right"></i><a href="#">Share this issue with a colleague</a></li>
+  </ul>
+
+  <div ng-show="issue.Description.length">
+    <h3>Description</h3>
+    <p>{{issue.Description}}</p>
+  </div>
+
+  <div ng-show="issue.URLs.length">
+    <h3>URLs</h3>
+    <p>The issue was found on the following URLs:</p>
+    <ul>
+      <li ng-repeat="url in issue.URLs"><a href="{{url}}" target="_blank">{{url}}</a></li>
+      <tr>
+        <td ng-repeat="url in issue.URLs"><a href="">{{url}}</a></td>
+      </tr>
+    </ul>
+  </div>
+
+  <div ng-show="issue.Solution.length">
+    <h3>Remediation</h3>
+    <p>{{issue.Solution}}</p>
+  </div>
+
+</div>

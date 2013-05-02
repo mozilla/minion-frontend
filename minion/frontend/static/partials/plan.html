@@ -1,0 +1,48 @@
+<div ng-controller="ScanController">
+
+  <div class="container">
+
+  <h2>Plan Details</h2>
+
+  <div class="row">
+    <div class="span12">
+      <table class="table table-bordered">
+        <tr>
+          <td><b>Plan</b></td>
+          <td>{{plan.name}}</td>
+        </tr>
+        <tr>
+          <td><b>Description</b></td>
+          <td>{{plan.description}}</td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+
+  <div class="row">
+
+    <div class="span12">
+
+      <h3>Workflow</h3>
+
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Step</th>
+            <th>Plugin</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tr ng-repeat="step in plan.workflow">
+          <td>#{{$index+1}}</td>
+          <td>{{step.plugin.name}} {{step.plugin.version}}</td>
+          <td ng-bind-html-unsafe="step.description|link_bugs"></td>
+        </tr>
+      </table>
+
+    </div>
+
+  </div>
+
+</div>

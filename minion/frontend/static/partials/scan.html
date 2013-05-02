@@ -1,0 +1,104 @@
+<div ng-controller="ScanController">
+
+  <div class="container">
+
+  <h2>Scan Results</h2>
+
+  <div class="row">
+    <div class="span6">
+      <h3>Summary</h3>
+      <table class="table table-bordered">
+        <tr>
+          <td><b>Plan</b></td>
+          <td>{{scan.plan.name}}</td>
+        </tr>
+        <tr>
+          <td><b>Target</b></td>
+          <td><a href="{{scan.configuration.target}}" target="_blank">{{scan.configuration.target}}</a></td>
+        </tr>
+        <tr>
+          <td><b>Started</b></td>
+          <td>{{scan.sessions[0].started | scan_datetime }} ({{scan.sessions[0].started | scan_datetime_fromnow }})</td>
+        </tr>
+        <tr>
+          <td><b>State</b></td>
+          <td>{{scan.state}}</td>
+        </tr>
+      </table>
+    </div>
+    <div class="span6">
+      <h3>Issue Counts</h3>
+      <table class="table table-bordered">
+        <tr>
+          <td><b>High</b></td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <td><b>Medium</b></td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <td><b>Low</b></td>
+          <td>0</td>
+        </tr>
+        <tr>
+          <td><b>Informational</b></td>
+          <td>0</td>
+        </tr>
+      </table>
+    </div>
+
+  </div>
+
+  <ul class="icons">
+    <li><i class="icon-double-angle-right"></i><a href="#">Request help with these scan results</a></li>
+    <li><i class="icon-double-angle-right"></i><a href="#">Share these scan results with a colleague</a></li>
+  </ul>
+
+<div class="row">
+
+  <div class="span12">
+
+  <h3>Workflow</h3>
+
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Plugin</th>
+        <th>Started</th>
+        <th>State</th>
+        <th>Duration</th>
+        <td>Description</td>
+      </tr>
+    </thead>
+    <tr ng-repeat="session in scan.sessions">
+      <td>{{session.plugin.name}} {{session.plugin.version}}</td>
+      <td>{{session.started | scan_datetime}}</td>
+      <td>{{session.state}}</td>
+      <td>{{session.duration | moment_duration}}</td>
+      <td ng-bind-html-unsafe="scan.plan.workflow[$index].description|link_bugs"></td>
+    </tr>
+  </table>
+
+  <h3>Found Issues</h3>
+
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Severity</th>
+        <th>Source</th>
+        <th>Risk Summary</th>
+      </tr>
+    </thead>
+    <tr ng-repeat="issue in issues">
+      <td>{{issue.Severity}}</td>
+      <td>{{issue.session.plugin.name}} {{issue.session.plugin.version}}</td>
+      <td><a ng-click="openIssue(scan.id, issue.Id)">{{issue.Summary}}</a></td>
+    </tr>
+  </table>
+
+</div>
+
+</div>
+
+</div>
