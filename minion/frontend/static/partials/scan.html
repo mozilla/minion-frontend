@@ -1,3 +1,9 @@
+<!--
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
 <div ng-controller="ScanController">
 
   <div class="container">
@@ -93,7 +99,7 @@
     <tr ng-repeat="issue in issues">
       <td>{{issue.Severity}}</td>
       <td>{{issue.session.plugin.name}} {{issue.session.plugin.version}}</td>
-      <td><a ng-click="openIssue(scan.id, issue.Id)">{{issue.Summary}}</a></td>
+      <td><a ng-href="#!/scan/{{scan.id}}/issue/{{issue.Id}}">{{issue.Summary}}</a></td>
     </tr>
   </table>
 
