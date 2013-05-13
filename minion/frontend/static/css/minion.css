@@ -24,6 +24,22 @@ body {
   background-color: #B0C4DE;
 }
 
+.severity-High {
+    background-color: #ff3333;
+}
+
+.severity-Medium {
+  background-color: #ff7f00;
+}
+
+.severity-Low {
+    background-color: #eec900;
+}
+
+.severity-Informational {
+  background-color: #B0C4DE;
+}
+
 .form-signin {
     max-width: 300px;
     padding: 19px 29px 29px;

@@ -58,6 +58,31 @@ def count_scan_issues(scan, severity):
                 n += 1
     return n
 
+@app.route("/api/issues")
+def api_issues():
+    if session.get('email') is None:
+        return jsonify(success=False)
+    sites = []
+    user = User.query.filter_by(email=session.get('email')).first()
+    for site in user.sites:
+        s = {'url': site.url, 'issues': []}
+        for plan in site.plans:
+            scan = Scan.query.filter_by(site_id=site.id,plan_id=plan.id).order_by('minion_scan_created desc').first()
+            if scan:
+                minion_scan = load_minion_scan(scan.minion_scan_uuid)
+                if minion_scan:
+                    for minion_session in minion_scan.get('sessions', []):
+                        for i in minion_session.get('issues', []):
+                            for field in i.keys():
+                                if field not in ('Id', 'Summary', 'Severity'):
+                                    del i[field]
+                            i['scan'] = {'id': minion_scan['id']}
+                            s['issues'].append(i)
+        SORTED_SEVERITIES = ('High', 'Medium', 'Low', 'Informational', 'Info', 'Error')
+        s['issues'] = sorted(s['issues'], key=lambda issue: SORTED_SEVERITIES.index(issue['Severity']))
+        sites.append(s)
+    return jsonify(success=True, data=sites)
+
 @app.route("/api/history")
 def api_history():
     if session.get('email') is None:

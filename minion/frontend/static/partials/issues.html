@@ -1,0 +1,52 @@
+<!--
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<div ng-show="!loading" class="container">
+
+  <ul class="nav nav-pills pull-left">
+    <li ng-class="{active: filterName == 'all'}">
+      <a ng-click="filter('all')">All</a>
+    </li>
+    <li ng-class="{active: filterName == 'high'}">
+      <a ng-click="filter('all')">High</a>
+    </li>
+    <li ng-class="{active: filterName == 'medium'}">
+      <a ng-click="filter('moco')">Medium</a>
+    </li>
+    <li ng-class="{active: filterName == 'low'}">
+      <a ng-click="filter('mofo')">Low</a>
+    </li>
+    <li ng-class="{active: filterName == 'info'}">
+      <a ng-click="filter('mofo')">Low</a>
+    </li>
+  </ul>
+
+  <ul class="nav nav-pills pull-right">
+    <li ng-class="{active: sortName == 'count'}">
+      <a ng-click="sort('count')">Sort by Count</a>
+    </li>
+    <li ng-class="{active: sortName == 'age'}">
+      <a ng-click="sort('age')">Sort by Age</a>
+    </li>
+    <li ng-class="{active: sortName == 'name'}">
+      <a ng-click="sort('name')">Sort by Name</a>
+    </li>
+  </ul>
+</div>
+
+<div class="container" ng-controller="IssuesController">
+  <div ng-repeat="site in sites">
+    <h4 style="text-overflow: hidden; text-transform:uppercase;" class="site-title-big">{{site.url}}</h4>
+    <ul style="list-style: none;">
+      <li ng-repeat="issue in site.issues" style="margin-bottom: 2px;">
+        <span style="width: 80px; margin-right: 6px; text-align: center;" class="label severity-{{issue.Severity}}">{{issue.Severity}}</span>
+        <a ng-href="#!/scan/{{issue.scan.id}}/issue/{{issue.Id}}">
+          {{issue.Summary}}
+        </a>
+      </li>
+    </ul>
+  </div>
+</div>

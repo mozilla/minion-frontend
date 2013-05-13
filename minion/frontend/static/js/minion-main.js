@@ -5,7 +5,7 @@
 var app = angular.module("MinionApp", []);
 
 app.controller("MinionController", function($rootScope, $http, $location) {
-    $rootScope.session = {email: 'sarentz@mozilla.com'};
+    $rootScope.session = null; // {email: 'sarentz@mozilla.com'};
     navigator.id.logout();
     navigator.id.watch({
         loggedInUser: undefined,
@@ -27,6 +27,7 @@ app.config(function($routeProvider, $locationProvider) {
     $routeProvider
         .when("/", { templateUrl: "static/partials/home.html", controller: "HomeController" })
         .when("/home", { templateUrl: "static/partials/home.html", controller: "HomeController" })
+	.when("/issues", { templateUrl: "static/partials/issues.html", controller: "IssuesController" })
         .when("/request", { templateUrl: "static/partials/request.html", controller: "RequestController" })
         .when("/invite", { templateUrl: "static/partials/invite.html", controller: "InviteController" })
         .when("/scan/:scanId", { templateUrl: "static/partials/scan.html", controller: "ScanController" })
@@ -103,6 +104,18 @@ app.controller("HomeController", function($scope, $http, $location, $timeout) {
         });
     };
 
+    $scope.$on('$viewContentLoaded', function() {
+        $scope.reload();
+    });
+});
+
+app.controller("IssuesController", function($scope, $http, $location, $timeout) {
+    $scope.filterName = 'all';
+    $scope.reload = function () {
+        $http.get('/api/issues').success(function(response, status, headers, config){
+	    $scope.sites = response.data;
+        });
+    };    
     $scope.$on('$viewContentLoaded', function() {
         $scope.reload();
     });
