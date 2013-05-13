@@ -6,6 +6,19 @@
 
 <div ng-show="!loading" class="container">
 
+    <ul class="nav nav-tabs">
+      <li>
+        <a ng-href="#!/home/sites">Sites & Scans</a>
+      </li>
+      <li>
+        <a ng-href="#!/home/history">Scan History</a>
+      </li>
+      <li class="active">
+        <a ng-href="#!/home/issues">All Issues</a>
+      </li>
+    </ul>
+
+<!--
   <ul class="nav nav-pills pull-left">
     <li ng-class="{active: filterName == 'all'}">
       <a ng-click="filter('all')">All</a>
@@ -35,6 +48,7 @@
       <a ng-click="sort('name')">Sort by Name</a>
     </li>
   </ul>
+-->
 </div>
 
 <div class="container" ng-controller="IssuesController">

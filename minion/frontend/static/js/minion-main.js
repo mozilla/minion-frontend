@@ -6,7 +6,7 @@ var app = angular.module("MinionApp", []);
 
 app.controller("MinionController", function($rootScope, $http, $location) {
     if (sessionStorage.getItem("email")) {
-        $rootScope.session = {email: sessionStorage.getItem("email")};
+        $rootScope.session = {email: sessionStorage.getItem("email"), role: sessionStorage.getItem("role")};
     } else {
         $rootScope.session = null;
     }
@@ -21,7 +21,7 @@ app.controller("MinionController", function($rootScope, $http, $location) {
                         $rootScope.session = response.data;
                         sessionStorage.setItem("email", response.data.email);
                         sessionStorage.setItem("role", response.data.role);
-                        $location.path("/home").replace();
+                        $location.path("/home/sites").replace();
                     }
                 });
 	},
@@ -46,8 +46,9 @@ app.config(function($routeProvider, $locationProvider) {
     $locationProvider.hashPrefix('!');
     $routeProvider
         .when("/", { templateUrl: "static/partials/home.html", controller: "HomeController" })
-        .when("/home", { templateUrl: "static/partials/home.html", controller: "HomeController" })
-	.when("/issues", { templateUrl: "static/partials/issues.html", controller: "IssuesController" })
+        .when("/home/sites", { templateUrl: "static/partials/home.html", controller: "HomeController" })
+        .when("/home/history", { templateUrl: "static/partials/history.html", controller: "HistoryController" })
+        .when("/home/issues", { templateUrl: "static/partials/issues.html", controller: "IssuesController" })
         .when("/request", { templateUrl: "static/partials/request.html", controller: "RequestController" })
         .when("/invite", { templateUrl: "static/partials/invite.html", controller: "InviteController" })
         .when("/scan/:scanId", { templateUrl: "static/partials/scan.html", controller: "ScanController" })
@@ -69,7 +70,7 @@ app.run(function($rootScope, $http, $location) {
     $http.get('/api/session').success(function(response, status, headers, config) {
         if (response.success) {
             $rootScope.session = response.data;
-            $location.path("/home").replace();
+            $location.path("/home/sites").replace();
         } else {
             $rootScope.session = null;
             $location.path("/login").replace();
@@ -166,14 +167,34 @@ app.controller("ScanController", function($scope, $routeParams, $http, $location
         $http.get('/api/scan/' + $routeParams.scanId).success(function(response, status, headers, config) {
             var scan = response.data;
             var issues = [];
+            var issueCounts = {high: 0, medium: 0, low: 0, info: 0, error: 0};
             _.each(scan.sessions, function (session) {
                 _.each(session.issues, function (issue) {
                     issue.session = session;
                     issues.push(issue);
+                    switch (issue.Severity) {
+                        case "High":
+                            issueCounts.high++;
+                            break;
+                        case "Medium":
+                            issueCounts.medium++;
+                            break;
+                        case "Low":
+                            issueCounts.low++;
+                            break;
+                        case "Informational":
+                        case "Info":
+                            issueCounts.info++;
+                            break;
+                        case "Error":
+                            issueCounts.error++;
+                            break;
+                    }
                 });
             });
             $scope.scan = scan;
             $scope.issues = issues;
+            $scope.issueCounts = issueCounts;
         });
     });
 });

@@ -30,6 +30,10 @@
           <td><b>State</b></td>
           <td>{{scan.state}}</td>
         </tr>
+        <tr>
+          <td><b>Something</b></td>
+          <td>Something</td>
+        </tr>
       </table>
     </div>
     <div class="span6">
@@ -37,26 +41,30 @@
       <table class="table table-bordered">
         <tr>
           <td><b>High</b></td>
-          <td>0</td>
+          <td>{{issueCounts.high}}</td>
         </tr>
         <tr>
           <td><b>Medium</b></td>
-          <td>0</td>
+          <td>{{issueCounts.medium}}</td>
         </tr>
         <tr>
           <td><b>Low</b></td>
-          <td>0</td>
+          <td>{{issueCounts.low}}</td>
         </tr>
         <tr>
           <td><b>Informational</b></td>
-          <td>0</td>
+          <td>{{issueCounts.info}}</td>
+        </tr>
+        <tr>
+          <td><b>Error</b></td>
+          <td>{{issueCounts.error}}</td>
         </tr>
       </table>
     </div>
 
   </div>
 
-  <ul class="icons">
+  <ul class="icons" ng-show="social">
     <li><i class="icon-double-angle-right"></i><a href="#">Request help with these scan results</a></li>
     <li><i class="icon-double-angle-right"></i><a href="#">Share these scan results with a colleague</a></li>
   </ul>

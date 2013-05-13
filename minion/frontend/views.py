@@ -63,9 +63,16 @@ def count_scan_issues(scan, severity):
 def api_issues():
     if session.get('email') is None:
         return jsonify(success=False)
+
     sites = []
-    user = User.query.filter_by(email=session.get('email')).first()
-    for site in user.sites:
+    if session.get('role') == 1:
+        user = User.query.filter_by(email=session.get('email')).first()
+        sites = user.sites
+    elif session.get('role') in (2,7):
+        sites = Site.query.all()
+
+    results = []
+    for site in sites:
         s = {'url': site.url, 'issues': []}
         for plan in site.plans:
             scan = Scan.query.filter_by(site_id=site.id,plan_id=plan.id).order_by('minion_scan_created desc').first()
@@ -81,33 +88,53 @@ def api_issues():
                             s['issues'].append(i)
         SORTED_SEVERITIES = ('High', 'Medium', 'Low', 'Informational', 'Info', 'Error')
         s['issues'] = sorted(s['issues'], key=lambda issue: SORTED_SEVERITIES.index(issue['Severity']))
-        sites.append(s)
-    return jsonify(success=True, data=sites)
+        results.append(s)
+
+    return jsonify(success=True, data=results)
 
 @app.route("/api/history")
 def api_history():
     if session.get('email') is None:
         return jsonify(success=False)
-    history  = [] # [{target, plan, date, state, high, medium, low, info}, ...]
-    user = User.query.filter_by(email=session.get('email')).first()
-    for site in user.sites:
-        for plan in site.plans:
-            for scan in Scan.query.filter_by(site_id=site.id,plan_id=plan.id).all():
-                epoch = datetime.datetime(year=1970,month=1,day=1)
-                history.append({'site': {'url': site.url, 'id': site.id},
-                                'plan': {'name': plan.minion_plan_name, 'id': plan.id, 'manual': plan.manual},
-                                'scan': {'id': scan.minion_scan_uuid, 'date': int((scan.minion_scan_created - epoch).total_seconds()),
-                                         'high': scan.minion_scan_high_count, 'medium': scan.minion_scan_medium_count,
-                                         'low': scan.minion_scan_low_count, 'info': scan.minion_scan_info_count}})
-    return jsonify(success=True, data=history)
+    limit = min(25, int(request.args.get('limit', 25)))
+    page = int(request.args.get('page', 0))
+    if session.get('role') == 1:
+        q = db.session.query(User,Site,Plan,Scan)
+        q = q.join(User.sites)
+        q = q.join(Site.plans)
+        q = q.join(Plan.scans)
+        q = q.filter(User.email==session['email'])
+        q = q.order_by(Scan.minion_scan_created.desc()).offset(page*limit).limit(limit)
+    elif session.get('role') in (2,7):
+        q = db.session.query(User,Site,Plan,Scan)
+        q = q.join(User.sites)
+        q = q.join(Site.plans)
+        q = q.join(Plan.scans)
+        q = q.order_by(Scan.minion_scan_created.desc()).offset(page*limit).limit(limit)
+    results = []
+    for user,site,plan,scan in q.all():
+        epoch = datetime.datetime(year=1970,month=1,day=1)
+        results.append({'site': {'url': site.url, 'id': site.id},
+                        'plan': {'name': plan.minion_plan_name, 'id': plan.id, 'manual': plan.manual},
+                        'scan': {'id': scan.minion_scan_uuid, 'date': int((scan.minion_scan_created - epoch).total_seconds()),
+                                 'high': scan.minion_scan_high_count, 'medium': scan.minion_scan_medium_count,
+                                 'low': scan.minion_scan_low_count, 'info': scan.minion_scan_info_count}})
+    return jsonify(success=True, data=results)
 
 @app.route("/api/sites")
 def api_sites():
     if session.get('email') is None:
         return jsonify(success=False)
-    sites = [] # [{url: 'http://foo', plans: [{name: 'scratch', last_results: {}}]}]
-    user = User.query.filter_by(email=session.get('email')).first()
-    for site in user.sites:
+
+    sites = []
+    if session.get('role') == 1:
+        user = User.query.filter_by(email=session.get('email')).first()
+        sites = user.sites
+    elif session.get('role') in (2,7):
+        sites = Site.query.all()
+
+    results = []
+    for site in sites:
         s = {'id': site.id, 'url': site.url, 'plans': []}
         for plan in site.plans:
             p = {'id': plan.id,
@@ -142,8 +169,8 @@ def api_sites():
                 p['high_count'] = scan.minion_scan_high_count
                 p['info_count'] = scan.minion_scan_info_count
             s['plans'].append(p)
-        sites.append(s)
-    return jsonify(success=True, data=sites)
+        results.append(s)
+    return jsonify(success=True, data=results)
 
 @app.route("/api/scan/<minion_scan_id>/issue/<minion_issue_id>")
 def api_scan_issue(minion_scan_id, minion_issue_id):

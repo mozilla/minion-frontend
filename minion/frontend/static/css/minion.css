@@ -8,12 +8,13 @@ body {
     padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
 }
 
+
 .warning-high {
-    background-color: #ff3333;
+    background-color: #b94a48;
 }
 
 .warning-medium {
-  background-color: #ff7f00;
+  background-color: #f89406;
 }
 
 .warning-low {
@@ -21,15 +22,20 @@ body {
 }
 
 .warning-info {
-  background-color: #B0C4DE;
+  background-color: #0095dd;
 }
 
+.warning-error {
+    background-color: #999999;
+}
+
+
 .severity-High {
-    background-color: #ff3333;
+    background-color: #b94a48;
 }
 
 .severity-Medium {
-  background-color: #ff7f00;
+  background-color: #f89406;
 }
 
 .severity-Low {
@@ -37,7 +43,15 @@ body {
 }
 
 .severity-Informational {
-  background-color: #B0C4DE;
+  background-color: #0095dd;
+}
+
+.severity-Info {
+  background-color: #0095dd;
+}
+
+.severity-Error {
+    background-color: #999999;
 }
 
 .form-signin {

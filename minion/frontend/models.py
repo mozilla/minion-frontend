@@ -71,7 +71,7 @@ class Plan(db.Model):
     scans = db.relationship('Scan', backref='plan', lazy='dynamic')
 
     def __repr__(self):
-        return '<Plan %r>' % self.name
+        return '<Plan %r>' % self.minion_plan_name
 
 
 class Scan(db.Model):
