@@ -5,21 +5,41 @@
 var app = angular.module("MinionApp", []);
 
 app.controller("MinionController", function($rootScope, $http, $location) {
-    $rootScope.session = null; // {email: 'sarentz@mozilla.com'};
+    if (sessionStorage.getItem("email")) {
+        $rootScope.session = {email: sessionStorage.getItem("email")};
+    } else {
+        $rootScope.session = null;
+    }
     navigator.id.logout();
     navigator.id.watch({
-        loggedInUser: undefined,
+        loggedInUser: sessionStorage.getItem("email"),
 	onlogin: function(assertion) {
             $http.post('/api/login', {assertion: assertion})
                 .success(function(response, status, headers, config) {
-                    $rootScope.session = response.data;
-                    $location.path("/home").replace();
+                    console.log(response);
+                    if (response.success) {
+                        $rootScope.session = response.data;
+                        sessionStorage.setItem("email", response.data.email);
+                        sessionStorage.setItem("role", response.data.role);
+                        $location.path("/home").replace();
+                    }
                 });
 	},
 	onlogout: function() {
             //$rootScope.session = null;
+            //sessionStorage.removeItem("email");
+            //sessionStorage.removeItem("role");
 	}
     });
+
+    $rootScope.signOut = function() {
+        console.log("SIGNOUT");
+        $rootScope.session = null;
+        sessionStorage.removeItem("email");
+        sessionStorage.removeItem("role");
+        navigator.id.logout();
+        $location.path("/login").replace();
+    };
 });
 
 app.config(function($routeProvider, $locationProvider) {
@@ -61,11 +81,6 @@ app.controller("LoginController", function($scope, $rootScope, $location) {
     $rootScope.signIn = function() {
         navigator.id.request();
     };
-    $rootScope.signOut = function() {
-        navigator.id.logout();
-        $rootScope.session = null;
-        $location.path("/login").replace();
-    };
 });
 
 app.controller("HomeController", function($scope, $http, $location, $timeout) {
@@ -98,9 +113,9 @@ app.controller("HomeController", function($scope, $http, $location, $timeout) {
             var recentSitesAndPlans = _.sortBy(sitesAndPlans, function (e) {return e.plan.date;}).reverse().slice(0,4);
             $scope.recentSitesAndPlans = recentSitesAndPlans;
 
-            $timeout(function () {
-                $scope.reload();
-            }, 5000);
+            //$timeout(function () {
+            //    $scope.reload();
+            //}, 5000);
         });
     };
 
@@ -115,7 +130,7 @@ app.controller("IssuesController", function($scope, $http, $location, $timeout) 
         $http.get('/api/issues').success(function(response, status, headers, config){
 	    $scope.sites = response.data;
         });
-    };    
+    };
     $scope.$on('$viewContentLoaded', function() {
         $scope.reload();
     });

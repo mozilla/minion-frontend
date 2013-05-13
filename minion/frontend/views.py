@@ -21,7 +21,7 @@ def index():
 def api_session():
     if session.get('email') is None:
         return jsonify(success=False)
-    return jsonify(success=True, data={'email': session['email']})
+    return jsonify(success=True, data={'email': session['email'], 'role': session['role']})
 
 @app.route("/api/login", methods=["POST"])
 def persona_login():
@@ -31,7 +31,8 @@ def persona_login():
     if not receipt:
         return jsonify(success=False)
     user = User.get_or_create(receipt['email'])
-    session['email'] = receipt['email']
+    session['email'] = user.email
+    session['role'] = user.role
     return api_session()
 
 @app.route("/api/logout")
