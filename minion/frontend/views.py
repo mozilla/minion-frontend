@@ -46,8 +46,10 @@ def api_logout():
 # too much about that code or the backend infrastructure.
 #
 
+MINION_BACKEND = "http://127.0.0.1:8383"
+
 def load_minion_scan(id):
-    r = requests.get("http://127.0.0.1:8282/scan/" + id)
+    r = requests.get(MINION_BACKEND + "/scan/" + id)
     r.raise_for_status()
     return r.json()['scan']
 
@@ -176,7 +178,7 @@ def api_sites():
 def api_scan_issue(minion_scan_id, minion_issue_id):
     if session.get('email') is None:
         return jsonify(success=False)
-    r = requests.get("http://127.0.0.1:8282/scan/" + minion_scan_id)
+    r = requests.get(MINION_BACKEND + "/scan/" + minion_scan_id)
     j = r.json()
     for s in j['scan']['sessions']:
         for issue in s['issues']:
@@ -190,7 +192,7 @@ def api_scan_issue(minion_scan_id, minion_issue_id):
 def api_scan(minion_scan_id):
     if session.get('email') is None:
         return jsonify(success=False)
-    r = requests.get("http://127.0.0.1:8282/scan/" + minion_scan_id)
+    r = requests.get(MINION_BACKEND + "/scan/" + minion_scan_id)
     scan = r.json()['scan']
     return jsonify(success=True,data=scan)
 
@@ -198,11 +200,9 @@ def api_scan(minion_scan_id):
 def api_plan(minion_plan_name):
     if session.get('email') is None:
         return jsonify(success=False)
-    r = requests.get("http://127.0.0.1:8282/plan/" + minion_plan_name)
+    r = requests.get(MINION_BACKEND + "/plan/" + minion_plan_name)
     plan = r.json()['plan']
     return jsonify(success=True,data=plan)
-
-TASK_ENGINE_URL = "http://127.0.0.1:8282"
 
 @app.route("/api/scan", methods=['PUT'])
 def api_scan_create():
@@ -212,11 +212,15 @@ def api_scan_create():
     plan = Plan.query.get(request.json['planId'])
     site = Site.query.get(request.json['siteId'])
     # Create a scan
-    r = requests.put(TASK_ENGINE_URL + "/scan/create/" + plan.minion_plan_name, data=json.dumps({'target': site.url}))
+    r = requests.put(MINION_BACKEND + "/scan/create/" + plan.minion_plan_name,
+                     headers={'Content-Type': 'application/json'},
+                     data=json.dumps({'target': site.url}))
     r.raise_for_status()
     minion_scan = r.json()['scan']
     # Start the scan
-    r = requests.post(TASK_ENGINE_URL + "/scan/" + minion_scan['id'] + "/state", data="START")
+    r = requests.put(MINION_BACKEND + "/scan/" + minion_scan['id'] + "/state",
+                      headers={'Content-Type': 'text/plain'},
+                      data="START")
     r.raise_for_status()
 
     # Create a scan record
