@@ -52,6 +52,7 @@ app.config(function($routeProvider, $locationProvider) {
         .when("/request", { templateUrl: "static/partials/request.html", controller: "RequestController" })
         .when("/invite", { templateUrl: "static/partials/invite.html", controller: "InviteController" })
         .when("/scan/:scanId", { templateUrl: "static/partials/scan.html", controller: "ScanController" })
+        .when("/scan/:scanId/raw", { templateUrl: "static/partials/raw.html", controller: "RawController" })
         .when("/scan/:scanId/issue/:issueId", { templateUrl: "static/partials/issue.html", controller: "IssueController" })
         .when("/plan/:planName", { templateUrl: "static/partials/plan.html", controller: "PlanController" })
         .when("/history", { templateUrl: "static/partials/history.html", controller: "HistoryController" })
@@ -114,9 +115,9 @@ app.controller("HomeController", function($scope, $http, $location, $timeout) {
             var recentSitesAndPlans = _.sortBy(sitesAndPlans, function (e) {return e.plan.date;}).reverse().slice(0,4);
             $scope.recentSitesAndPlans = recentSitesAndPlans;
 
-            //$timeout(function () {
-            //    $scope.reload();
-            //}, 5000);
+            $timeout(function () {
+                $scope.reload();
+            }, 2500);
         });
     };
 
@@ -156,6 +157,16 @@ app.controller("HistoryController", function($scope, $http, $location, $timeout)
 
     $scope.$on('$viewContentLoaded', function() {
         $scope.reload();
+    });
+});
+
+app.controller("RawController", function ($scope, $routeParams, $http, $location) {
+    $scope.$on('$viewContentLoaded', function() {
+        $http.get('/api/scan/' + $routeParams.scanId)
+            .success(function(response, status, headers, config) {
+                $scope.scan = response.data;
+                $scope.formatted_scan = JSON.stringify(response.data, null, 4);
+            });
     });
 });
 

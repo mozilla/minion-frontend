@@ -8,7 +8,7 @@
 
   <div class="container">
 
-  <h2>Scan Results</h2>
+  <h2>Scan Results <span class="pull-right"><a ng-href="#!/scan/{{scan.id}}/raw" class="btn btn-mini">JSON</a></span></h2>
 
   <div class="row">
     <div class="span6">
@@ -89,7 +89,7 @@
       <td>{{session.plugin.name}} {{session.plugin.version}}</td>
       <td>{{session.started | scan_datetime}}</td>
       <td>{{session.state}}</td>
-      <td>{{session.duration | moment_duration}}</td>
+      <td>{{session.finished - session.started | moment_duration}}</td>
       <td ng-bind-html-unsafe="scan.plan.workflow[$index].description|link_bugs"></td>
     </tr>
   </table>
