@@ -6,7 +6,9 @@ from setuptools import setup
 
 install_requires = [
     'flask',
-    'requests'
+    'flask-sqlalchemy',
+    'requests',
+    'pymongo'
 ]
 
 setup(name="minion.frontend",
