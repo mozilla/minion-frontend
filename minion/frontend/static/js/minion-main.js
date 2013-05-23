@@ -40,6 +40,25 @@ app.controller("MinionController", function($rootScope, $http, $location) {
         navigator.id.logout();
         $location.path("/login").replace();
     };
+
+    $rootScope.openScan = function (scanId) {
+        $location.path("/scan/" + scanId); // .replace();
+    };
+
+    $rootScope.startScan = function (site, plan) {
+        console.log("Scanning " + site.id + " with plan " + plan.id);
+        $http.put('/api/scan/start', {siteId: site.id, planId: plan.id })
+            .success(function(response, status, headers, config) {
+                //$scope.reload();
+            });
+    };
+    
+    $rootScope.stopScan = function (scanId) {
+	$http.put('/api/scan/stop', {scanId: scanId})
+	    .success(function(response, status, headers, config) {
+		//$scope.reload();
+	    });
+    };
 });
 
 app.config(function($routeProvider, $locationProvider) {
@@ -86,22 +105,10 @@ app.controller("LoginController", function($scope, $rootScope, $location) {
 });
 
 app.controller("HomeController", function($scope, $http, $location, $timeout) {
-    $scope.openScan = function (scanId) {
-        $location.path("/scan/" + scanId); // .replace();
-    };
-    $scope.startScan = function (site, plan) {
-        console.log("Scanning " + site.id + " with plan " + plan.id);
-        $http.put('/api/scan', {siteId: site.id, planId: plan.id })
-            .success(function(response, status, headers, config) {
-                $scope.reload();
-            });
-    };
-
     var scheduleReload = function () {
     };
 
     $scope.reload = function () {
-        console.log("MINION RELOADING SITES AND PLANS");
         $http.get('/api/sites').success(function(response, status, headers, config){
             // Flatten the result so that we can easily turn this into a table
             var sitesAndPlans = [];
@@ -141,12 +148,6 @@ app.controller("IssuesController", function($scope, $http, $location, $timeout) 
 app.controller("HistoryController", function($scope, $http, $location, $timeout) {
     $scope.openScan = function (scanId) {
         $location.path("/scan/" + scanId); // .replace();
-    };
-    $scope.startScan = function (site, plan) {
-        $http.put('/api/scan', {siteId: site.id, planId: plan.id })
-            .success(function(response, status, headers, config) {
-                $scope.reload();
-            });
     };
 
     $scope.reload = function () {

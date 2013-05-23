@@ -204,8 +204,8 @@ def api_plan(minion_plan_name):
     plan = r.json()['plan']
     return jsonify(success=True,data=plan)
 
-@app.route("/api/scan", methods=['PUT'])
-def api_scan_create():
+@app.route("/api/scan/start", methods=['PUT'])
+def api_scan_start():
     if session.get('email') is None:
         return jsonify(success=False)
     # Find the plan and site
@@ -232,3 +232,18 @@ def api_scan_create():
     db.session.commit()
 
     return jsonify(success=True)
+
+@app.route("/api/scan/stop", methods=['PUT'])
+def api_scan_stop():
+    # Check if the session is valid
+    if session.get('email') is None:
+        return jsonify(success=False)
+    # Get the scan id
+    scan_id = request.json['scanId']
+    # Stop the scan
+    r = requests.put(MINION_BACKEND + "/scan/" + scan_id + "/state",
+                     headers={'Content-Type': 'text/plain'},
+                      data="STOP")
+    r.raise_for_status()
+    return jsonify(success=True)
+    
