@@ -44,12 +44,27 @@
   <div ng-show="issue.URLs.length">
     <h3>URLs</h3>
     <p>The issue was found on the following URLs:</p>
-    <ul>
-      <li ng-repeat="url in issue.URLs"><a href="{{url}}" target="_blank">{{url}}</a></li>
+
+    <table class="table table-bordered" ng-repeat="url in issue.URLs">
       <tr>
-        <td ng-repeat="url in issue.URLs"><a href="">{{url}}</a></td>
+	<td><b>URL</b></td>
+	<td>{{url.URL}}</td>
       </tr>
-    </ul>
+      <tr>
+	<td><b>Extra</b></td>
+	<td>{{url.Extra}}</td>
+      </tr>
+    </table>
+
+    <!--
+	<ul>
+	  <li ng-repeat="url in issue.URLs"><a href="{{url}}" target="_blank">{{url}}</a></li>
+	  <tr>
+            <td ng-repeat="url in issue.URLs"><a href="">{{url}}</a></td>
+	  </tr>
+	</ul>
+    -->
+
   </div>
 
   <div ng-show="issue.Solution.length">
