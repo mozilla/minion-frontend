@@ -261,9 +261,25 @@ app.filter('moment_duration', function () {
 
 app.filter('link_bugs', function () {
     return function(input, options) {
+        if (!input) {
+            return "";
+        }
         return input.replace(/\#(\d{6,7})/,function (match, bugId) {
             var a = "https://bugzilla.mozilla.org/show_bug.cgi?id=" + bugId;
             return '<a href="' + a + '" target="_blank">#' + bugId + '</a>';
         });
+    };
+});
+
+app.filter('text', function () {
+    return function(input, options) {
+        var result = "";
+        if (input) {
+            var paragraphs = input.split("\n");
+            for (var i = 0; i < paragraphs.length; i++) {
+                result += "<p>" + paragraphs[i] + "</p>";
+            }
+        }
+        return result;
     };
 });
