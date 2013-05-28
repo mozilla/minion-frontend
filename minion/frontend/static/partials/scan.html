@@ -111,6 +111,25 @@
     </tr>
   </table>
 
+  <div ng-show="failures.length > 0">
+  
+    <h3>Failures</h3>
+  
+    <table class="table table-bordered">
+      <thead>
+	<tr>
+          <th>Plugin</th>
+          <th>Reason</th>
+	</tr>
+      </thead>
+      <tr ng-repeat="failure in failures">
+	<td>{{failure.plugin.name}}</td>
+	<td><a ng-href="#!/scan/{{scan.id}}/session/{{failure.session_idx}}/failure">{{failure.failure.message}}</a></td>
+      </tr>
+    </table>
+    
+  </div>
+
 </div>
 
 </div>

@@ -73,6 +73,7 @@ app.config(function($routeProvider, $locationProvider) {
         .when("/scan/:scanId", { templateUrl: "static/partials/scan.html", controller: "ScanController" })
         .when("/scan/:scanId/raw", { templateUrl: "static/partials/raw.html", controller: "RawController" })
         .when("/scan/:scanId/issue/:issueId", { templateUrl: "static/partials/issue.html", controller: "IssueController" })
+        .when("/scan/:scanId/session/:sessionIdx/failure", { templateUrl: "static/partials/session-failure.html", controller: "SessionFailureController" })
         .when("/plan/:planName", { templateUrl: "static/partials/plan.html", controller: "PlanController" })
         .when("/history", { templateUrl: "static/partials/history.html", controller: "HistoryController" })
         .when("/login", { templateUrl: "static/partials/login.html", controller: "LoginController" });
@@ -204,9 +205,16 @@ app.controller("ScanController", function($scope, $routeParams, $http, $location
                     }
                 });
             });
+	    var failures = []
+	    _.each(scan.sessions, function (session, idx) {
+		if (session.failure) {
+		    failures.push({session_idx: idx, plugin: session.plugin, failure: session.failure});
+		}
+	    });
             $scope.scan = scan;
             $scope.issues = issues;
             $scope.issueCounts = issueCounts;
+	    $scope.failures = failures;
         });
     });
 });
@@ -225,6 +233,15 @@ app.controller("IssueController", function($scope, $routeParams, $http) {
             $scope.issue = response.data.issue;
             $scope.session = response.data.session;
             $scope.scan = response.data.scan;
+        });
+    });
+});
+
+app.controller("SessionFailureController", function($scope, $routeParams, $http) {
+    $scope.$on('$viewContentLoaded', function() {
+        $http.get('/api/scan/' + $routeParams.scanId).success(function(response, status, headers, config) {
+            var scan = response.data;
+	    $scope.session = scan.sessions[$routeParams.sessionIdx];
         });
     });
 });

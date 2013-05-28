@@ -1,0 +1,40 @@
+<!--
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<div ng-controller="SessionFailureController">
+
+  <div class="container">
+
+    <h2>Plugin Session Failure Details</h2>
+
+    <div class="row">
+
+      <div class="span12">
+
+	<table class="table table-bordered">
+          <tr>
+            <td><b>Message</b></td>
+            <td>{{session.failure.message}}</td>
+          </tr>
+          <tr>
+            <td><b>Hostname</b></td>
+            <td>{{session.failure.hostname}}</td>
+          </tr>
+          <tr>
+            <td><b>Plugin</b></td>
+            <td>{{session.plugin.name}}</td>
+          </tr>
+	</table>    
+	
+	<pre>{{session.failure.exception}}</pre>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
