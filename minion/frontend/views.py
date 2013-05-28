@@ -88,7 +88,7 @@ def api_issues():
                                     del i[field]
                             i['scan'] = {'id': minion_scan['id']}
                             s['issues'].append(i)
-        SORTED_SEVERITIES = ('High', 'Medium', 'Low', 'Informational', 'Info', 'Error')
+        SORTED_SEVERITIES = ('Fatal', 'High', 'Medium', 'Low', 'Informational', 'Info', 'Error')
         s['issues'] = sorted(s['issues'], key=lambda issue: SORTED_SEVERITIES.index(issue['Severity']))
         results.append(s)
 
