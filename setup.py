@@ -5,7 +5,8 @@
 from setuptools import setup
 
 install_requires = [
-    'flask',
+    'flask==0.9',
+    'flask-script==0.5.3',
     'flask-sqlalchemy',
     'requests',
     'pymongo'
@@ -20,5 +21,5 @@ setup(name="minion.frontend",
       packages=['minion', 'minion.frontend'],
       namespace_packages=['minion'],
       include_package_data=True,
-      install_requires = install_requires)
-
+      install_requires = install_requires,
+      scripts = ['scripts/minion-frontend'])
