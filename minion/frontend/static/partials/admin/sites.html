@@ -1,38 +1,46 @@
-<div ng-controller="AdminSitesController">
+<div class="container" ng-controller="AdminSitesController">
 
-  <div class="container">
+  <ul class="nav nav-tabs">
+    <li>
+      <a ng-href="#!/admin/users">Users</a>
+    </li>
+    <li class="active">
+      <a ng-href="#!/admin/sites">Sites</a>
+    </li>
+    <li>
+      <a ng-href="#!/admin/groups">Groups</a>
+    </li>
+  </ul>
 
-    <h2>Sites <span class="pull-right"><a class="btn btn-mini" ng-click="createSite()">Add...</a></span></h2>
-    <div class="row">
-      <div class="span12">
-        <table class="table table-bordered">
-          <thead>
-            <tr>
-              <th>URL</th>
-              <th>Created</th>
-              <th>Ownership Verification</th>
-              <th>Plans</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tr ng-repeat="site in sites">
-            <td>{{site.url}}</td>
-            <td>{{site.created | scan_datetime}}</td>
-            <td>No</td>
-            <td>
-              <ul>
-                <li ng-repeat="plan in site.plans">{{plan}}</li>
-              </ul>
-            </td>
-            <td>
-              <a ng-href="#!/admin/sites/{{site.id}}" class="btn btn-mini">Edit</a>
-              <!--<a ng-click="removeSite(site)" class="btn btn-mini">Remove</a>-->
-            </td>
+  <h2>Sites <span class="pull-right"><a class="btn btn-mini" ng-click="createSite()">Add...</a></span></h2>
+  <div class="row">
+    <div class="span12">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>URL</th>
+            <th>Created</th>
+            <th>Ownership Verification</th>
+            <th>Plans</th>
+            <th>Actions</th>
           </tr>
-        </table>
-      </div>
+        </thead>
+        <tr ng-repeat="site in sites">
+          <td>{{site.url}}</td>
+          <td>{{site.created | scan_datetime}}</td>
+          <td>No</td>
+          <td>
+            <ul>
+              <li ng-repeat="plan in site.plans">{{plan}}</li>
+            </ul>
+          </td>
+          <td>
+            <a ng-href="#!/admin/sites/{{site.id}}" class="btn btn-mini">Edit</a>
+            <!--<a ng-click="removeSite(site)" class="btn btn-mini">Remove</a>-->
+          </td>
+        </tr>
+      </table>
     </div>
-
   </div>
 
 </div>

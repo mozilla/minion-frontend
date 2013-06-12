@@ -45,7 +45,7 @@
               Logged in as {{session.email}} - <a ng-click="signOut()">Sign out</a>
             </p>
             <ul class="nav">
-              <!-- <li class="active"><a href="#">Home</a></li> -->
+              <li ng-show="session.role == 'administrator'"><a ng-href="#!/admin/users">Administration</a></li>
             </ul>
           </div>
         </div>
