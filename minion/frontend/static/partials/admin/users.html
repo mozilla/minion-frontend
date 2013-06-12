@@ -19,14 +19,18 @@
         <thead>
           <tr>
             <th>Email</th>
+            <th>Created</th>
             <th>Name</th>
+            <th>Role</th>
             <th>Groups</th>
           </tr>
         </thead>
         <tr ng-repeat="user in users">
           <td>{{user.email}}</td>
+          <td>{{user.created | scan_datetime }}</td>
           <td>{{user.name}}</td>
-          <td>{{user.groups}}</td>
+          <td>{{user.role}}</td>
+          <td>{{user.groups.join(', ')}}</td>
         </tr>
       </table>
     </div>
