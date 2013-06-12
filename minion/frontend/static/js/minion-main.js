@@ -2,9 +2,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-var app = angular.module("MinionApp", []);
+var app = angular.module("MinionApp", ["ui.bootstrap"]);
 
-app.controller("MinionController", function($rootScope, $http, $location) {
+app.controller("MinionController", function($rootScope, $http, $location, $templateCache) {
     if (sessionStorage.getItem("email")) {
         $rootScope.session = {email: sessionStorage.getItem("email"), role: sessionStorage.getItem("role")};
     } else {
@@ -45,20 +45,28 @@ app.controller("MinionController", function($rootScope, $http, $location) {
         $location.path("/scan/" + scanId); // .replace();
     };
 
-    $rootScope.startScan = function (site, plan) {
-        console.log("Scanning " + site.id + " with plan " + plan.id);
-        $http.put('/api/scan/start', {siteId: site.id, planId: plan.id })
+    $rootScope.openIssue = function (scanId, issueId) {
+        $location.path("/scan/" + scanId + "/issue/" + issueId);
+    };
+
+    $rootScope.startScan = function (target, plan) {
+        $http.put('/api/scan/start', {target: target, plan: plan })
             .success(function(response, status, headers, config) {
                 //$scope.reload();
             });
     };
-    
+
     $rootScope.stopScan = function (scanId) {
 	$http.put('/api/scan/stop', {scanId: scanId})
 	    .success(function(response, status, headers, config) {
 		//$scope.reload();
 	    });
     };
+
+    // TODO This should only be enabled for development
+    $rootScope.$on('$viewContentLoaded', function() {
+        $templateCache.removeAll();
+    });
 });
 
 app.config(function($routeProvider, $locationProvider) {
@@ -76,7 +84,12 @@ app.config(function($routeProvider, $locationProvider) {
         .when("/scan/:scanId/session/:sessionIdx/failure", { templateUrl: "static/partials/session-failure.html", controller: "SessionFailureController" })
         .when("/plan/:planName", { templateUrl: "static/partials/plan.html", controller: "PlanController" })
         .when("/history", { templateUrl: "static/partials/history.html", controller: "HistoryController" })
-        .when("/login", { templateUrl: "static/partials/login.html", controller: "LoginController" });
+        .when("/login", { templateUrl: "static/partials/login.html", controller: "LoginController" })
+        // Administration
+        .when("/admin/sites", { templateUrl: "static/partials/admin/sites.html", controller: "AdminSitesController" })
+        .when("/admin/users", { templateUrl: "static/partials/admin/users.html", controller: "AdminUsersController" })
+        .when("/admin/groups", { templateUrl: "static/partials/admin/groups.html", controller: "AdminGroupsController" })
+        .when("/admin/groups/:groupName", { templateUrl: "static/partials/admin/group.html", controller: "AdminGroupController" });
 });
 
 app.run(function($rootScope, $http, $location) {
@@ -111,17 +124,15 @@ app.controller("HomeController", function($scope, $http, $location, $timeout) {
 
     $scope.reload = function () {
         $http.get('/api/sites').success(function(response, status, headers, config){
-            // Flatten the result so that we can easily turn this into a table
-            var sitesAndPlans = [];
-            _.each(response.data, function (site) {
-                _.each(site.plans, function (plan, idx) {
-                    sitesAndPlans.push({label: idx == 0 ? site.url : "", site: site, plan: plan});
-                });
+            _.each(response.data, function (r, idx) {
+                r.label = r.target;
+                if (idx > 0) {
+                    if (r.target === response.data[idx-1].target) {
+                        r.label = "";
+                    }
+                }
             });
-            $scope.sitesAndPlans = sitesAndPlans;
-
-            var recentSitesAndPlans = _.sortBy(sitesAndPlans, function (e) {return e.plan.date;}).reverse().slice(0,4);
-            $scope.recentSitesAndPlans = recentSitesAndPlans;
+            $scope.report = response.data;
 
             $timeout(function () {
                 $scope.reload();
@@ -138,7 +149,7 @@ app.controller("IssuesController", function($scope, $http, $location, $timeout) 
     $scope.filterName = 'all';
     $scope.reload = function () {
         $http.get('/api/issues').success(function(response, status, headers, config){
-	    $scope.sites = response.data;
+	    $scope.report = response.data;
         });
     };
     $scope.$on('$viewContentLoaded', function() {
@@ -153,7 +164,7 @@ app.controller("HistoryController", function($scope, $http, $location, $timeout)
 
     $scope.reload = function () {
         $http.get('/api/history').success(function(response, status, headers, config){
-            $scope.history = _.sortBy(response.data, function (e) {return e.scan.date;}).reverse();
+            $scope.history = response.data;
         });
     };
 
@@ -173,9 +184,6 @@ app.controller("RawController", function ($scope, $routeParams, $http, $location
 });
 
 app.controller("ScanController", function($scope, $routeParams, $http, $location) {
-    $scope.openIssue = function (scanId, issueId) {
-        $location.path("/scan/" + scanId + "/issue/" + issueId);
-    };
     $scope.$on('$viewContentLoaded', function() {
         $http.get('/api/scan/' + $routeParams.scanId).success(function(response, status, headers, config) {
             var scan = response.data;
@@ -246,6 +254,8 @@ app.controller("SessionFailureController", function($scope, $routeParams, $http)
     });
 });
 
+// Filters
+
 app.filter('moment', function () {
     return function(input, options) {
         return moment(input).format(options.format || "YYYY-MM-DD");
@@ -255,7 +265,7 @@ app.filter('moment', function () {
 app.filter('scan_datetime', function () {
     return function(input, options) {
         if (input) {
-            return moment.unix(input).format("YYYY-MM-DD HH:MM");
+            return moment.unix(input).format("YYYY-MM-DD HH:mm");
         } else {
             return "Never";
         }

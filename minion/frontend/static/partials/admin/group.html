@@ -1,0 +1,63 @@
+<div ng-controller="AdminGroupController">
+
+  <div class="container">
+
+    <div class="row">
+      <div class="span6">
+        <h2>Group</h2>
+        <table class="table table-bordered">
+          <tr>
+            <td><b>Name</b></td><td>{{group.name}}</td>
+          </tr>
+          <tr>
+            <td><b>Description</b></td><td>{{group.description}}</td>
+          </tr>
+          <tr>
+            <td><b>Created</b></td><td>{{group.created}}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="span6">
+        <h3>Users <span class="pull-right"><a ng-click="addUser()" class="btn btn-mini">Add...</a></span></h3>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tr ng-show="!group.users.length">
+            <td colspan="2">No users in this group yet.</td>
+          </tr>
+          <tr ng-repeat="user in group.users">
+            <td>{{user}}</td>
+            <td><a ng-click="removeUser(user)" class="btn btn-mini">Remove</a></td>
+          </tr>
+        </table>
+      </div>
+      <div class="span6">
+        <h3>Sites <span class="pull-right"><a ng-click="addSite()" class="btn btn-mini">Add...</a></span></h3>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Site</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tr ng-show="!group.sites.length">
+            <td colspan="2">No sites in this group yet.</td>
+          </tr>
+          <tr ng-repeat="site in group.sites">
+            <td>{{site}}</td>
+            <td><a ng-click="removeSite(site)" class="btn btn-mini">Remove</a></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+</div>

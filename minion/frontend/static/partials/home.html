@@ -34,19 +34,19 @@
             <th></th>
           </tr>
         </thead>
-        <tr ng-repeat="e in sitesAndPlans">
-          <td><a href="{{e.label}}" target="_blank">{{e.label}}</a></td>
-          <td><a ng-href="#!/plan/{{e.plan.name}}">{{e.plan.name}}</a></td>
-          <td>{{e.plan.date | scan_datetime }}</td>
-          <td>{{e.plan.state || "-"}}</td>
-          <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-high">{{e.plan.high_count || "-"}}</span></td>
-          <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-medium">{{e.plan.medium_count || "-"}}</span></td>
-          <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-low">{{e.plan.low_count || "-"}}</span></<td></td>
-          <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-info">{{e.plan.info_count || "-"}}</span></td>
+        <tr ng-repeat="r in report">
+          <td><a href="{{r.label}}" target="_blank">{{r.label}}</a></td>
+          <td><a ng-href="#!/plan/{{r.plan.name}}">{{r.plan}}</a></td>
+          <td>{{r.scan.created | scan_datetime }}</td>
+          <td>{{r.scan.state || "-"}}</td>
+          <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-high">{{r.scan.issues.high || "-"}}</span></td>
+          <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-medium">{{r.scan.issues.medium || "-"}}</span></td>
+          <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-low">{{r.scan.issues.low || "-"}}</span></<td></td>
+          <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-info">{{r.scan.issues.info || "-"}}</span></td>
           <td>
-            <button class="btn btn-mini btn-primary" style="width: 60px" ng-class="{disabled: !e.plan.date}" type="button" ng-click="openScan(e.plan.scan_id)">Details</button>
-            <button class="btn btn-mini btn-primary" style="width: 60px" type="button" ng-click="startScan(e.site, e.plan)" ng-show="e.plan.manual && e.plan.state != 'STARTED'">Scan</button>
-            <button class="btn btn-mini btn-primary" style="width: 60px" type="button" ng-click="stopScan(e.plan.scan_id)" ng-show="e.plan.manual && e.plan.state == 'STARTED'">Stop</button>
+            <button class="btn btn-mini btn-primary" style="width: 60px" ng-class="{disabled: !r.scan}" type="button" ng-click="openScan(r.scan.id)">Details</button>
+            <button class="btn btn-mini btn-primary" style="width: 60px" type="button" ng-click="startScan(r.target, r.plan)" ng-show="r.scan.state != 'STARTED' && r.scan.state != 'QUEUED'">Scan</button>
+            <button class="btn btn-mini btn-primary" style="width: 60px" type="button" ng-click="stopScan(r.scan.id)" ng-show="r.scan.state == 'STARTED' || r.scan.state == 'QUEUED'">Stop</button>
           </td>
         </tr>
       </table>

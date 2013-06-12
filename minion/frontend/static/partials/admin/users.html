@@ -1,0 +1,27 @@
+<div ng-controller="AdminUsersController">
+
+  <div class="container">
+
+    <h2>Users</h2>
+    <div class="row">
+      <div class="span12">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Email</th>
+              <th>Name</th>
+              <th>Groups</th>
+            </tr>
+          </thead>
+          <tr ng-repeat="user in users">
+            <td>{{user.email}}</td>
+            <td>{{user.name}}</td>
+            <td>{{user.groups}}</td>
+          </tr>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+</div>
