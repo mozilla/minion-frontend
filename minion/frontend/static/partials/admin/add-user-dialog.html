@@ -1,9 +1,23 @@
-<div class="modal-header">
-  <h1>Add User</h1>
-</div>
-<div class="modal-body">
-  <p>Site : <input ng-model="email" /></p>
-</div>
-<div class="modal-footer">
-  <button ng-click="close(email)" class="btn btn-primary">Add</button>
-</div>
+<form class="form-horizontal" name="addUserForm">
+
+  <div class="modal-header">
+    <h1>Add User to Group</h1>
+  </div>
+
+  <form>
+    <div class="modal-body">
+      <div class="control-group">
+        <label class="control-label" for="inputRole">Email</label>
+        <div class="controls">
+          <select ng-model="email" ng-options="user.email for user in users" required></select>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div class="modal-footer">
+    <button ng-click="cancel()" class="btn">Cancel</button>
+    <button ng-click="submit(email)" class="btn btn-primary" ng-disabled="addUserForm.$invalid">Add</button>
+  </div>
+
+</form>
