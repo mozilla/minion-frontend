@@ -118,6 +118,16 @@ def _backend_list_users():
         return None
     return j.get('users')
 
+def _backend_add_user(user):
+    r = requests.post(config['backend-api']['url'] + "/users",
+                      headers={'Content-Type': 'application/json'},
+                      data=json.dumps(user))
+    r.raise_for_status()
+    j = r.json()
+    if not j.get('success'):
+        return None
+    return j.get('user')
+
 def _backend_list_groups():
     r = requests.get(config['backend-api']['url'] + "/groups")
     r.raise_for_status()
@@ -351,6 +361,20 @@ def get_api_admin_users():
     if not users:
         return jsonify(success=False, reason='unknown')
     return jsonify(success=True, data=users)
+
+@app.route("/api/admin/users", methods=['POST'])
+def post_api_admin_users():
+    # Check if the session is valid
+    if session.get('email') is None:
+        return jsonify(success=False, reason='not-logged-in')
+    # Check if the user is an administrator
+    if session.get('role') != 'administrator':
+        return jsonify(success=False, reason='permission')
+    # Retrieve user list from backend
+    user = _backend_add_user(request.json)
+    if not user:
+        return jsonify(success=False, reason='unknown')
+    return jsonify(success=True, data=user)
 
 @app.route("/api/admin/plans", methods=["GET"])
 def get_api_admin_plans():

@@ -4,14 +4,62 @@
 
 // Controllers for /users
 
-app.controller("AdminUsersController", function($scope, $routeParams, $http, $location) {
-    $scope.$on('$viewContentLoaded', function() {
+app.controller("AdminCreateUserController", function ($scope, dialog, users, groups) {
+    $scope.user = {email:"", name: "", groups:[], role: "user"};
+    $scope.groups = groups;
+    $scope.roles = ["user", "administrator"];
+
+    $scope.cancel = function () {
+        dialog.close(null);
+    };
+
+    $scope.submit = function(user) {
+        if (_.find(users, function (u) { return u.email === user.email })) {
+            $scope.error = "The user already exists.";
+        } else {
+            dialog.close(user);
+        }
+    };
+});
+
+app.controller("AdminUsersController", function($scope, $http, $dialog) {
+    var reload = function() {
         $http.get('/api/admin/users')
             .success(function(response, status, headers, config) {
                 $scope.users = response.data;
             });
+    };
+
+    $scope.createUser = function () {
+        $http.get('/api/admin/groups')
+            .success(function(response, status, headers, config) {
+                var d = $dialog.dialog({
+                    templateUrl: "static/partials/admin/users/create-user.html?x=" + new Date().getTime(),
+                    controller: "AdminCreateUserController",
+                    resolve: { users: function() { return $scope.users; },
+                               groups: function() { return response.data; } }
+                });
+                d.open().then(function(user) {
+                    if(user) {
+                        console.dir(user);
+                        $http.post('/api/admin/users', {email:user.email, name: user.name, role: user.role, groups: user.groups})
+                            .success(function(response, status, headers, config) {
+                                if (response.success) {
+                                    reload();
+                                } else {
+                                    // TODO Show an error dialog
+                                }
+                            });
+                    }
+                });
+            });
+    };
+    $scope.$on('$viewContentLoaded', function() {
+        reload();
     });
 });
+
+
 
 // Controllers for /groups
 
