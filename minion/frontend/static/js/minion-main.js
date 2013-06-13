@@ -4,7 +4,7 @@
 
 var app = angular.module("MinionApp", ["ui.bootstrap"]);
 
-app.controller("MinionController", function($rootScope, $http, $location, $templateCache) {
+app.controller("MinionController", function($rootScope, $http, $location) {
     if (sessionStorage.getItem("email")) {
         $rootScope.session = {email: sessionStorage.getItem("email"), role: sessionStorage.getItem("role")};
     } else {
@@ -62,11 +62,6 @@ app.controller("MinionController", function($rootScope, $http, $location, $templ
 		//$scope.reload();
 	    });
     };
-
-    // TODO This should only be enabled for development
-    $rootScope.$on('$viewContentLoaded', function() {
-        $templateCache.removeAll();
-    });
 });
 
 app.config(function($routeProvider, $locationProvider) {
