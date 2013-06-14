@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import datetime
+import functools
 import json
 
 from flask import render_template, redirect, url_for, session, jsonify, request, session
@@ -185,12 +186,42 @@ def _backend_patch_group(group_name, patch):
 #
 # Basic API for session management
 #
+NO_MATCHING = object()
 
+def requires_session(required):
+    """
+    Check if the required key-value exist in the session.
+    If a specific key does not require matching, e.g.
+    session.get('email'), then the value will simply be
+    NO_MATCHING object (see the global name above).
+
+    @app.route("/api/....")
+    @requires_session({'email': NO_MATCHING, 
+        'role': 'administrator'})
+    def view_func(...)
+
+    """
+    def decorator(view):
+        @functools.wraps(view)
+        def check_session(*args, **kwargs):
+            for req_key, req_value in required.iteritems():
+                value_in_session = session.get(req_key, None)
+                if value_in_session is not None:
+                    if req_value is not NO_MATCHING  and value_in_session != req_value:
+                        return jsonify(success=False)
+                else:
+                    return jsonify(success=False)
+        return check_session
+    return decorator                
+
+                
+        
 @app.route("/")
 def index():
     return app.send_static_file('index.html')
 
 @app.route("/api/session")
+@requires_session({'email': NO_MATCHING})
 def api_session():
     if session.get('email') is None:
         return jsonify(success=False)
