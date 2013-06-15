@@ -3,6 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import datetime
+import functools
 import json
 
 from flask import render_template, redirect, url_for, session, jsonify, request, session
@@ -185,15 +186,50 @@ def _backend_patch_group(group_name, patch):
 #
 # Basic API for session management
 #
+def requires_session(*decor_args):
+    """
+    Check if user is logged in or not by checking
+    'email' is in session. This is done by default
+    without giving any argument to the decorator.
+    You can give the name of a role as an argument.
+    For examples:
+
+    @app.route("/api/....")
+    @requires_session
+    def view_func(...)
+
+    @app.rpite("/api/...."_
+    @reqiores_session("administrator")
+    def view_func(...)
+
+    """
+
+    def decorator(view):
+        @functools.wraps(view)
+        def check_session(*args, **kwargs):
+            if not session.get('email'):
+                return jsonify(success=False, reason='not-logged-in')
+            if isinstance(decor_args[0], str):
+                role = decor_args[0]
+                if role is not None and session.get('role') != role:
+                    return jsonify(success=False, reason='permission')
+        return check_session
+
+    # the decorator can implicilty take the function being
+    # decorated. We must ensure the arg is actually callable.
+    # Otherwise, we call the decorator without any argument.
+    if len(decor_args) == 1 and callable(decor_args[0]):
+        return decorator(decor_args[0])
+    else:
+        return decorator
 
 @app.route("/")
 def index():
     return app.send_static_file('index.html')
 
 @app.route("/api/session")
+@requires_session
 def api_session():
-    if session.get('email') is None:
-        return jsonify(success=False)
     return jsonify(success=True, data={'email': session['email'], 'role': session['role']})
 
 @app.route("/api/login", methods=["POST"])
@@ -223,36 +259,32 @@ def api_logout():
 # #
 
 @app.route("/api/issues")
+@requires_session
 def api_issues():
-    if session.get('email') is None:
-        return jsonify(success=False)
     report = get_issues_report(user=session['email'])
     if report is None:
         return jsonify(success=False, data=None)
     return jsonify(success=True, data=report)
 
 @app.route("/api/history")
+@requires_session
 def api_history():
-    if session.get('email') is None:
-        return jsonify(success=False)
     report = get_history_report(user=session['email'])
     if report is None:
         return jsonify(success=False, data=None)
     return jsonify(success=True, data=report)
 
 @app.route("/api/sites")
+@requires_session
 def api_sites():
-    if session.get('email') is None:
-        return jsonify(success=False)
     report = get_status_report(user=session['email'])
     if report is None:
         return jsonify(success=False, data=None)
     return jsonify(success=True, data=report)
 
 @app.route("/api/scan/<minion_scan_id>/issue/<minion_issue_id>")
+@requires_session
 def api_scan_issue(minion_scan_id, minion_issue_id):
-    if session.get('email') is None:
-        return jsonify(success=False)
     r = requests.get(config['backend-api']['url'] + "/scans/" + minion_scan_id)
     j = r.json()
     for s in j['scan']['sessions']:
@@ -264,26 +296,23 @@ def api_scan_issue(minion_scan_id, minion_issue_id):
     return jsonify(success=False)
 
 @app.route("/api/scan/<minion_scan_id>")
+@requires_session
 def api_scan(minion_scan_id):
-    if session.get('email') is None:
-        return jsonify(success=False)
     # TODO This must check if the user actually has access to the scan
     r = requests.get(config['backend-api']['url'] + "/scans/" + minion_scan_id)
     scan = r.json()['scan']
     return jsonify(success=True,data=scan)
 
 @app.route("/api/plan/<minion_plan_name>")
+@requires_session
 def api_plan(minion_plan_name):
-    if session.get('email') is None:
-        return jsonify(success=False)
     r = requests.get(config['backend-api']['url'] + "/plans/" + minion_plan_name)
     plan = r.json()['plan']
     return jsonify(success=True,data=plan)
 
 @app.route("/api/scan/start", methods=['PUT'])
+@requires_session
 def api_scan_start():
-    if session.get('email') is None:
-        return jsonify(success=False)
     # Find the plan and site
     plan = request.json['plan']
     target = request.json['target']
@@ -302,10 +331,8 @@ def api_scan_start():
     return jsonify(success=True)
 
 @app.route("/api/scan/stop", methods=['PUT'])
+@requires_session
 def api_scan_stop():
-    # Check if the session is valid
-    if session.get('email') is None:
-        return jsonify(success=False)
     # Get the scan id
     scan_id = request.json['scanId']
     # Stop the scan
@@ -320,13 +347,8 @@ def api_scan_stop():
 #
 
 @app.route("/api/admin/sites", methods=["GET"])
+@requires_session('administrator')
 def get_api_admin_sites():
-    # Check if the session is valid
-    if session.get('email') is None:
-        return jsonify(success=False, reason='not-logged-in')
-    # Check if the user is an administrator
-    if session.get('role') != 'administrator':
-        return jsonify(success=False, reason='permission')
     # Retrieve user list from backend
     sites = _backend_get_sites()
     if not sites:
@@ -334,13 +356,8 @@ def get_api_admin_sites():
     return jsonify(success=True, data=sites)
 
 @app.route("/api/admin/sites", methods=["POST"])
+@requires_session('administrator')
 def post_api_admin_sites():
-    # Check if the session is valid
-    if session.get('email') is None:
-        return jsonify(success=False, reason='not-logged-in')
-    # Check if the user is an administrator
-    if session.get('role') != 'administrator':
-        return jsonify(success=False, reason='permission')
     # Create a new site
     site = _backend_add_site(request.json)
     if not site:
@@ -349,13 +366,8 @@ def post_api_admin_sites():
 
 
 @app.route("/api/admin/users", methods=['GET'])
+@requires_session('administrator')
 def get_api_admin_users():
-    # Check if the session is valid
-    if session.get('email') is None:
-        return jsonify(success=False, reason='not-logged-in')
-    # Check if the user is an administrator
-    if session.get('role') != 'administrator':
-        return jsonify(success=False, reason='permission')
     # Retrieve user list from backend
     users = _backend_list_users()
     if not users:
@@ -363,13 +375,8 @@ def get_api_admin_users():
     return jsonify(success=True, data=users)
 
 @app.route("/api/admin/users", methods=['POST'])
+@requires_session('administrator')
 def post_api_admin_users():
-    # Check if the session is valid
-    if session.get('email') is None:
-        return jsonify(success=False, reason='not-logged-in')
-    # Check if the user is an administrator
-    if session.get('role') != 'administrator':
-        return jsonify(success=False, reason='permission')
     # Retrieve user list from backend
     user = _backend_add_user(request.json)
     if not user:
@@ -377,13 +384,8 @@ def post_api_admin_users():
     return jsonify(success=True, data=user)
 
 @app.route("/api/admin/plans", methods=["GET"])
+@requires_session('administrator')
 def get_api_admin_plans():
-    # Check if the session is valid
-    if session.get('email') is None:
-        return jsonify(success=False, reason='not-logged-in')
-    # Check if the user is an administrator
-    if session.get('role') != 'administrator':
-        return jsonify(success=False, reason='permission')
     # Retrieve user list from backend
     plans = _backend_get_plans()
     if not plans:
@@ -391,13 +393,8 @@ def get_api_admin_plans():
     return jsonify(success=True, data=plans)
 
 @app.route("/api/admin/groups", methods=['GET'])
+@requires_session('administrator')
 def get_api_admin_groups():
-    # Check if the session is valid
-    if session.get('email') is None:
-        return jsonify(success=False, reason='not-logged-in')
-    # Check if the user is an administrator
-    if session.get('role') != 'administrator':
-        return jsonify(success=False, reason='permission')
     # Retrieve user list from backend
     groups = _backend_list_groups()
     if not groups:
@@ -405,13 +402,8 @@ def get_api_admin_groups():
     return jsonify(success=True, data=groups)
 
 @app.route("/api/admin/groups", methods=['POST'])
+@requires_session('administrator')
 def post_api_admin_groups():
-    # Check if the session is valid
-    if session.get('email') is None:
-        return jsonify(success=False, reason='not-logged-in')
-    # Check if the user is an administrator
-    if session.get('role') != 'administrator':
-        return jsonify(success=False, reason='permission')
     # Create a new group
     group = _backend_add_group(request.json)
     if not group:
@@ -419,13 +411,8 @@ def post_api_admin_groups():
     return jsonify(success=True)
 
 @app.route("/api/admin/groups/<group_name>", methods=['GET'])
+@requires_session('administrator')
 def get_api_admin_group_by_name(group_name):
-    # Check if the session is valid
-    if session.get('email') is None:
-        return jsonify(success=False, reason='not-logged-in')
-    # Check if the user is an administrator
-    if session.get('role') != 'administrator':
-        return jsonify(success=False, reason='permission')
     # Retrieve group from the backend
     group = _backend_get_group(group_name)
     if not group:
@@ -433,28 +420,18 @@ def get_api_admin_group_by_name(group_name):
     return jsonify(success=True, data=group)
 
 @app.route("/api/admin/groups/<group_name>", methods=['DELETE'])
+@requires_session('administrator')
 def delete_api_admin_group_by_name(group_name):
-    # Check if the session is valid
-    if session.get('email') is None:
-        return jsonify(success=False, reason='not-logged-in')
-    # Check if the user is an administrator
-    if session.get('role') != 'administrator':
-        return jsonify(success=False, reason='permission')
     # Retrieve group from the backend
     if not _backend_delete_group(group_name):
         return jsonify(success=False, reason='unknown')
     return jsonify(success=True)
 
 @app.route("/api/admin/groups/<group_name>", methods=['PATCH'])
+@requires_session('administrator')
 def post_api_admin_groups_group_name_sites(group_name):
     print "REQUEST DATA", request
     print "REQUEST DATA", request.headers
-    # Check if the session is valid
-    if session.get('email') is None:
-        return jsonify(success=False, reason='not-logged-in')
-    # Check if the user is an administrator
-    if session.get('role') != 'administrator':
-        return jsonify(success=False, reason='permission')
     # Patch the group
     if not _backend_patch_group(group_name, request.json):
         return jsonify(success=False, reason='unknown')
