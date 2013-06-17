@@ -213,6 +213,7 @@ def requires_session(*decor_args):
                 role = decor_args[0]
                 if role is not None and session.get('role') != role:
                     return jsonify(success=False, reason='permission')
+            return view(*args, **kwargs)
         return check_session
 
     # the decorator can implicilty take the function being
