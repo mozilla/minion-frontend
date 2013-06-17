@@ -18,7 +18,6 @@ import requests
 # (althiugh it does not seem to work) and the session secret can move to
 # the config file
 
-app.debug = True
 app.secret_key = "dkejkdejkldjel"
 
 config = frontend_config()

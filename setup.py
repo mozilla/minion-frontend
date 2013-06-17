@@ -6,7 +6,6 @@ from setuptools import setup
 
 install_requires = [
     'flask==0.9',
-    'flask-script==0.5.3',
     'requests'
 ]
 
