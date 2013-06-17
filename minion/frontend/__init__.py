@@ -7,3 +7,11 @@ from flask import Flask
 app = Flask(__name__);
 
 from minion.frontend import views
+
+def configure_app(app, debug=False):
+    if debug:
+        app.debug = True
+        app.secret_key =  "ThisIsOnlyForDevelopmentMode"
+    else:
+        raise Exception("TODO Implement a real session store for production apps")
+    return app

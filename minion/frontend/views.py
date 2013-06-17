@@ -5,6 +5,7 @@
 import datetime
 import functools
 import json
+import sys
 
 from flask import render_template, redirect, url_for, session, jsonify, request, session
 
@@ -13,12 +14,6 @@ from minion.frontend.persona import verify_assertion
 from minion.frontend.utils import frontend_config
 
 import requests
-
-# This should move somewhere else. The -d option is part of flask.script
-# (althiugh it does not seem to work) and the session secret can move to
-# the config file
-
-app.secret_key = "dkejkdejkldjel"
 
 config = frontend_config()
 
