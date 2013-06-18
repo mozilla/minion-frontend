@@ -6,6 +6,13 @@
 
     <div class="container" ng-controller="HomeController">
 
+    <div ng-show="report.length == 0">
+      <h2>Welcome to Minion</h2>
+      <p>You do not have any sites in Minion yet. This should become a nice landing page for new users.</p>
+    </div>
+
+    <div ng-show="report.length > 0">
+
     <ul class="nav nav-tabs">
       <li class="active">
         <a ng-href="#!/home/sites">Sites & Scans</a>
@@ -55,5 +62,7 @@
         <li><i class="icon-double-angle-right"></i><a href="#">Request a new site to be added to Minion</a></li>
         <li><i class="icon-double-angle-right"></i><a href="#">Invite a colleague to Minion</a></li>
       </ul>
+
+      </div>
 
     </div>
