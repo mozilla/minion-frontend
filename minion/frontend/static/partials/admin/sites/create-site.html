@@ -1,14 +1,19 @@
 
-<div class="modal-header">
-  <h1>Add Site</h1>
-</div>
+<form class="form-horizontal" name="siteForm">
 
-<div class="modal-body">
-    <form class="form-horizontal">
+  <div class="modal-header">
+    <h1>Add Site</h1>
+  </div>
+
+  <form>
+    <div class="modal-body">
+
+      <div ng-show="error" class="alert alert-error"><strong>Oh snap!</strong> {{error}}</div>
+
       <div class="control-group">
         <label class="control-label" for="inputUrl">URL</label>
         <div class="controls">
-          <input type="text" ng-model="site.url" placeholder="http://">
+          <input type="text" ng-model="site.url" placeholder="http://" required ng-pattern="/^(http|https)://([a-z0-9][-a-z0-9]+)(\.[a-z0-9][-a-z0-9]+)+(:\d+)?$/">
         </div>
       </div>
 
@@ -27,10 +32,12 @@
           </select>
         </div>
       </div>
-    </form>
-</div>
+    </div>
+  </form>
 
-<div class="modal-footer">
-  <button ng-click="close(null)" class="btn">Cancel</button>
-  <button ng-click="close(site)" class="btn btn-primary">Add</button>
-</div>
+  <div class="modal-footer">
+    <button ng-click="cancel()" class="btn">Cancel</button>
+    <button ng-click="submit(site)" class="btn btn-primary" ng-disabled="siteForm.$invalid">Add</button>
+  </div>
+
+</form>

@@ -227,11 +227,20 @@ app.controller("AdminGroupController", function($scope, $routeParams, $http, $lo
 
 // Controllers for /admin/sites
 
-app.controller("AdminCreateSiteController", function ($scope, dialog, plans) {
+app.controller("AdminCreateSiteController", function ($scope, dialog, plans, sites) {
     $scope.site = {url:"",plans:[]};
     $scope.plans = plans;
-    $scope.close = function(site){
-        dialog.close(site);
+
+    $scope.cancel = function () {
+        dialog.close(null);
+    };
+
+    $scope.submit = function(site) {
+        if (_.find(sites, function (s) { return s.url === site.url; })) {
+            $scope.error = "The site already exists.";
+        } else {
+            dialog.close(site);
+        }
     };
 });
 
@@ -245,24 +254,27 @@ app.controller("AdminSitesController", function($scope, $routeParams, $http, $di
 
     $scope.createSite = function () {
 
-        $http.get('/api/admin/plans')
-            .success(function(response, status, headers, config) {
+        $http.get('/api/admin/plans').success(function(response) {
+            $scope.plans = response.data;
+            $http.get('/api/admin/sites').success(function(response) {
+                $scope.sites = response.data;
                 var d = $dialog.dialog({
                     templateUrl: "static/partials/admin/sites/create-site.html?x=" + new Date().getTime(),
                     controller: "AdminCreateSiteController",
-                    resolve: { plans: function() { return response.data; } }
+                    resolve: { plans: function() { return $scope.plans; },
+                               sites: function() { return $scope.sites; } }
                 });
                 d.open().then(function(site) {
                     if(site) {
-                        $http.post('/api/admin/sites', {url: site.url, plans: site.plans})
-                            .success(function(response, status, headers, config) {
-                                if (response.success) {
-                                    reload();
-                                }
-                            });
+                        $http.post('/api/admin/sites', {url: site.url, plans: site.plans}).success(function(response) {
+                            if (response.success) {
+                                reload();
+                            }
+                        });
                     }
                 });
             });
+        });
     };
 
     $scope.$on('$viewContentLoaded', function() {
