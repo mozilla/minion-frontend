@@ -43,7 +43,7 @@ def create_user(email, role):
 def get_or_create_user(email):
     user = get_user(email)
     if not user:
-        user = create_user(email, 'guest')
+        user = create_user(email, 'user')
     return user
 
 def get_history_report(user=None):
