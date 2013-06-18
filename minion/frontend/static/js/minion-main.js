@@ -129,9 +129,11 @@ app.controller("HomeController", function($scope, $http, $location, $timeout) {
             });
             $scope.report = response.data;
 
-            $timeout(function () {
-                $scope.reload();
-            }, 2500);
+            if ($scope.report.length > 0) {
+                $timeout(function () {
+                    $scope.reload();
+                }, 2500);
+            }
         });
     };
 
