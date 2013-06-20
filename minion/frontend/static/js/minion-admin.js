@@ -227,6 +227,19 @@ app.controller("AdminGroupController", function($scope, $routeParams, $http, $lo
 
 // Controllers for /admin/sites
 
+app.controller("AdminEditSiteController", function ($scope, dialog, site, plans) {
+    $scope.site = site;
+    $scope.plans = plans;
+
+    $scope.cancel = function () {
+        dialog.close(null);
+    };
+
+    $scope.submit = function(site) {
+        dialog.close(site);
+    };
+});
+
 app.controller("AdminCreateSiteController", function ($scope, dialog, plans, sites) {
     $scope.site = {url:"",plans:[]};
     $scope.plans = plans;
@@ -250,6 +263,27 @@ app.controller("AdminSitesController", function($scope, $routeParams, $http, $di
             .success(function(response, status, headers, config) {
                 $scope.sites = response.data;
             });
+    };
+
+    $scope.editSite = function (site) {
+        console.dir(site);
+        $http.get('/api/admin/plans').success(function(response) {
+            $scope.plans = response.data;
+                var d = $dialog.dialog({
+                    templateUrl: "static/partials/admin/sites/edit-site.html?x=" + new Date().getTime(),
+                    controller: "AdminEditSiteController",
+                    resolve: { plans: function() { return $scope.plans; },
+                               site: function() { return angular.copy(site); } }
+                });
+                d.open().then(function(site) {
+                    if (site) {
+                        console.dir(site);
+                        $http.post('/api/admin/sites/' + site.id, {plans: site.plans}).success(function(response) {
+                            reload();
+                        });
+                    }
+                });
+        });
     };
 
     $scope.createSite = function () {

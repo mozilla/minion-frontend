@@ -97,6 +97,16 @@ def _backend_add_site(site):
         return None
     return j.get('site')
 
+def _backend_update_site(site_id, site):
+    r = requests.post(config['backend-api']['url'] + "/sites/" + site_id,
+                      headers={'Content-Type': 'application/json'},
+                      data=json.dumps(site))
+    r.raise_for_status()
+    j = r.json()
+    if not j.get('success'):
+        return None
+    return j.get('site')
+
 def _backend_get_plans():
     r = requests.get(config['backend-api']['url'] + "/plans")
     r.raise_for_status()
@@ -359,6 +369,14 @@ def post_api_admin_sites():
         return jsonify(success=False, reason='unknown')
     return jsonify(success=True, data=site)
 
+@app.route("/api/admin/sites/<site_id>", methods=["POST"])
+@requires_session('administrator')
+def post_api_admin_sites_site_id(site_id):
+    # Update a site
+    site = _backend_update_site(site_id, request.json)
+    if not site:
+        return jsonify(success=False, reason='unknown')
+    return jsonify(success=True, data=site)
 
 @app.route("/api/admin/users", methods=['GET'])
 @requires_session('administrator')

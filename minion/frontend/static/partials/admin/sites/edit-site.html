@@ -1,0 +1,43 @@
+
+<form class="form-horizontal" name="siteForm">
+
+  <div class="modal-header">
+    <h1>Edit Site</h1>
+  </div>
+
+  <form>
+    <div class="modal-body">
+
+      <div ng-show="error" class="alert alert-error"><strong>Oh snap!</strong> {{error}}</div>
+
+      <div class="control-group">
+        <label class="control-label" for="inputUrl">URL</label>
+        <div class="controls">
+          {{site.url}}
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="controls">
+          <label class="checkbox">
+            <input type="checkbox" ng-model="site.ownershipVerification">Requires Ownership Verification
+          </label>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="inputPassword">Plans</label>
+        <div class="controls">
+          <select size="8" multiple ng-multiple="true" ng-model="site.plans" ng-options="p.name as p.name for p in plans">
+          </select>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div class="modal-footer">
+    <button ng-click="cancel()" class="btn">Cancel</button>
+    <button ng-click="submit(site)" class="btn btn-primary" ng-disabled="siteForm.$invalid">Update</button>
+  </div>
+
+</form>
