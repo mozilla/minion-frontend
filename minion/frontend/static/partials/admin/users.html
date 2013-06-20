@@ -33,6 +33,7 @@
           <td>{{user.role}}</td>
           <td>{{user.groups.join(', ')}}</td>
           <td>
+            <a ng-click="editUser(user)" class="btn btn-mini">Edit</a>
             <a ng-click="removeUser(user)" class="btn btn-mini">Remove</a>
           </td>
         </tr>

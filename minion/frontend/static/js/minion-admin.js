@@ -4,6 +4,20 @@
 
 // Controllers for /users
 
+app.controller("AdminEditUserController", function ($scope, dialog, user, groups) {
+    $scope.user = user;
+    $scope.groups = groups;
+    $scope.roles = ["user", "administrator"];
+
+    $scope.cancel = function () {
+        dialog.close(null);
+    };
+
+    $scope.submit = function() {
+        dialog.close($scope.user);
+    };
+});
+
 app.controller("AdminCreateUserController", function ($scope, dialog, users, groups) {
     $scope.user = {email:"", name: "", groups:[], role: "user"};
     $scope.groups = groups;
@@ -28,6 +42,25 @@ app.controller("AdminUsersController", function($scope, $http, $dialog) {
             .success(function(response, status, headers, config) {
                 $scope.users = response.data;
             });
+    };
+
+    $scope.editUser = function (user) {
+        $http.get('/api/admin/groups').success(function(response) {
+            $scope.groups = response.data;
+                var d = $dialog.dialog({
+                    templateUrl: "static/partials/admin/users/edit-user.html?x=" + new Date().getTime(),
+                    controller: "AdminEditUserController",
+                    resolve: { groups: function() { return $scope.groups; },
+                               user: function() { return angular.copy(user); } }
+                });
+                d.open().then(function(user) {
+                    if (user) {
+                        $http.post('/api/admin/users/' + user.email, user).success(function(response) {
+                            reload();
+                        });
+                    }
+                });
+        });
     };
 
     $scope.removeUser = function(user) {
