@@ -133,6 +133,14 @@ def _backend_add_user(user):
         return None
     return j.get('user')
 
+def _backend_delete_user(user_email):
+    r = requests.delete(config['backend-api']['url'] + "/users/" + user_email)
+    r.raise_for_status()
+    j = r.json()
+    if not j.get('success'):
+        return None
+    return True
+
 def _backend_list_groups():
     r = requests.get(config['backend-api']['url'] + "/groups")
     r.raise_for_status()
@@ -395,6 +403,13 @@ def post_api_admin_users():
     if not user:
         return jsonify(success=False, reason='unknown')
     return jsonify(success=True, data=user)
+
+@app.route("/api/admin/users/<user_email>", methods=['DELETE'])
+@requires_session('administrator')
+def delete_api_admin_users_by_email(user_email):
+    if not _backend_delete_user(user_email):
+        return jsonify(success=False, reason='unknown')
+    return jsonify(success=True)
 
 @app.route("/api/admin/plans", methods=["GET"])
 @requires_session('administrator')

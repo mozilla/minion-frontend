@@ -30,6 +30,19 @@ app.controller("AdminUsersController", function($scope, $http, $dialog) {
             });
     };
 
+    $scope.removeUser = function(user) {
+        var title = 'Remove User';
+        var msg = 'Are you sure you want to remove ' + user.email + ' from minion?';
+        var btns = [{result:false, label: 'Cancel'}, {result:true, label: 'OK', cssClass: 'btn-primary'}];
+        $dialog.messageBox(title, msg, btns).open().then(function(result) {
+            if (result) {
+                $http.delete('/api/admin/users/' + user.email).success(function(response, status, headers, config) {
+                    reload();
+                });
+            }
+        });
+    };
+
     $scope.createUser = function () {
         $http.get('/api/admin/groups')
             .success(function(response, status, headers, config) {
