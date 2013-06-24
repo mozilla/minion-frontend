@@ -342,7 +342,10 @@ def api_scan_start():
     # Create a scan
     r = requests.post(config['backend-api']['url'] + "/scans",
                       headers={'Content-Type': 'application/json'},
-                      data=json.dumps({'plan': plan, 'configuration': { 'target': target }}))
+                      data=json.dumps({
+                          'user': session['email'],
+                          'plan': plan, 
+                          'configuration': { 'target': target }}))
     r.raise_for_status()
     scan = r.json()['scan']
     # Start the scan
