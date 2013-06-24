@@ -7,15 +7,15 @@
     <li>
       <a ng-href="#!/admin/sites">Sites</a>
     </li>
-    <li class="active">
+    <li>
       <a ng-href="#!/admin/groups">Groups</a>
     </li>
-    <li>
+    <li class="active">
       <a ng-href="#!/admin/plans">Plans</a>
     </li>
   </ul>
 
-  <h2>Groups <span class="pull-right"><a class="btn btn-mini" ng-click="addGroup()">Add...</a></span></h2>
+  <h2>Plans <span class="pull-right"><a class="btn btn-mini" ng-click="createPlan()">Create...</a></span></h2>
   <div class="row">
     <div class="span12">
       <table class="table table-bordered">
@@ -24,16 +24,15 @@
             <th>Name</th>
             <th>Created</th>
             <th>Description</th>
-            <th>Actions</th>
           </tr>
         </thead>
-        <tr ng-repeat="group in groups">
-          <td><a ng-href="#!/admin/groups/{{group.name}}">{{group.name}}</a></td>
-          <td>{{group.created | scan_datetime}}</td>
-          <td>{{group.description}}</td>
+        <tr ng-repeat="plan in plans">
+          <td><a ng-href="#!/admin/plans/{{group.name}}">{{plan.name}}</a></td>
+          <td>{{plan.created | scan_datetime}}</td>
+          <td>{{plan.description}}</td>
           <td>
-            <a ng-href="#!/admin/groups/{{group.name}}" class="btn btn-mini">Edit</a>
-            <a ng-click="removeGroup(group.name)" class="btn btn-mini">Remove</a>
+            <a ng-click="editPlan(plan)" class="btn btn-mini">Edit</a>
+            <a ng-click="removePlan(plan)" class="btn btn-mini">Remove</a>
           </td>
         </tr>
       </table>

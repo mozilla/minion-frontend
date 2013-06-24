@@ -2,7 +2,7 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-var app = angular.module("MinionApp", ["ui.bootstrap"]);
+var app = angular.module("MinionApp", ["ui.bootstrap", "minionAdminPlansModule", "minionAdminSitesModule"]);
 
 app.controller("MinionController", function($rootScope, $http, $location) {
     if (sessionStorage.getItem("email")) {
@@ -84,7 +84,8 @@ app.config(function($routeProvider, $locationProvider) {
         .when("/admin/sites", { templateUrl: "static/partials/admin/sites.html", controller: "AdminSitesController" })
         .when("/admin/users", { templateUrl: "static/partials/admin/users.html", controller: "AdminUsersController" })
         .when("/admin/groups", { templateUrl: "static/partials/admin/groups.html", controller: "AdminGroupsController" })
-        .when("/admin/groups/:groupName", { templateUrl: "static/partials/admin/group.html", controller: "AdminGroupController" });
+        .when("/admin/groups/:groupName", { templateUrl: "static/partials/admin/group.html", controller: "AdminGroupController" })
+        .when("/admin/plans", { templateUrl: "static/partials/admin/plans/plans.html", controller: "AdminPlansController" });
 });
 
 app.run(function($rootScope, $http, $location) {

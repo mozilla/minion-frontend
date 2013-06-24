@@ -79,6 +79,14 @@ def get_issues_report(user=None):
         return None
     return j.get('report')
 
+def _backend_get_plugins():
+    r = requests.get(config['backend-api']['url'] + "/plugins")
+    r.raise_for_status()
+    j = r.json()
+    if not j.get('success'):
+        return None
+    return j.get('plugins')
+
 def _backend_get_sites():
     r = requests.get(config['backend-api']['url'] + "/sites")
     r.raise_for_status()
@@ -114,6 +122,34 @@ def _backend_get_plans():
     if not j.get('success'):
         return None
     return j.get('plans')
+
+def _backend_create_plan(plan):
+    r = requests.post(config['backend-api']['url'] + "/plans",
+                      headers={'Content-Type': 'application/json'},
+                      data=json.dumps(plan))
+    r.raise_for_status()
+    j = r.json()
+    if not j.get('success'):
+        return None
+    return j.get('plan')
+
+def _backend_update_plan(plan_name, plan):
+    r = requests.post(config['backend-api']['url'] + "/plans/" + plan_name,
+                      headers={'Content-Type': 'application/json'},
+                      data=json.dumps(plan))
+    r.raise_for_status()
+    j = r.json()
+    if not j.get('success'):
+        return None
+    return j.get('plan')
+
+def _backend_delete_plan(plan_name):
+    r = requests.delete(config['backend-api']['url'] + "/plans/" + plan_name)
+    r.raise_for_status()
+    j = r.json()
+    if not j.get('success'):
+        return None
+    return True
 
 def _backend_list_users():
     r = requests.get(config['backend-api']['url'] + "/users")
@@ -369,6 +405,14 @@ def api_scan_stop():
 # API For the Administration Pages
 #
 
+@app.route("/api/admin/plugins", methods=["GET"])
+@requires_session('administrator')
+def get_api_admin_plugins():
+    plugins = _backend_get_plugins()
+    if not plugins:
+        return jsonify(success=False, reason='unknown')
+    return jsonify(success=True, data=plugins)
+
 @app.route("/api/admin/sites", methods=["GET"])
 @requires_session('administrator')
 def get_api_admin_sites():
@@ -436,6 +480,28 @@ def get_api_admin_plans():
     if not plans:
         return jsonify(success=False, reason='unknown')
     return jsonify(success=True, data=plans)
+
+@app.route("/api/admin/plans", methods=["POST"])
+@requires_session('administrator')
+def post_api_admin_plans():
+    plan = _backend_create_plan(request.json)
+    if not plan:
+        return jsonify(success=False, reason='unknown')
+    return jsonify(success=True)
+
+@app.route("/api/admin/plans/<plan_name>", methods=['POST'])
+@requires_session('administrator')
+def post_api_admin_plans_by_plan_name(plan_name):
+    if not _backend_update_plan(plan_name, request.json):
+        return jsonify(success=False, reason='unknown')
+    return jsonify(success=True)
+
+@app.route("/api/admin/plans/<plan_name>", methods=['DELETE'])
+@requires_session('administrator')
+def delete_api_admin_plans_by_plan_name(plan_name):
+    if not _backend_delete_plan(plan_name):
+        return jsonify(success=False, reason='unknown')
+    return jsonify(success=True)
 
 @app.route("/api/admin/groups", methods=['GET'])
 @requires_session('administrator')

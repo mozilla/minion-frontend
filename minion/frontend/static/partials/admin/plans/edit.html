@@ -1,0 +1,45 @@
+
+<form class="form-horizontal" name="editPlanForm">
+
+  <div class="modal-header">
+    <h1>Edit Plan</h1>
+  </div>
+
+  <form>
+    <div class="modal-body">
+
+      <div ng-show="error" class="alert alert-error"><strong>Oh snap!</strong> {{error}}</div>
+
+      <div class="control-group">
+        <label class="control-label" for="inputName">Name</label>
+        <div class="controls">
+          {{plan.name}}
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="inputName">Description</label>
+        <div class="controls">
+          <input type="text" ng-model="plan.description" placeholder="description" required>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <div class="controls">
+          <label class="checkbox">
+            <input type="checkbox" ng-model="plan.requiresAdministrator">Can only be executed by administrators
+          </label>
+        </div>
+      </div>
+
+      <textarea ng-model="plan.workflow" style="width: 95%" xxxclass="input-xxlarge" id="textarea" rows="9"></textarea>
+
+    </div>
+  </form>
+
+  <div class="modal-footer">
+    <button ng-click="cancel()" class="btn">Cancel</button>
+    <button ng-click="submit()" class="btn btn-primary" ng-disabled="editPlanForm.$invalid">Save</button>
+  </div>
+
+</form>
