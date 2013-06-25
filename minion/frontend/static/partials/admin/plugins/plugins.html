@@ -1,0 +1,44 @@
+<div class="container" ng-controller="AdminPluginsController">
+
+  <ul class="nav nav-tabs">
+    <li>
+      <a ng-href="#!/admin/users">Users</a>
+    </li>
+    <li>
+      <a ng-href="#!/admin/sites">Sites</a>
+    </li>
+    <li>
+      <a ng-href="#!/admin/groups">Groups</a>
+    </li>
+    <li>
+      <a ng-href="#!/admin/plans">Plans</a>
+    </li>
+    <li class="active">
+      <a ng-href="#!/admin/plugins">Plugins</a>
+    </li>
+  </ul>
+
+  <h2>Plugins</h2>
+
+  <div class="row">
+    <div class="span12">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Class</th>
+            <th>Version</th>
+            <th>Weight</th>
+          </tr>
+        </thead>
+        <tr ng-repeat="plugin in plugins">
+          <td>{{plugin.name}}</td>
+          <td>{{plugin.class}}</td>
+          <td>{{plugin.version}}</td>
+          <td>{{plugin.weight}}</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+</div>
