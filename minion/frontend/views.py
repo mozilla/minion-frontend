@@ -456,6 +456,9 @@ def get_api_admin_users():
 @requires_session('administrator')
 def post_api_admin_users():
     # Retrieve user list from backend
+    if request.json.get('invitation'):
+        request.json['sender'] = session.get('email')
+    print request.json
     user = _backend_add_user(request.json)
     if not user:
         return jsonify(success=False, reason='unknown')
