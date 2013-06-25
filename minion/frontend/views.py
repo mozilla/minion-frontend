@@ -115,6 +115,42 @@ def _backend_update_site(site_id, site):
         return None
     return j.get('site')
 
+def _backend_add_invite(invite):
+    r = requests.post(config['backend-api']['url'] + "/invites",
+                      headers={'Content-Type': 'application/json'},
+                      data=json.dumps(invite))
+    r.raise_for_status()
+    j = r.json()
+    if not j.get('success'):
+        return None
+    return j.get('invite')
+
+def _backend_get_invite(id=None, recipient=None, sender=None):
+    if id is not None:
+        r = requests.get(config['backend-api']['url'] + "/invites/%s" % id)
+    else:
+        params = {}
+        if recipient is not None:
+            params['recipient'] = recipient
+        if sender is not None:
+            params['sender'] = sender
+        r = requests.get(config['backend-api']['url'] + "/invites", params=params)
+    r.raise_statis()
+    j = r.json()
+    if not j.get('success'):
+        return None
+    return j.get('invite') or j.get('invites')
+
+def _backend_control_invite(id, action_data):
+    r = requests.post(config['backend-api']['url'] + "/invites/%s/control" % id,
+                      headers={'Content-Type': 'application/json'},
+                      data=json.dumps(action_data))
+    r.raise_status()
+    j = r.json()
+    if not j.get('success'):
+        return None
+    return j.get('invite')
+
 def _backend_get_plans():
     r = requests.get(config['backend-api']['url'] + "/plans")
     r.raise_for_status()
@@ -458,11 +494,36 @@ def post_api_admin_users():
     # Retrieve user list from backend
     if request.json.get('invitation'):
         request.json['sender'] = session.get('email')
-    print request.json
     user = _backend_add_user(request.json)
     if not user:
         return jsonify(success=False, reason='unknown')
     return jsonify(success=True, data=user)
+
+@app.route("/api/admin/invites", methods=['POST'])
+@requires_session('administrator')
+def post_api_admin_invite():
+    invitation = _backend_add_invite(request.json)
+    return jsonify(success=True, data=invitation)
+
+@app.route("/api/admin/invites", methods=['GET'])
+@requires_session('administrator')
+def get_api_admin_invites():
+    recipient = request.args.get('recipient', None)
+    sender = request.args.get('sender', None)
+    invitations = _backend_get_invite(recipient=recipient, sender=sender)
+    return jsonify(success=True, data=invitations)
+
+@app.route("/api/admin/invites/<id>", methods=['GET'])
+@requires_session('administrator')
+def get_api_admin_invite(id):
+    invitation = _backend_get_invite(id=id)
+    return jsonify(success=True, data=invitation)
+
+@app.route("/api/admin/invites/<id>/control", methods=["POST"])
+@requires_session('administrator')
+def control_api_admin_invite(id):
+    invitation = _backend_control_invite(id, request.json)
+    return jsonify(success=True, data=invitation)
 
 @app.route("/api/admin/users/<user_email>", methods=['POST'])
 @requires_session('administrator')
