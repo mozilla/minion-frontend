@@ -5,6 +5,7 @@
 import datetime
 import functools
 import json
+import pprint
 import sys
 
 from flask import render_template, redirect, url_for, session, jsonify, request, session
@@ -121,6 +122,7 @@ def _backend_add_invite(invite):
                       data=json.dumps(invite))
     r.raise_for_status()
     j = r.json()
+    pprint.pprint(r.json(), indent=2)
     if not j.get('success'):
         return None
     return j.get('invite')
@@ -135,7 +137,9 @@ def _backend_get_invite(id=None, recipient=None, sender=None):
         if sender is not None:
             params['sender'] = sender
         r = requests.get(config['backend-api']['url'] + "/invites", params=params)
-    r.raise_statis()
+    r.raise_for_status()
+    import pprint
+    pprint.pprint(r.json(), indent=2)
     j = r.json()
     if not j.get('success'):
         return None

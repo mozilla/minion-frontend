@@ -4,6 +4,7 @@
 
 // Controllers for /users
 
+// Edit user dialog controller
 app.controller("AdminEditUserController", function ($scope, dialog, user, groups) {
     $scope.user = user;
     $scope.groups = groups;
@@ -18,6 +19,7 @@ app.controller("AdminEditUserController", function ($scope, dialog, user, groups
     };
 });
 
+// Add user dialog controller
 app.controller("AdminCreateUserController", function ($scope, dialog, users, groups) {
     $scope.user = {email:"", name: "", groups:[], role: "user"};
     $scope.groups = groups;
@@ -41,6 +43,8 @@ app.controller("AdminCreateUserController", function ($scope, dialog, users, gro
     };
 });
 
+// users.html main controller
+// Dispatch dialog to use other controllers on action
 app.controller("AdminUsersController", function($scope, $http, $dialog) {
     var reload = function() {
         $http.get('/api/admin/users')
@@ -113,6 +117,72 @@ app.controller("AdminUsersController", function($scope, $http, $dialog) {
 });
 
 
+// Controllers for /invites
+
+// Controller for creating invites dialog
+app.controller("AdminCreateInviteController", function($scope, dialog, users, groups) {
+    $scope.sender = sessionStorage.getItem("email")
+    $scope.invite = {sender: $scope.sender, recipient: ""};
+    //$scope.user = {email:"", name: "", groups:[], role: "user"};
+    $scope.groups = groups;
+    $scope.roles = ["user", "administrator"];
+ 
+    // todo: do cleanup!
+    $scope.cancel = function() {
+        dialog.close(null);
+    };
+
+    $scope.submit = function(user) {
+        dialog.close(user);
+    }
+});
+
+
+app.controller("AdminInviteController", function($scope, $http, $dialog) {
+    var reload = function() {
+        $http.get('/api/admin/invites')
+            .success(function(response, status, headers, config) {
+                $scope.invites = response.data      
+            });
+    };
+
+    $scope.createInvite = function () {
+        $http.get('/api/admin/groups')
+            .success(function(response, status, headers, config) {
+                var d = $dialog.dialog({
+                    templateUrl: "static/partials/admin/invites/create-invites.html?x=" + new Date().getTime(),
+                    controller: "AdminCreateInviteController",
+                    resolve: { users: function() { return $scope.users; },
+                               groups: function() { return response.data; } }
+                });
+
+                d.open().then(function(user) {
+                    if(user) {
+                        data1 = {email: user.email, name: user.name, role: user.role, groups: user.groups, invitation: true}
+                        sender = sessionStorage.getItem("email");
+                        data2 = {sender: sender, recipient: user.email}
+                        $http.post('/api/admin/users', data1).success(function(response, status, headers, config) {
+                            if (response.success) {
+                                reload();
+                                // now we should be able to send an invite
+                                $http.post('/api/admin/invites', data2).success(function(response, status, headers, config) {
+                                    if (response.success) {
+                                        reload();
+                                    }
+                                }); 
+                            } else {
+                                // TODO Show an error dialog
+                            }
+                        });
+                    }
+                });
+            });
+    };
+
+    $scope.$on('$viewContentLoaded', function() {
+        reload();
+    });
+});
 
 // Controllers for /groups
 

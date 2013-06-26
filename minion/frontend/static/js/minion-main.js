@@ -85,8 +85,12 @@ app.config(function($routeProvider, $locationProvider) {
         .when("/admin/users", { templateUrl: "static/partials/admin/users.html", controller: "AdminUsersController" })
         .when("/admin/groups", { templateUrl: "static/partials/admin/groups.html", controller: "AdminGroupsController" })
         .when("/admin/groups/:groupName", { templateUrl: "static/partials/admin/group.html", controller: "AdminGroupController" })
+<<<<<<< HEAD
         .when("/admin/plugins", { templateUrl: "static/partials/admin/plugins/plugins.html", controller: "AdminPluginsController" })
         .when("/admin/plans", { templateUrl: "static/partials/admin/plans/plans.html", controller: "AdminPlansController" });
+=======
+        .when("/admin/invites", { templateUrl: "static/partials/admin/invites.html", controller: "AdminInviteController" });
+>>>>>>> Added a basic invitation page. See #27. Can display and send invitation.
 });
 
 app.run(function($rootScope, $http, $location) {

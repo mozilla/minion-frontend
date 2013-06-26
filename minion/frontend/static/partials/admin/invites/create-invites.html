@@ -1,0 +1,50 @@
+
+<form class="form-horizontal" name="inviteForm">
+
+  <div class="modal-header">
+    <h1>Invite User</h1>
+  </div>
+
+  <form>
+    <div class="modal-body">
+
+      <div ng-show="error" class="alert alert-error"><strong>Oh snap!</strong> {{error}}</div>
+
+      <div class="control-group">
+        <label class="control-label" for="inputEmail">Email {{userForm.$valid}}</label>
+        <div class="controls">
+          <input type="email" ng-model="user.email" placeholder="example@domain.com" required>
+          <span class="help-inline">Something may have gone wrong</span>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="inputName">Name</label>
+        <div class="controls">
+          <input type="text" ng-model="user.name" placeholder="Some Person">
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="inputRole">Role</label>
+        <div class="controls">
+          <select ng-model="user.role" ng-options="role for role in roles"></select>
+        </div>
+      </div>
+
+      <div class="control-group">
+        <label class="control-label" for="inputGroups">Groups</label>
+        <div class="controls">
+          <select size="8" multiple ng-multiple="true" ng-model="user.groups" ng-options="g.name as g.name for g in groups">
+          </select>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div class="modal-footer">
+    <button ng-click="cancel()" class="btn">Cancel</button>
+    <button ng-click="submit(user)" class="btn btn-primary" ng-disabled="userForm.$invalid">Add</button>
+  </div>
+
+</form>

@@ -1,0 +1,45 @@
+<div class="container" ng-controller="AdminInviteController">
+
+  <ul class="nav nav-tabs">
+    <li class="active">
+      <a ng-href="#!/admin/users">Users</a>
+    </li>
+    <li>
+      <a ng-href="#!/admin/sites">Sites</a>
+    </li>
+    <li>
+      <a ng-href="#!/admin/groups">Groups</a>
+    </li>
+    <li>
+      <a ng-href="#!/admin/invites">Invites</a>
+    </li>
+  </ul>
+
+  <h2>Invitations <span class="pull-right"><a class="btn btn-mini" ng-click="createInvite()">Invite...</a></span></h2>
+  <div class="row">
+    <div class="span12">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+            <th>Recipient</th>
+            <th>Sender</th>
+            <th>Sent On</th>
+            <th>Accepted On</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tr ng-repeat="invite in invites">
+          <td>{{invite.recipient}}</td>
+          <td>{{invite.sender}}</td>
+          <td>{{invite.sent_on | scan_datetime }}</td>
+          <td>{{invite.accepted_on | scan_datetime }}</td>
+          <td>
+            <a ng-click="resendInvite(invite)" class="btn btn-mini">Edit</a>
+            <a ng-click="removeInvite(invite)" class="btn btn-mini">Remove</a>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+</div>
