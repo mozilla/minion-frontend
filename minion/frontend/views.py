@@ -138,8 +138,6 @@ def _backend_get_invite(id=None, recipient=None, sender=None):
             params['sender'] = sender
         r = requests.get(config['backend-api']['url'] + "/invites", params=params)
     r.raise_for_status()
-    import pprint
-    pprint.pprint(r.json(), indent=2)
     j = r.json()
     if not j.get('success'):
         return None
@@ -149,11 +147,18 @@ def _backend_control_invite(id, action_data):
     r = requests.post(config['backend-api']['url'] + "/invites/%s/control" % id,
                       headers={'Content-Type': 'application/json'},
                       data=json.dumps(action_data))
-    r.raise_status()
+    r.raise_for_status()
     j = r.json()
     if not j.get('success'):
         return None
     return j.get('invite')
+
+def _backend_delete_invite(id):
+    r = requests.delete(config['backend-api']['url'] + '/invites/%s' % id)
+    r.raise_for_status()
+    j = r.json()
+    print j
+    return j
 
 def _backend_get_plans():
     r = requests.get(config['backend-api']['url'] + "/plans")
@@ -522,6 +527,15 @@ def get_api_admin_invites():
 def get_api_admin_invite(id):
     invitation = _backend_get_invite(id=id)
     return jsonify(success=True, data=invitation)
+
+@app.route("/api/admin/invites/<id>", methods=['DELETE'])
+@requires_session('administrator')
+def delete_api_admin_invite(id):
+    j = _backend_delete_invite(id=id)
+    if j['success']:
+        return jsonify(success=True)
+    else:
+        return jsonify(success=False, reason=j['reason'])
 
 @app.route("/api/admin/invites/<id>/control", methods=["POST"])
 @requires_session('administrator')

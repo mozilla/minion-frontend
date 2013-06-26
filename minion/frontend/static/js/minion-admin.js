@@ -123,7 +123,6 @@ app.controller("AdminUsersController", function($scope, $http, $dialog) {
 app.controller("AdminCreateInviteController", function($scope, dialog, users, groups) {
     $scope.sender = sessionStorage.getItem("email")
     $scope.invite = {sender: $scope.sender, recipient: ""};
-    //$scope.user = {email:"", name: "", groups:[], role: "user"};
     $scope.groups = groups;
     $scope.roles = ["user", "administrator"];
  
@@ -138,11 +137,12 @@ app.controller("AdminCreateInviteController", function($scope, dialog, users, gr
 });
 
 
-app.controller("AdminInviteController", function($scope, $http, $dialog) {
+// We don't want to refresh the page to see default orderBy to take place
+app.controller("AdminInviteController", function($scope, $http, $dialog, $filter) {
     var reload = function() {
         $http.get('/api/admin/invites')
             .success(function(response, status, headers, config) {
-                $scope.invites = response.data      
+                $scope.invites = $filter('orderBy')(response.data, 'sent_on');
             });
     };
 
@@ -179,6 +179,24 @@ app.controller("AdminInviteController", function($scope, $http, $dialog) {
             });
     };
 
+    $scope.resendInvite = function(id) {
+        $http.post('/api/admin/invites/' + id + '/control', {action: 'resend'})
+            .success(function(response, status, headers, config) {
+                if (response.success) {
+                    reload();
+                }
+            });
+    };
+
+    $scope.removeInvite = function(id) {
+        $http.delete('/api/admin/invites/' + id)
+            .success(function(response, status, headers, config) {
+                if (response.success) {
+                    reload();
+                }
+            });
+    };
+    
     $scope.$on('$viewContentLoaded', function() {
         reload();
     });

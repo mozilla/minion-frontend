@@ -15,7 +15,14 @@
     </li>
   </ul>
 
-  <h2>Invitations <span class="pull-right"><a class="btn btn-mini" ng-click="createInvite()">Invite...</a></span></h2>
+  <h2>Invitations </h2><span class="pull-right">
+          Search: <input ng-model="query">  Sort by:
+          <select ng-model="orderOption">
+              <option value="sent_on">Sent on (ascending)</option>
+              <option value="-sent_on">Sent on (descending)</option>
+              <option value="accepted_on">Accepted on (ascending)</option>
+              <option value="-accepted_on">Accepted on (descending)</option>
+      </select>  <a class="btn btn-small" ng-click="createInvite()">Invite...</a></span>
   <div class="row">
     <div class="span12">
       <table class="table table-bordered">
@@ -28,14 +35,14 @@
             <th>Actions</th>
           </tr>
         </thead>
-        <tr ng-repeat="invite in invites">
+        <tr ng-repeat="invite in invites | filter:query | orderBy:orderOption">
           <td>{{invite.recipient}}</td>
           <td>{{invite.sender}}</td>
           <td>{{invite.sent_on | scan_datetime }}</td>
           <td>{{invite.accepted_on | scan_datetime }}</td>
           <td>
-            <a ng-click="resendInvite(invite)" class="btn btn-mini">Edit</a>
-            <a ng-click="removeInvite(invite)" class="btn btn-mini">Remove</a>
+            <a ng-click="resendInvite(invite.id)" class="btn btn-mini">Resend</a>
+            <a ng-click="removeInvite(invite.id)" class="btn btn-mini">Remove</a>
           </td>
         </tr>
       </table>
