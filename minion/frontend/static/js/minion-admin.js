@@ -29,7 +29,7 @@ app.controller("AdminCreateUserController", function ($scope, dialog, users, gro
         dialog.close(null);
     };
 
-    $scope.submit_add = function(user) {
+    $scope.submit = function(user) {
         if (_.find(users, function (u) { return u.email === user.email })) {
             $scope.error = "The user already exists.";
         } else {
@@ -37,10 +37,6 @@ app.controller("AdminCreateUserController", function ($scope, dialog, users, gro
         }
     };
 
-    $scope.submit_invite = function(user) {
-        user['invitation'] = true;
-        dialog.close(user);
-    };
 });
 
 // users.html main controller
@@ -97,8 +93,6 @@ app.controller("AdminUsersController", function($scope, $http, $dialog) {
                 d.open().then(function(user) {
                     if(user) {
                         data = {email: user.email, name: user.name, role: user.role, groups: user.groups}
-                        if (user['invitation'])
-                            data['invitation'] = true
                         console.dir(user);
                         $http.post('/api/admin/users', data).success(function(response, status, headers, config) {
                             if (response.success) {
