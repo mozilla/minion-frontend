@@ -1,7 +1,7 @@
-<div class="container" ng-controller="AdminInviteController">
+<div class="container" ng-controller="AdminInvitesController">
 
-  <ul class="nav nav-tabs">
-    <li class="active">
+   <ul class="nav nav-tabs">
+    <li>
       <a ng-href="#!/admin/users">Users</a>
     </li>
     <li>
@@ -11,9 +11,16 @@
       <a ng-href="#!/admin/groups">Groups</a>
     </li>
     <li>
+      <a ng-href="#!/admin/plans">Plans</a>
+    </li>
+    <li>
+      <a ng-href="#!/admin/plugins">Plugins</a>
+    </li>
+    <li class="active">
       <a ng-href="#!/admin/invites">Invites</a>
     </li>
-  </ul>
+
+  </ul> 
 
   <h2>Invitations </h2><span class="pull-right">
           Search: <input ng-model="query">  Sort by:
@@ -28,18 +35,22 @@
       <table class="table table-bordered">
         <thead>
           <tr>
-            <th>Recipient</th>
-            <th>Sender</th>
-            <th>Sent On</th>
-            <th>Accepted On</th>
-            <th>Actions</th>
+              <th>Recipient Email</th>
+              <th>Recipient Name</th>
+              <th>Sender</th>
+              <th>Sender Name</th>
+              <th>Sent On</th>
+              <th>Accepted On</th>
+              <th>Actions</th>
           </tr>
         </thead>
         <tr ng-repeat="invite in invites | filter:query | orderBy:orderOption">
-          <td>{{invite.recipient}}</td>
-          <td>{{invite.sender}}</td>
-          <td>{{invite.sent_on | scan_datetime }}</td>
-          <td>{{invite.accepted_on | scan_datetime }}</td>
+            <td>{{invite.recipient}}</td>
+            <td>{{invite.recipient_name}}</td>
+            <td>{{invite.sender}}</td>
+            <td>{{invite.sender_name}}</td>
+            <td>{{invite.sent_on | scan_datetime }}</td>
+            <td>{{invite.accepted_on | scan_datetime }}</td>
           <td>
             <a ng-click="resendInvite(invite.id)" class="btn btn-mini">Resend</a>
             <a ng-click="removeInvite(invite.id)" class="btn btn-mini">Remove</a>

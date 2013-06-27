@@ -1,0 +1,15 @@
+<!--
+    This Source Code Form is subject to the terms of the Mozilla Public
+    License, v. 2.0. If a copy of the MPL was not distributed with this
+    file, You can obtain one at http://mozilla.org/MPL/2.0/.
+-->
+
+<div class="container" ng-controller="InviteController">
+  <form class="form" id="invite-form">
+      <h2>Invitation Confirmation</h2>
+    <p>
+        <a class="btn btn-large btn-danger" ng-click="signIn({{inviteId}})" href="#"><i class="icon-user"></i> Decline </a>
+        <a class="btn btn-large btn-primary" ng-click="signIn()" href="#"><i class="icon-user"></i> Accept </a>
+    </p>
+  </form>
+</div>

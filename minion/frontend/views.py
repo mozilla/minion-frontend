@@ -47,6 +47,17 @@ def get_or_create_user(email):
         user = create_user(email, 'user')
     return user
 
+def update_invite(recipient, invite_id):
+    invite = _backend_get_invite(id=invite_id)
+    if invite:
+        invite = _backend_control_invite(invite_id, {'action': 'accept'})
+        if not invite:
+            return None
+        else:
+            return get_user(recipient)
+    else:
+        return None
+
 def get_history_report(user=None):
     params = {}
     if user is not None:
@@ -338,12 +349,16 @@ def api_session():
 
 @app.route("/api/login", methods=["POST"])
 def persona_login():
+    print request.json
     if not request.json or 'assertion' not in request.json:
         return jsonify(success=False)
     receipt = verify_assertion(request.json['assertion'], request.host)
     if not receipt:
         return jsonify(success=False)
-    user = get_or_create_user(receipt['email'])
+    if request.json.get('invited'):
+        user = update_invite(recipient['email'], request.json['invite_id'])
+    else:
+        user = get_or_create_user(receipt['email'])
     if not user:
         return jsonify(success=False)
     session['email'] = user['email']
@@ -369,6 +384,13 @@ def api_issues():
     if report is None:
         return jsonify(success=False, data=None)
     return jsonify(success=True, data=report)
+
+@app.route("/api/invites/<invite_id>")
+def api_get_invite(invite_id):
+    invite = _backend_get_invite(invite_id)
+    if invite:
+        return jsonify(success=True, data=invite)
+    return jsonify(success=False)
 
 @app.route("/api/history")
 @requires_session

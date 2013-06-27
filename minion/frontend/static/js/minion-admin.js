@@ -132,7 +132,7 @@ app.controller("AdminCreateInviteController", function($scope, dialog, users, gr
 
 
 // We don't want to refresh the page to see default orderBy to take place
-app.controller("AdminInviteController", function($scope, $http, $dialog, $filter) {
+app.controller("AdminInvitesController", function($scope, $http, $dialog, $filter) {
     var reload = function() {
         $http.get('/api/admin/invites')
             .success(function(response, status, headers, config) {
