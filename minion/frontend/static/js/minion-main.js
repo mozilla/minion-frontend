@@ -92,6 +92,11 @@ app.config(function($routeProvider, $locationProvider) {
 });
 
 app.run(function($rootScope, $http, $location) {
+
+    $rootScope.backToLogin = function() {
+        $rootScope.session = null;
+        $location.path("/login");
+    }
     $rootScope.signIn = function(inviteid) {
         if (inviteid)
             $rootScope.inviteId = inviteid;
