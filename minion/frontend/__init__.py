@@ -7,11 +7,16 @@ from flask import Flask
 app = Flask(__name__);
 
 from minion.frontend import views
+from minion.frontend.utils import frontend_config
 
-def configure_app(app, debug=False):
-    if debug:
-        app.debug = True
-        app.secret_key =  "ThisIsOnlyForDevelopmentMode"
+def configure_app(app, production=True, debug=True):
+    app.debug = debug
+    app.use_evalex = False
+    if production:
+        config = frontend_config()
+        if config.get('session-secret') is None:
+            raise Exception("Configure a sesssion-secret in the configuration for production usage")
+        app.secret_key = config.get('session-secret')
     else:
-        raise Exception("TODO Implement a real session store for production apps")
+        app.secret_key =  "ThisIsOnlyForDevelopmentMode"
     return app
