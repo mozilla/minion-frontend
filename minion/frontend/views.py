@@ -51,6 +51,7 @@ def update_invite(recipient, invite_id):
     invite = _backend_get_invite(id=invite_id)
     if invite:
         invite = _backend_control_invite(invite_id, {'action': 'accept'})
+        print "update", invite
         if not invite:
             return None
         else:
@@ -349,15 +350,16 @@ def api_session():
 
 @app.route("/api/login", methods=["POST"])
 def persona_login():
-    print request.json
     if not request.json or 'assertion' not in request.json:
         return jsonify(success=False)
     receipt = verify_assertion(request.json['assertion'], request.host)
     if not receipt:
         return jsonify(success=False)
-    if request.json.get('invited'):
-        user = update_invite(recipient['email'], request.json['invite_id'])
+    if request.json.get('invite_id'):
+        print request.json
+        user = update_invite(receipt['email'], request.json['invite_id'])
     else:
+        print 'e'
         user = get_or_create_user(receipt['email'])
     if not user:
         return jsonify(success=False)

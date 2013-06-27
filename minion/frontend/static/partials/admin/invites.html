@@ -41,6 +41,7 @@
               <th>Sender Name</th>
               <th>Sent On</th>
               <th>Accepted On</th>
+              <th>Status</th>
               <th>Actions</th>
           </tr>
         </thead>
@@ -51,6 +52,7 @@
             <td>{{invite.sender_name}}</td>
             <td>{{invite.sent_on | scan_datetime }}</td>
             <td>{{invite.accepted_on | scan_datetime }}</td>
+            <td>{{invite.status}}</td>
           <td>
             <a ng-click="resendInvite(invite.id)" class="btn btn-mini">Resend</a>
             <a ng-click="removeInvite(invite.id)" class="btn btn-mini">Remove</a>

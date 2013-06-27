@@ -14,7 +14,7 @@ app.controller("MinionController", function($rootScope, $http, $location) {
     navigator.id.watch({
         loggedInUser: sessionStorage.getItem("email"),
     onlogin: function(assertion) {
-            $http.post('/api/login', {assertion: assertion})
+            $http.post('/api/login', {assertion: assertion, invite_id: $rootScope.inviteId})
                 .success(function(response, status, headers, config) {
                     console.log(response);
                     if (response.success) {
@@ -23,6 +23,7 @@ app.controller("MinionController", function($rootScope, $http, $location) {
                         sessionStorage.setItem("role", response.data.role);
                         $location.path("/home/sites").replace();
                     }
+                $rootScpe.inviteId = null;
                 });
     },
     onlogout: function() {
@@ -91,11 +92,21 @@ app.config(function($routeProvider, $locationProvider) {
 });
 
 app.run(function($rootScope, $http, $location) {
+    $rootScope.signIn = function(inviteid) {
+        if (inviteid)
+            $rootScope.inviteId = inviteid;
+        else
+            $rootScope.inviteId = null;
+        navigator.id.request();
+    }
     $rootScope.$on( "$routeChangeStart", function(event, next, current) {
         // make  /invites/:inviteId into a whitelist
         has_invite = $location.url().substring().split('/')[1] == "invite"
         if (!has_invite && !$rootScope.session) {
+            console.log($location.url())
+            console.log("inside 1")
             if (next.$$route.templateUrl !== "static/partials/login.html" ) {
+                console.log("inside 2")
                 $location.path("/login");
             }
         }
@@ -113,9 +124,9 @@ app.run(function($rootScope, $http, $location) {
 });
 
 app.controller("LoginController", function($scope, $rootScope, $location) {
-    $rootScope.signIn = function() {
-        navigator.id.request();
-    };
+    //$rootScope.ssignIn = function() {
+    //    navigator.id.request();
+    //};
 });
 
 app.controller("HomeController", function($scope, $http, $location, $timeout) {
@@ -157,6 +168,9 @@ app.controller("IssuesController", function($scope, $http, $location, $timeout) 
     $scope.$on('$viewContentLoaded', function() {
         $scope.reload();
     });
+    //$scope.signIn = function() {
+    //    navigator.id.request();
+    //};
 });
 
 app.controller("InviteController", function ($scope, $rootScope, $routeParams, $http, $location) {
@@ -174,6 +188,10 @@ app.controller("InviteController", function ($scope, $rootScope, $routeParams, $
                 if (accepted_on)
                     $location.path("/login");
             }});
+    //$rootScope.signIn = function() {
+    //    navigator.id.request();
+    //};
+
 });
 
 app.controller("HistoryController", function($scope, $http, $location, $timeout) {
