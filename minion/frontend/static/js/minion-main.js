@@ -72,7 +72,7 @@ app.config(function($routeProvider, $locationProvider) {
         .when("/home/history", { templateUrl: "static/partials/history.html", controller: "HistoryController" })
         .when("/home/issues", { templateUrl: "static/partials/issues.html", controller: "IssuesController" })
         .when("/request", { templateUrl: "static/partials/request.html", controller: "RequestController" })
-        .when("/invite", { templateUrl: "static/partials/invite.html", controller: "InviteController" })
+        .when("/invite/:inviteId", { templateUrl: "static/partials/invite.html", controller: "InviteController" })
         .when("/scan/:scanId", { templateUrl: "static/partials/scan.html", controller: "ScanController" })
         .when("/scan/:scanId/raw", { templateUrl: "static/partials/raw.html", controller: "RawController" })
         .when("/scan/:scanId/issue/:issueId", { templateUrl: "static/partials/issue.html", controller: "IssueController" })
@@ -92,7 +92,9 @@ app.config(function($routeProvider, $locationProvider) {
 
 app.run(function($rootScope, $http, $location) {
     $rootScope.$on( "$routeChangeStart", function(event, next, current) {
-        if (!$rootScope.session) {
+        // make  /invites/:inviteId into a whitelist
+        has_invite = $location.url().substring().split('/')[1] == "invite"
+        if (!has_invite && !$rootScope.session) {
             if (next.$$route.templateUrl !== "static/partials/login.html" ) {
                 $location.path("/login");
             }
