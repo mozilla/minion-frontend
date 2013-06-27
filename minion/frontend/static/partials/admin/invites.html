@@ -1,0 +1,63 @@
+<div class="container" ng-controller="AdminInvitesController">
+
+   <ul class="nav nav-tabs">
+    <li>
+      <a ng-href="#!/admin/users">Users</a>
+    </li>
+    <li>
+      <a ng-href="#!/admin/sites">Sites</a>
+    </li>
+    <li>
+      <a ng-href="#!/admin/groups">Groups</a>
+    </li>
+    <li>
+      <a ng-href="#!/admin/plans">Plans</a>
+    </li>
+    <li>
+      <a ng-href="#!/admin/plugins">Plugins</a>
+    </li>
+    <li class="active">
+      <a ng-href="#!/admin/invites">Invites</a>
+    </li>
+
+  </ul> 
+
+  <h2>Invitations </h2><span class="pull-right">
+          Search: <input ng-model="query">  Sort by:
+          <select ng-model="orderOption">
+              <option value="sent_on">Sent on (ascending)</option>
+              <option value="-sent_on">Sent on (descending)</option>
+              <option value="accepted_on">Accepted on (ascending)</option>
+              <option value="-accepted_on">Accepted on (descending)</option>
+      </select>  <a class="btn btn-small" ng-click="createInvite()">Invite...</a></span>
+  <div class="row">
+    <div class="span12">
+      <table class="table table-bordered">
+        <thead>
+          <tr>
+              <th>Recipient Email</th>
+              <th>Recipient Name</th>
+              <th>Sender</th>
+              <th>Sender Name</th>
+              <th>Sent On</th>
+              <th>Accepted On</th>
+              <th>Actions</th>
+          </tr>
+        </thead>
+        <tr ng-repeat="invite in invites | filter:query | orderBy:orderOption">
+            <td>{{invite.recipient}}</td>
+            <td>{{invite.recipient_name}}</td>
+            <td>{{invite.sender}}</td>
+            <td>{{invite.sender_name}}</td>
+            <td>{{invite.sent_on | scan_datetime }}</td>
+            <td>{{invite.accepted_on | scan_datetime }}</td>
+          <td>
+            <a ng-click="resendInvite(invite.id)" class="btn btn-mini">Resend</a>
+            <a ng-click="removeInvite(invite.id)" class="btn btn-mini">Remove</a>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
+
+</div>

@@ -4,6 +4,7 @@
 
 // Controllers for /users
 
+// Edit user dialog controller
 app.controller("AdminEditUserController", function ($scope, dialog, user, groups) {
     $scope.user = user;
     $scope.groups = groups;
@@ -18,6 +19,7 @@ app.controller("AdminEditUserController", function ($scope, dialog, user, groups
     };
 });
 
+// Add user dialog controller
 app.controller("AdminCreateUserController", function ($scope, dialog, users, groups) {
     $scope.user = {email:"", name: "", groups:[], role: "user"};
     $scope.groups = groups;
@@ -34,8 +36,11 @@ app.controller("AdminCreateUserController", function ($scope, dialog, users, gro
             dialog.close(user);
         }
     };
+
 });
 
+// users.html main controller
+// Dispatch dialog to use other controllers on action
 app.controller("AdminUsersController", function($scope, $http, $dialog) {
     var reload = function() {
         $http.get('/api/admin/users')
@@ -87,15 +92,15 @@ app.controller("AdminUsersController", function($scope, $http, $dialog) {
                 });
                 d.open().then(function(user) {
                     if(user) {
+                        data = {email: user.email, name: user.name, role: user.role, groups: user.groups}
                         console.dir(user);
-                        $http.post('/api/admin/users', {email:user.email, name: user.name, role: user.role, groups: user.groups})
-                            .success(function(response, status, headers, config) {
-                                if (response.success) {
-                                    reload();
-                                } else {
-                                    // TODO Show an error dialog
-                                }
-                            });
+                        $http.post('/api/admin/users', data).success(function(response, status, headers, config) {
+                            if (response.success) {
+                                reload();
+                            } else {
+                                // TODO Show an error dialog
+                            }
+                        });
                     }
                 });
             });
@@ -106,6 +111,90 @@ app.controller("AdminUsersController", function($scope, $http, $dialog) {
 });
 
 
+// Controllers for /invites
+
+// Controller for creating invites dialog
+app.controller("AdminCreateInviteController", function($scope, dialog, users, groups) {
+    $scope.sender = sessionStorage.getItem("email")
+    $scope.invite = {sender: $scope.sender, recipient: ""};
+    $scope.groups = groups;
+    $scope.roles = ["user", "administrator"];
+ 
+    // todo: do cleanup!
+    $scope.cancel = function() {
+        dialog.close(null);
+    };
+
+    $scope.submit = function(user) {
+        dialog.close(user);
+    }
+});
+
+
+// We don't want to refresh the page to see default orderBy to take place
+app.controller("AdminInvitesController", function($scope, $http, $dialog, $filter) {
+    var reload = function() {
+        $http.get('/api/admin/invites')
+            .success(function(response, status, headers, config) {
+                $scope.invites = $filter('orderBy')(response.data, 'sent_on');
+            });
+    };
+
+    $scope.createInvite = function () {
+        $http.get('/api/admin/groups')
+            .success(function(response, status, headers, config) {
+                var d = $dialog.dialog({
+                    templateUrl: "static/partials/admin/invites/create-invites.html?x=" + new Date().getTime(),
+                    controller: "AdminCreateInviteController",
+                    resolve: { users: function() { return $scope.users; },
+                               groups: function() { return response.data; } }
+                });
+
+                d.open().then(function(user) {
+                    if(user) {
+                        data1 = {email: user.email, name: user.name, role: user.role, groups: user.groups, invitation: true}
+                        sender = sessionStorage.getItem("email");
+                        data2 = {sender: sender, recipient: user.email}
+                        $http.post('/api/admin/users', data1).success(function(response, status, headers, config) {
+                            if (response.success) {
+                                reload();
+                                // now we should be able to send an invite
+                                $http.post('/api/admin/invites', data2).success(function(response, status, headers, config) {
+                                    if (response.success) {
+                                        reload();
+                                    }
+                                }); 
+                            } else {
+                                // TODO Show an error dialog
+                            }
+                        });
+                    }
+                });
+            });
+    };
+
+    $scope.resendInvite = function(id) {
+        $http.post('/api/admin/invites/' + id + '/control', {action: 'resend'})
+            .success(function(response, status, headers, config) {
+                if (response.success) {
+                    reload();
+                }
+            });
+    };
+
+    $scope.removeInvite = function(id) {
+        $http.delete('/api/admin/invites/' + id)
+            .success(function(response, status, headers, config) {
+                if (response.success) {
+                    reload();
+                }
+            });
+    };
+    
+    $scope.$on('$viewContentLoaded', function() {
+        reload();
+    });
+});
 
 // Controllers for /groups
 

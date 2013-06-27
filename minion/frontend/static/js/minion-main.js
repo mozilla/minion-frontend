@@ -13,7 +13,7 @@ app.controller("MinionController", function($rootScope, $http, $location) {
     navigator.id.logout();
     navigator.id.watch({
         loggedInUser: sessionStorage.getItem("email"),
-	onlogin: function(assertion) {
+    onlogin: function(assertion) {
             $http.post('/api/login', {assertion: assertion})
                 .success(function(response, status, headers, config) {
                     console.log(response);
@@ -24,12 +24,12 @@ app.controller("MinionController", function($rootScope, $http, $location) {
                         $location.path("/home/sites").replace();
                     }
                 });
-	},
-	onlogout: function() {
+    },
+    onlogout: function() {
             //$rootScope.session = null;
             //sessionStorage.removeItem("email");
             //sessionStorage.removeItem("role");
-	}
+    }
     });
 
     $rootScope.signOut = function() {
@@ -57,10 +57,10 @@ app.controller("MinionController", function($rootScope, $http, $location) {
     };
 
     $rootScope.stopScan = function (scanId) {
-	$http.put('/api/scan/stop', {scanId: scanId})
-	    .success(function(response, status, headers, config) {
-		//$scope.reload();
-	    });
+    $http.put('/api/scan/stop', {scanId: scanId})
+        .success(function(response, status, headers, config) {
+        //$scope.reload();
+        });
     };
 });
 
@@ -72,7 +72,7 @@ app.config(function($routeProvider, $locationProvider) {
         .when("/home/history", { templateUrl: "static/partials/history.html", controller: "HistoryController" })
         .when("/home/issues", { templateUrl: "static/partials/issues.html", controller: "IssuesController" })
         .when("/request", { templateUrl: "static/partials/request.html", controller: "RequestController" })
-        .when("/invite", { templateUrl: "static/partials/invite.html", controller: "InviteController" })
+        .when("/invite/:inviteId", { templateUrl: "static/partials/invite.html", controller: "InviteController" })
         .when("/scan/:scanId", { templateUrl: "static/partials/scan.html", controller: "ScanController" })
         .when("/scan/:scanId/raw", { templateUrl: "static/partials/raw.html", controller: "RawController" })
         .when("/scan/:scanId/issue/:issueId", { templateUrl: "static/partials/issue.html", controller: "IssueController" })
@@ -86,12 +86,15 @@ app.config(function($routeProvider, $locationProvider) {
         .when("/admin/groups", { templateUrl: "static/partials/admin/groups.html", controller: "AdminGroupsController" })
         .when("/admin/groups/:groupName", { templateUrl: "static/partials/admin/group.html", controller: "AdminGroupController" })
         .when("/admin/plugins", { templateUrl: "static/partials/admin/plugins/plugins.html", controller: "AdminPluginsController" })
-        .when("/admin/plans", { templateUrl: "static/partials/admin/plans/plans.html", controller: "AdminPlansController" });
+        .when("/admin/plans", { templateUrl: "static/partials/admin/plans/plans.html", controller: "AdminPlansController" })
+        .when("/admin/invites", { templateUrl: "static/partials/admin/invites.html", controller: "AdminInvitesController" });
 });
 
 app.run(function($rootScope, $http, $location) {
     $rootScope.$on( "$routeChangeStart", function(event, next, current) {
-        if (!$rootScope.session) {
+        // make  /invites/:inviteId into a whitelist
+        has_invite = $location.url().substring().split('/')[1] == "invite"
+        if (!has_invite && !$rootScope.session) {
             if (next.$$route.templateUrl !== "static/partials/login.html" ) {
                 $location.path("/login");
             }
@@ -148,12 +151,29 @@ app.controller("IssuesController", function($scope, $http, $location, $timeout) 
     $scope.filterName = 'all';
     $scope.reload = function () {
         $http.get('/api/issues').success(function(response, status, headers, config){
-	    $scope.report = response.data;
+        $scope.report = response.data;
         });
     };
     $scope.$on('$viewContentLoaded', function() {
         $scope.reload();
     });
+});
+
+app.controller("InviteController", function ($scope, $rootScope, $routeParams, $http, $location) {
+    $scope.inviteId = $routeParams.inviteId;
+   
+    var timenow = Math.round(new Date().getTime()/1000);
+    $http.get('/api/invites/' + $scope.inviteId)
+        .success(function(response, status, headers, config) {
+            console.log(response)
+            if (!response.success) {
+                $location.path("/login");
+            } else {
+                sent_on = response.data['sent_on'];
+                accepted_on = response.data['accepted_on'];
+                if (accepted_on)
+                    $location.path("/login");
+            }});
 });
 
 app.controller("HistoryController", function($scope, $http, $location, $timeout) {
@@ -212,16 +232,16 @@ app.controller("ScanController", function($scope, $routeParams, $http, $location
                     }
                 });
             });
-	    var failures = []
-	    _.each(scan.sessions, function (session, idx) {
-		if (session.failure) {
-		    failures.push({session_idx: idx, plugin: session.plugin, failure: session.failure});
-		}
-	    });
+        var failures = []
+        _.each(scan.sessions, function (session, idx) {
+        if (session.failure) {
+            failures.push({session_idx: idx, plugin: session.plugin, failure: session.failure});
+        }
+        });
             $scope.scan = scan;
             $scope.issues = issues;
             $scope.issueCounts = issueCounts;
-	    $scope.failures = failures;
+        $scope.failures = failures;
         });
     });
 });
@@ -248,7 +268,7 @@ app.controller("SessionFailureController", function($scope, $routeParams, $http)
     $scope.$on('$viewContentLoaded', function() {
         $http.get('/api/scan/' + $routeParams.scanId).success(function(response, status, headers, config) {
             var scan = response.data;
-	    $scope.session = scan.sessions[$routeParams.sessionIdx];
+        $scope.session = scan.sessions[$routeParams.sessionIdx];
         });
     });
 });
