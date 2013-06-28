@@ -1,1 +1,1 @@
-recursive-include minion *.html *.js *.css *.ttf *.svg *.eot *.woff *.png *.jpg
+recursive-include minion *.html *.js *.css *.ttf *.svg *.eot *.woff *.png *.jpg *.txt

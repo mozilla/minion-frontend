@@ -340,6 +340,10 @@ def requires_session(*decor_args):
 def index():
     return app.send_static_file('index.html')
 
+@app.route("/robots.txt")
+def index():
+    return app.send_static_file('robots.txt')
+
 @app.route("/api/session")
 @requires_session
 def api_session():
