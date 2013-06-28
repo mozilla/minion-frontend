@@ -23,7 +23,7 @@ app.controller("MinionController", function($rootScope, $http, $location) {
                         sessionStorage.setItem("role", response.data.role);
                         $location.path("/home/sites").replace();
                     }
-                $rootScpe.inviteId = null;
+                $rootScope.inviteId = null;
                 });
     },
     onlogout: function() {
