@@ -173,31 +173,36 @@ app.controller("IssuesController", function($scope, $http, $location, $timeout) 
     $scope.$on('$viewContentLoaded', function() {
         $scope.reload();
     });
-    //$scope.signIn = function() {
-    //    navigator.id.request();
-    //};
 });
 
 app.controller("InviteController", function ($scope, $rootScope, $routeParams, $http, $location) {
     $scope.inviteId = $routeParams.inviteId;
-   
-    var timenow = Math.round(new Date().getTime()/1000);
+ 
     $http.get('/api/invites/' + $scope.inviteId)
         .success(function(response, status, headers, config) {
-            console.log(response)
             if (!response.success) {
-                $location.path("/login");
+                $scope.invite_state_msg = "Your invitation link is invalid."
+                $scope.invite_state = "invalid";
             } else {
                 sent_on = response.data['sent_on'];
                 accepted_on = response.data['accepted_on'];
-                if (accepted_on)
+                expire_on = response.data['expire_on'];
+                invite_status = response.data['status'];
+                if (accepted_on || 
+                     (invite_status == 'expired' || invite_status == 'used')) {
                     $location.path("/login");
-            }});
-    //$rootScope.signIn = function() {
-    //    navigator.id.request();
-    //};
-
-});
+                } else { 
+                    timenow = Math.round(new Date().getTime()/1000);
+                    if ((expire_on - timenow) < 0) {
+                        $scope.invite_state_msg = "Your invitation is expired."
+                        $scope.invite_state = "expired";
+                    } else {
+                        $scope.invite_state_msg = "Your invitation will expire on " + 
+                                moment.unix(expire_on).format("YYYY-MM-DD HH:mm");
+                        $scope.invite_state = "available";
+                    }
+               }}});
+}); 
 
 app.controller("HistoryController", function($scope, $http, $location, $timeout) {
     $scope.openScan = function (scanId) {

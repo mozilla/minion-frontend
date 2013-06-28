@@ -51,7 +51,6 @@ def update_invite(recipient, invite_id):
     invite = _backend_get_invite(id=invite_id)
     if invite:
         invite = _backend_control_invite(invite_id, {'action': 'accept'})
-        print "update", invite
         if not invite:
             return None
         else:
@@ -134,7 +133,6 @@ def _backend_add_invite(invite):
                       data=json.dumps(invite))
     r.raise_for_status()
     j = r.json()
-    pprint.pprint(r.json(), indent=2)
     if not j.get('success'):
         return None
     return j.get('invite')
@@ -169,7 +167,6 @@ def _backend_delete_invite(id):
     r = requests.delete(config['backend-api']['url'] + '/invites/%s' % id)
     r.raise_for_status()
     j = r.json()
-    print j
     return j
 
 def _backend_get_plans():
@@ -356,10 +353,8 @@ def persona_login():
     if not receipt:
         return jsonify(success=False)
     if request.json.get('invite_id'):
-        print request.json
         user = update_invite(receipt['email'], request.json['invite_id'])
     else:
-        print 'e'
         user = get_or_create_user(receipt['email'])
     if not user:
         return jsonify(success=False)

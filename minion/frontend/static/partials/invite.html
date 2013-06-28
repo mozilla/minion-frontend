@@ -9,14 +9,15 @@
     <div class="row-fluid">
         <div class="span4"><!-- left empty block --></div>
 	<div class="span4">
-            <h3 class="text-center">Confirm your invitation</h3>
+            <h3 class="text-center" ng-show="invite_state == 'available'">Confirm your invitation</h3>
+            <h3 class="text-center"> {{ invite_state_msg }} </h3>            
             <div class="row-fluid">
                 <div class="span2"></div>
-                <div class="span4">
+                <div class="span4" ng-show="invite_state == 'available'">
                     <button class="btn btn-success btn-large btn-block" 
                         ng-click="signIn(inviteId)" href="javascript:void(0)" type="button">Accept</button>
 				</div>
-				<div class="span4">
+                <div class="span4" ng-show="invite_state == 'available'">
                     <button class="btn btn-danger btn-large btn-block" 
                         ng-click="backToLogin()" href="#" type="button">Decline</button>
                 </div>
