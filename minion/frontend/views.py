@@ -341,7 +341,7 @@ def index():
     return app.send_static_file('index.html')
 
 @app.route("/robots.txt")
-def index():
+def robots():
     return app.send_static_file('robots.txt')
 
 @app.route("/api/session")
