@@ -4,13 +4,24 @@
     file, You can obtain one at http://mozilla.org/MPL/2.0/.
 -->
 
-<div class="container" ng-controller="InviteController">
-  <form class="form" id="invite-form">
-      <h2>Invitation Confirmation</h2>
-    <p>
-        <a class="btn btn-large btn-danger" ng-click="backToLogin()" href="#"><i class="icon-user"></i> Decline </a>
-        <a class="btn btn-large btn-primary" ng-click="signIn(inviteId)" href="javascript:void(0)"><i class="icon-user"></i> Accept </a>
 
-    </p>
-  </form>
+<div class="container-fluid" ng-controller="InviteController">
+    <div class="row-fluid">
+        <div class="span4"><!-- left empty block --></div>
+	<div class="span4">
+            <h3 class="text-center">Confirm your invitation</h3>
+            <div class="row-fluid">
+                <div class="span2"></div>
+                <div class="span4">
+                    <button class="btn btn-success btn-large btn-block" 
+                        ng-click="signIn(inviteId)" href="javascript:void(0)" type="button">Accept</button>
+				</div>
+				<div class="span4">
+                    <button class="btn btn-danger btn-large btn-block" 
+                        ng-click="backToLogin()" href="#" type="button">Decline</button>
+                </div>
+                <div class="span2"></div>
+            </div>
+    </div>
+    <div class="span4"><!-- right empty block --></div>
 </div>
