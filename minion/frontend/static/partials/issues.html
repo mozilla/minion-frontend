@@ -53,10 +53,10 @@
 
 <div class="container" ng-controller="IssuesController">
   <div ng-repeat="r in report" ng-show="r.issues.length">
-    <h4 style="text-overflow: hidden; text-transform:uppercase;" class="site-title-big">{{r.target}}</h4>
-    <ul style="list-style: none;">
-      <li ng-repeat="issue in r.issues" style="margin-bottom: 2px;">
-        <span style="width: 80px; margin-right: 6px; text-align: center;" class="label severity-{{issue.severity}}">{{issue.severity}}</span>
+    <h4>{{r.target}}</h4>
+    <ul class="minion-issues-list">
+      <li ng-repeat="issue in r.issues">
+        <span class="label severity-{{issue.severity}} minion-severity-label">{{issue.severity}}</span>
         <a ng-href="#!/scan/{{issue.scan.id}}/issue/{{issue.id}}">
           {{issue.summary}}
         </a>

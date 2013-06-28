@@ -78,3 +78,28 @@ body {
     margin-bottom: 15px;
     padding: 7px 9px;
 }
+
+
+.minion-btn {
+    width: 60px;
+}
+
+.minion-issue-count-label {
+    width: 30px;
+    margin-right: 6px;
+    text-align: center;
+}
+
+.minion-severity-label {
+    width: 80px;
+    margin-right: 6px;
+    text-align: center;
+}
+
+.minion-issues-list {
+    list-style: none;
+}
+
+.minion-dialog-textbox {
+    width: 95%;
+}

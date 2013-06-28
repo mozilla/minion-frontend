@@ -46,14 +46,14 @@
           <td><a ng-href="#!/plan/{{r.plan.name}}">{{r.plan}}</a></td>
           <td>{{r.scan.created | scan_datetime }}</td>
           <td>{{r.scan.state || "-"}}</td>
-          <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-high">{{r.scan.issues.high || "-"}}</span></td>
-          <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-medium">{{r.scan.issues.medium || "-"}}</span></td>
-          <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-low">{{r.scan.issues.low || "-"}}</span></<td></td>
-          <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-info">{{r.scan.issues.info || "-"}}</span></td>
+          <td><span class="label warning-high minion-issue-count-label">{{r.scan.issues.high || "-"}}</span></td>
+          <td><span class="label warning-medium minion-issue-count-label">{{r.scan.issues.medium || "-"}}</span></td>
+          <td><span class="label warning-low minion-issue-count-label">{{r.scan.issues.low || "-"}}</span></<td></td>
+          <td><span class="label warning-info minion-issue-count-label">{{r.scan.issues.info || "-"}}</span></td>
           <td>
-            <button class="btn btn-mini btn-primary" style="width: 60px" ng-class="{disabled: !r.scan}" type="button" ng-click="openScan(r.scan.id)">Details</button>
-            <button class="btn btn-mini btn-primary" style="width: 60px" type="button" ng-click="startScan(r.target, r.plan)" ng-show="r.scan.state != 'STARTED' && r.scan.state != 'QUEUED'">Scan</button>
-            <button class="btn btn-mini btn-primary" style="width: 60px" type="button" ng-click="stopScan(r.scan.id)" ng-show="r.scan.state == 'STARTED' || r.scan.state == 'QUEUED'">Stop</button>
+            <button class="btn btn-mini btn-primary minion-btn" ng-class="{disabled: !r.scan}" type="button" ng-click="openScan(r.scan.id)">Details</button>
+            <button class="btn btn-mini btn-primary minion-btn" type="button" ng-click="startScan(r.target, r.plan)" ng-show="r.scan.state != 'STARTED' && r.scan.state != 'QUEUED'">Scan</button>
+            <button class="btn btn-mini btn-primary minion-btn" type="button" ng-click="stopScan(r.scan.id)" ng-show="r.scan.state == 'STARTED' || r.scan.state == 'QUEUED'">Stop</button>
           </td>
         </tr>
       </table>

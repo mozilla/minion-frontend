@@ -39,14 +39,14 @@
       <td>{{h.plan.name}}</td>
       <td>{{h.created | scan_datetime }}</td>
       <td>{{h.state || "-"}}</td>
-      <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-high">{{h.issues.high || "-"}}</span></td>
-      <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-medium">{{h.issues.medium || "-"}}</span></td>
-      <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-low">{{h.issues.low || "-"}}</span></td>
-      <td><span style="width: 30px; margin-right: 6px; text-align: center;" class="label warning-info">{{h.issues.info || "-"}}</span></td>
+      <td><span class="label warning-high minion-issue-count-label">{{h.issues.high || "-"}}</span></td>
+      <td><span class="label warning-medium minion-issue-count-label">{{h.issues.medium || "-"}}</span></td>
+      <td><span class="label warning-low minion-issue-count-label">{{h.issues.low || "-"}}</span></td>
+      <td><span class="label warning-info minion-issue-count-label">{{h.issues.info || "-"}}</span></td>
       <td>
-        <button class="btn btn-mini btn-primary" style="width: 60px" ng-class="{disabled: !h.finished}" type="button" ng-click="openScan(h.id)">Details</button>
-        <button class="btn btn-mini btn-primary" style="width: 60px" type="button" ng-click="startScan(h.configuration.target, h.plan.name)" ng-show="h.state != 'STARTED' && h.state != 'QUEUED'">Scan</button>
-        <button class="btn btn-mini btn-primary" style="width: 60px" type="button" ng-click="cancelScan()" ng-show="h.state == 'STARTED' || h.state == 'QUEUED'">Cancel</button>
+        <button class="btn btn-mini btn-primary minion-btn" ng-class="{disabled: !h.finished}" type="button" ng-click="openScan(h.id)">Details</button>
+        <button class="btn btn-mini btn-primary minion-btn" type="button" ng-click="startScan(h.configuration.target, h.plan.name)" ng-show="h.state != 'STARTED' && h.state != 'QUEUED'">Scan</button>
+        <button class="btn btn-mini btn-primary minion-btn" type="button" ng-click="cancelScan()" ng-show="h.state == 'STARTED' || h.state == 'QUEUED'">Cancel</button>
       </td>
     </tr>
   </table>
