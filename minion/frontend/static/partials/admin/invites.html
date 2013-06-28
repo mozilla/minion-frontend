@@ -29,6 +29,8 @@
               <option value="-sent_on">Sent on (descending)</option>
               <option value="accepted_on">Accepted on (ascending)</option>
               <option value="-accepted_on">Accepted on (descending)</option>
+              <option value="expire_on">Expire on (ascending)</option>
+              <option value="-expire_on">Expire on (descending)</option>
       </select>  <a class="btn btn-small" ng-click="createInvite()">Invite...</a></span>
   <div class="row">
     <div class="span12">
@@ -39,8 +41,9 @@
               <th>Recipient Name</th>
               <th>Sender</th>
               <th>Sender Name</th>
-              <th>Sent On</th>
-              <th>Accepted On</th>
+              <th>Sent on</th>
+              <th>Expire on</th>
+              <th>Accepted on</th>
               <th>Status</th>
               <th>Actions</th>
           </tr>
@@ -51,6 +54,7 @@
             <td>{{invite.sender}}</td>
             <td>{{invite.sender_name}}</td>
             <td>{{invite.sent_on | scan_datetime }}</td>
+            <td>{{invite.expire_on | scan_datetime }}</td>
             <td>{{invite.accepted_on | scan_datetime }}</td>
             <td>{{invite.status}}</td>
           <td>
