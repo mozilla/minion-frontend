@@ -1,11 +1,18 @@
-<div class="modal-header">
-  <h1>Add Group</h1>
-</div>
-<div class="modal-body">
-  <p>Name : <input ng-model="group.name" /></p>
+<form class="form-horizontal" name="groupForm">
 
-  <p>Description : <input ng-model="group.description" /></p>
-</div>
-<div class="modal-footer">
-  <button ng-click="close(result)" class="btn btn-primary">Add</button>
-</div>
+  <div class="modal-header">
+    <h1>Add Group</h1>
+  </div>
+
+  <form novalidate class="css-form">
+    <div class="modal-body">
+     <p>Name: <input type="text" ng-model="group.name" required /></p>
+     <p>Description: <input type="text" ng-model="group.description" required /></p>
+    </div>
+    
+    <div class="modal-footer">
+      <button ng-click="close(result)" class="btn btn-primary" ng-disabled="groupForm.$invalid">Add</button>
+    </div>
+  </form>
+</form>
+
