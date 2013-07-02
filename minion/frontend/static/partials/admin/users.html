@@ -32,6 +32,7 @@
             <th>Name</th>
             <th>Role</th>
             <th>Groups</th>
+            <th>Last login</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -40,7 +41,8 @@
           <td>{{user.created | scan_datetime }}</td>
           <td>{{user.name}}</td>
           <td>{{user.role}}</td>
-          <td>{{user.groups.join(', ')}}</td>
+          <td>{{user.groups.join(', ')}}</td> 
+          <td>{{user.last_login | scan_datetime }}</td>
           <td>
             <a ng-click="editUser(user)" class="btn btn-mini">Edit</a>
             <a ng-click="removeUser(user)" class="btn btn-mini">Remove</a>
