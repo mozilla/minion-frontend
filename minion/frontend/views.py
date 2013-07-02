@@ -362,6 +362,8 @@ def persona_login():
         user = get_or_create_user(receipt['email'])
     if not user:
         return jsonify(success=False)
+    elif user.get('status') == "banned":
+        return jsonify(success=False, reason="banned")
     session['email'] = user['email']
     session['role'] = user['role']
     return api_session()
