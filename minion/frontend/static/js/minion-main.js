@@ -4,7 +4,7 @@
 
 var app = angular.module("MinionApp", ["ui.bootstrap", "minionAdminPlansModule", "minionAdminSitesModule", "minionAdminPluginsModule"]);
 
-app.controller("MinionController", function($rootScope, $http, $location) {
+app.controller("MinionController", function($rootScope, $scope, $http, $location) {
     if (sessionStorage.getItem("email")) {
         $rootScope.session = {email: sessionStorage.getItem("email"), role: sessionStorage.getItem("role")};
     } else {
@@ -16,12 +16,14 @@ app.controller("MinionController", function($rootScope, $http, $location) {
     onlogin: function(assertion) {
             $http.post('/api/login', {assertion: assertion, invite_id: $rootScope.inviteId})
                 .success(function(response, status, headers, config) {
-                    console.log(response);
                     if (response.success) {
                         $rootScope.session = response.data;
                         sessionStorage.setItem("email", response.data.email);
                         sessionStorage.setItem("role", response.data.role);
                         $location.path("/home/sites").replace();
+                    } else {
+                        $scope.logInStatus = response.reason;
+                        $location.path("/login").replace();
                     }
                 $rootScope.inviteId = null;
                 });
@@ -108,10 +110,7 @@ app.run(function($rootScope, $http, $location) {
         // make  /invites/:inviteId into a whitelist
         has_invite = $location.url().substring().split('/')[1] == "invite"
         if (!has_invite && !$rootScope.session) {
-            console.log($location.url())
-            console.log("inside 1")
             if (next.$$route.templateUrl !== "static/partials/login.html" ) {
-                console.log("inside 2")
                 $location.path("/login");
             }
         }
