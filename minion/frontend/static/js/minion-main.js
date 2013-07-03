@@ -45,11 +45,13 @@ app.controller("MinionController", function($rootScope, $scope, $http, $location
     };
 
     $rootScope.openScan = function (scanId) {
-        $location.path("/scan/" + scanId); // .replace();
+        if (scanId)
+            $location.path("/scan/" + scanId); // .replace();
     };
 
     $rootScope.openIssue = function (scanId, issueId) {
-        $location.path("/scan/" + scanId + "/issue/" + issueId);
+        if (scanId)
+            $location.path("/scan/" + scanId + "/issue/" + issueId);
     };
 
     $rootScope.startScan = function (target, plan) {
