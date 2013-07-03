@@ -22,6 +22,16 @@ config = frontend_config()
 # Simple wrappers around common backend functionality
 #
 
+def login_user(email):
+    r = requests.put(config['backend-api']['url'] + "/login",
+        headers={'Content-Type': 'application/json'},
+        data=json.dumps({'email': email}))
+    r.raise_for_status()
+    j = r.json()
+    if not j.get('success'):
+        return None
+    return j.get('user')
+
 def get_user(email):
     r = requests.get(config['backend-api']['url'] + "/users/" + email)
     r.raise_for_status()
@@ -45,6 +55,12 @@ def get_or_create_user(email):
     user = get_user(email)
     if not user:
         user = create_user(email, 'user')
+    return user
+
+def login_or_create_user(email):
+    user = login_user(email)
+    if not user:
+        user = create_user(email, "user")
     return user
 
 def update_invite(recipient, invite_id):
@@ -359,7 +375,7 @@ def persona_login():
     if request.json.get('invite_id'):
         user = update_invite(receipt['email'], request.json['invite_id'])
     else:
-        user = get_or_create_user(receipt['email'])
+        user = login_or_create_user(receipt['email'])
     if not user:
         return jsonify(success=False)
     elif user.get('status') == "banned":

@@ -234,7 +234,7 @@ app.controller("AdminGroupsController", function($scope, $routeParams, $http, $l
     $scope.addGroup = function(){
         var group = {name:"", description:""};
         var d = $dialog.dialog({
-            templateUrl: "static/partials/admin/add-group-dialog.html",
+            templateUrl: "static/partials/admin/add-group-dialog.html?" + new Date().getTime(),
             controller: "AdminAddGroupController",
             resolve: {
                 group: function () {
