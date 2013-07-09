@@ -446,7 +446,6 @@ def api_scan_issue(minion_scan_id, minion_issue_id):
 @app.route("/api/scan/<minion_scan_id>")
 @requires_session
 def api_scan(minion_scan_id):
-    # TODO This must check if the user actually has access to the scan
     r = requests.get(config['backend-api']['url'] + "/scans/" + minion_scan_id,
             params={'email': session['email']})
     if r.json()['success']:
