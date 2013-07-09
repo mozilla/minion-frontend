@@ -73,6 +73,7 @@ app.config(function($routeProvider, $locationProvider) {
     $locationProvider.hashPrefix('!');
     $routeProvider
         .when("/", { templateUrl: "static/partials/home.html", controller: "HomeController" })
+        .when("/404", { templateUrl: "static/partials/404.html", controller: "404Controller" })
         .when("/home/sites", { templateUrl: "static/partials/home.html", controller: "HomeController" })
         .when("/home/history", { templateUrl: "static/partials/history.html", controller: "HistoryController" })
         .when("/home/issues", { templateUrl: "static/partials/issues.html", controller: "IssuesController" })
@@ -96,7 +97,6 @@ app.config(function($routeProvider, $locationProvider) {
 });
 
 app.run(function($rootScope, $http, $location) {
-
     $rootScope.backToLogin = function() {
         $rootScope.session = null;
         $location.path("/login");
@@ -133,6 +133,10 @@ app.controller("LoginController", function($scope, $rootScope, $location) {
     //$rootScope.ssignIn = function() {
     //    navigator.id.request();
     //};
+});
+
+app.controller("404Controller", function($scope, $rootScope, $location) {
+   // do nothing
 });
 
 app.controller("HomeController", function($scope, $http, $location, $timeout) {
@@ -225,42 +229,49 @@ app.controller("RawController", function ($scope, $routeParams, $http, $location
     $scope.$on('$viewContentLoaded', function() {
         $http.get('/api/scan/' + $routeParams.scanId)
             .success(function(response, status, headers, config) {
-                $scope.scan = response.data;
-                $scope.formatted_scan = JSON.stringify(response.data, null, 4);
-            });
+                if (response.success) {
+                    $scope.scan = response.data;
+                    $scope.formatted_scan = JSON.stringify(response.data, null, 4);
+                } else {
+                    $location.path('/404');
+            }});
     });
 });
 
 app.controller("ScanController", function($scope, $routeParams, $http, $location) {
     $scope.$on('$viewContentLoaded', function() {
         $http.get('/api/scan/' + $routeParams.scanId).success(function(response, status, headers, config) {
-            var scan = response.data;
-            var issues = [];
-            var issueCounts = {high: 0, medium: 0, low: 0, info: 0, error: 0};
-            _.each(scan.sessions, function (session) {
-                _.each(session.issues, function (issue) {
-                    issue.session = session;
-                    issues.push(issue);
-                    switch (issue.Severity) {
-                        case "High":
-                            issueCounts.high++;
-                            break;
-                        case "Medium":
-                            issueCounts.medium++;
-                            break;
-                        case "Low":
-                            issueCounts.low++;
-                            break;
-                        case "Informational":
-                        case "Info":
-                            issueCounts.info++;
-                            break;
-                        case "Error":
-                            issueCounts.error++;
-                            break;
-                    }
+            if (response.success) {
+                var scan = response.data;
+                var issues = [];
+                var issueCounts = {high: 0, medium: 0, low: 0, info: 0, error: 0};
+                _.each(scan.sessions, function (session) {
+                    _.each(session.issues, function (issue) {
+                        issue.session = session;
+                        issues.push(issue);
+                        switch (issue.Severity) {
+                            case "High":
+                                issueCounts.high++;
+                                break;
+                            case "Medium":
+                                issueCounts.medium++;
+                                break;
+                            case "Low":
+                                issueCounts.low++;
+                                break;
+                            case "Informational":
+                            case "Info":
+                                issueCounts.info++;
+                                break;
+                            case "Error":
+                                issueCounts.error++;
+                                break;
+                        }
+                    });
                 });
-            });
+            } else {
+                $location.path('/404');
+            }
         var failures = []
         _.each(scan.sessions, function (session, idx) {
         if (session.failure) {
