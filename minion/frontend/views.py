@@ -300,7 +300,6 @@ def _backend_delete_group(group_name):
     return True
 
 def _backend_patch_group(group_name, patch):
-    print "PATCH", patch
     r = requests.patch(config['backend-api']['url'] + "/groups/" + group_name,
                        headers={'Content-Type': 'application/json'},
                        data=json.dumps(patch))
@@ -673,8 +672,6 @@ def delete_api_admin_group_by_name(group_name):
 @app.route("/api/admin/groups/<group_name>", methods=['PATCH'])
 @requires_session('administrator')
 def post_api_admin_groups_group_name_sites(group_name):
-    print "REQUEST DATA", request
-    print "REQUEST DATA", request.headers
     # Patch the group
     if not _backend_patch_group(group_name, request.json):
         return jsonify(success=False, reason='unknown')
