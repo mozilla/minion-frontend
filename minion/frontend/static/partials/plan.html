@@ -1,4 +1,4 @@
-<div ng-controller="ScanController">
+<div ng-controller="PlanController">
 
   <div class="container">
 
@@ -36,7 +36,7 @@
         </thead>
         <tr ng-repeat="step in plan.workflow">
           <td>#{{$index+1}}</td>
-          <td>{{step.plugin.name}} {{step.plugin.version}}</td>
+          <td>{{step.plugin_name}} {{step.plugin.version}}</td>
           <td ng-bind-html-unsafe="step.description|link_bugs"></td>
         </tr>
       </table>

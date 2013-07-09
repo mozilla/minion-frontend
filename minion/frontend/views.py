@@ -430,23 +430,28 @@ def api_sites():
 @app.route("/api/scan/<minion_scan_id>/issue/<minion_issue_id>")
 @requires_session
 def api_scan_issue(minion_scan_id, minion_issue_id):
-    r = requests.get(config['backend-api']['url'] + "/scans/" + minion_scan_id)
+    r = requests.get(config['backend-api']['url'] + "/scans/" + minion_scan_id,
+            params={'email': session['email']})
     j = r.json()
-    for s in j['scan']['sessions']:
-        for issue in s['issues']:
-            if issue['Id'] == minion_issue_id:
-                SESSION_FIELDS = ('plugin', 'artifacts', 'state', 'artifacts')
-                r = {field: s.get(field) for field in SESSION_FIELDS}
-                return jsonify(success=True,data={'session': r, 'issue': issue, 'scan': j['scan']})
-    return jsonify(success=False)
+    if j['success']:
+        for s in j['scan']['sessions']:
+            for issue in s['issues']:
+                if issue['Id'] == minion_issue_id:
+                    SESSION_FIELDS = ('plugin', 'artifacts', 'state', 'artifacts')
+                    r = {field: s.get(field) for field in SESSION_FIELDS}
+                    return jsonify(success=True,data={'session': r, 'issue': issue, 'scan': j['scan']})
+    else:
+        return jsonify(success=False, reason=r.json()['reason'])
 
 @app.route("/api/scan/<minion_scan_id>")
 @requires_session
 def api_scan(minion_scan_id):
-    # TODO This must check if the user actually has access to the scan
-    r = requests.get(config['backend-api']['url'] + "/scans/" + minion_scan_id)
-    scan = r.json()['scan']
-    return jsonify(success=True,data=scan)
+    r = requests.get(config['backend-api']['url'] + "/scans/" + minion_scan_id,
+            params={'email': session['email']})
+    if r.json()['success']:
+        return jsonify(success=True, data=r.json()['scan'])
+    else:
+        return jsonify(success=r.json()['success'], reason=r.json().get('reason'))
 
 @app.route("/api/plan/<minion_plan_name>")
 @requires_session
@@ -473,10 +478,11 @@ def api_scan_start():
     # Start the scan
     r = requests.put(config['backend-api']['url'] + "/scans/" + scan['id'] + "/control",
                      headers={'Content-Type': 'text/plain'},
-                     data="START")
+                     data="START",
+                     params={'email': session['email']})
     r.raise_for_status()
 
-    return jsonify(success=True)
+    return jsonify(success=r.json()['success'], reason=r.json().get('reason'))
 
 @app.route("/api/scan/stop", methods=['PUT'])
 @requires_session
@@ -486,9 +492,11 @@ def api_scan_stop():
     # Stop the scan
     r = requests.put(config['backend-api']['url'] + "/scans/" + scan_id + "/control",
                      headers={'Content-Type': 'text/plain'},
-                      data="STOP")
+                     data="STOP",
+                     params={'email': session['email']})
     r.raise_for_status()
-    return jsonify(success=True)
+    return jsonify(success=r.json()['success'], reason=r.json().get('reason'))
+
 
 #
 # API For the Administration Pages
