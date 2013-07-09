@@ -93,7 +93,6 @@ app.controller("AdminUsersController", function($scope, $http, $dialog) {
                 d.open().then(function(user) {
                     if(user) {
                         data = {email: user.email, name: user.name, role: user.role, groups: user.groups}
-                        console.dir(user);
                         $http.post('/api/admin/users', data).success(function(response, status, headers, config) {
                             if (response.success) {
                                 reload();
@@ -133,7 +132,6 @@ app.controller("AdminCreateInviteController", function($scope, dialog, users, gr
 
 // We don't want to refresh the page to see default orderBy to take place
 app.controller("AdminInvitesController", function($scope, $http, $dialog, $filter, $location) {
-    console.log($location)
     var base_url = $location.absUrl().split("#!")[0] + '#!/invite';
     var reload = function() {
         $http.get('/api/admin/invites')
