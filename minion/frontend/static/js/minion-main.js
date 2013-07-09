@@ -36,7 +36,6 @@ app.controller("MinionController", function($rootScope, $scope, $http, $location
     });
 
     $rootScope.signOut = function() {
-        console.log("SIGNOUT");
         $rootScope.session = null;
         sessionStorage.removeItem("email");
         sessionStorage.removeItem("role");

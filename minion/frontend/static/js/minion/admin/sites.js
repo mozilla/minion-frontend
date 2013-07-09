@@ -43,7 +43,6 @@ minionAdminSitesModule.controller("AdminSitesController", function($scope, $rout
     };
 
     $scope.editSite = function (site) {
-        console.dir(site);
         $http.get('/api/admin/plans').success(function(response) {
             $scope.plans = response.data;
                 var d = $dialog.dialog({
@@ -54,7 +53,6 @@ minionAdminSitesModule.controller("AdminSitesController", function($scope, $rout
                 });
                 d.open().then(function(site) {
                     if (site) {
-                        console.dir(site);
                         $http.post('/api/admin/sites/' + site.id, {plans: site.plans}).success(function(response) {
                             reload();
                         });
