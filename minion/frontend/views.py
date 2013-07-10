@@ -66,7 +66,8 @@ def login_or_create_user(email):
 def update_invite(recipient, invite_id):
     invite = _backend_get_invite(id=invite_id)
     if invite:
-        invite = _backend_control_invite(invite_id, {'action': 'accept'})
+        invite = _backend_control_invite(invite_id, \
+            {'action': 'accept', 'login': recipient})
         if not invite:
             return None
         else:
