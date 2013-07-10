@@ -7,7 +7,7 @@ import requests
 
 def verify_assertion(assertion, audience):
     data = {'assertion': assertion, 'audience': audience}
-    response = requests.post('https://verifier.login.persona.org/verify', data = data, timeout = 5)
+    response = requests.post('https://verifier.login.persona.org/verify', data=data, timeout=5)
     if response.status_code != 200:
         return None
     receipt = json.loads(response.content)

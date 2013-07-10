@@ -14,7 +14,8 @@ app.controller("MinionController", function($rootScope, $scope, $http, $location
     navigator.id.watch({
         loggedInUser: sessionStorage.getItem("email"),
     onlogin: function(assertion) {
-            $http.post('/api/login', {assertion: assertion, invite_id: $rootScope.inviteId})
+            data = {assertion: assertion, invite_id: $rootScope.inviteId}
+            $http.post('/api/login', data)
                 .success(function(response, status, headers, config) {
                     if (response.success) {
                         $rootScope.session = response.data;
@@ -25,7 +26,6 @@ app.controller("MinionController", function($rootScope, $scope, $http, $location
                         $scope.logInStatus = response.reason;
                         $location.path("/login").replace();
                     }
-                $rootScope.inviteId = null;
                 });
     },
     onlogout: function() {
@@ -101,11 +101,13 @@ app.run(function($rootScope, $http, $location) {
         $location.path("/login");
     }
     $rootScope.signIn = function(inviteid) {
-        if (inviteid)
+        if (inviteid) {
             $rootScope.inviteId = inviteid;
-        else
+            navigator.id.request();
+        } else {
             $rootScope.inviteId = null;
-        navigator.id.request();
+            navigator.id.request();
+        }
     }
     $rootScope.$on( "$routeChangeStart", function(event, next, current) {
         // make  /invites/:inviteId into a whitelist
