@@ -155,7 +155,7 @@ app.controller("HomeController", function($scope, $http, $location, $timeout) {
                 }
             });
             $scope.report = response.data;
-            if ($scope.report.length > 0) {
+            if ($scope.report && $scope.report.length > 0) {
                 $timeout(function () {
                     $scope.reload();
                 }, 2500);
