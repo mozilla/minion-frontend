@@ -40,6 +40,7 @@ app.controller("MinionController", function($rootScope, $scope, $http, $location
         sessionStorage.removeItem("email");
         sessionStorage.removeItem("role");
         navigator.id.logout();
+        $http.get('/api/logout')
         $location.path("/login").replace();
     };
 
