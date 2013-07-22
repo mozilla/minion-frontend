@@ -208,6 +208,13 @@ app.controller("InviteController", function ($scope, $rootScope, $routeParams, $
                         $scope.invite_state = "available";
                     }
                }}});
+    $scope.declineInvite = function() {
+        data = {action: 'decline'}
+        $http.put('/api/invites/' + $scope.inviteId, data)
+            .success(function(response, status, headers, config) {
+                $rootScope.backToLogin();
+            
+    })};
 }); 
 
 app.controller("HistoryController", function($scope, $http, $location, $timeout) {
