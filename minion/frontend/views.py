@@ -409,7 +409,7 @@ def api_issues():
 @app.route("/api/invites/<invite_id>", methods=['GET', 'PUT'])
 def api_invite(invite_id):
     invite = _backend_get_invite(invite_id)
-    if invite:
+    if invite and invite['status'] == 'pending':
         if request.method == 'GET':
             return jsonify(success=True, data=invite)
         else:
