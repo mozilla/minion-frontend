@@ -63,13 +63,12 @@ def login_or_create_user(email):
         user = create_user(email, "user")
     return user
 
-def update_invite(recipient, data):
+def accept_invite(recipient, data):
     invite_id = data['invite_id']
-    action = data['action']
     invite = _backend_get_invite(id=invite_id)
     if invite:
         invite = _backend_control_invite(invite_id, \
-            {'action': action, 'login': recipient})
+            {'action': 'accept', 'login': recipient})
         if not invite:
             return None
         else:
@@ -375,7 +374,7 @@ def persona_login():
     if not receipt:
         return jsonify(success=False)
     if request.json.get('invite_id'):
-        user = update_invite(receipt['email'], request.json)
+        user = accept_invite(receipt['email'], request.json)
     else:
         user = login_or_create_user(receipt['email'])
     if not user:
