@@ -97,7 +97,7 @@
             <td>{{session.plugin.name}} (v{{session.plugin.version}})</td>
             <td>{{session.started | scan_datetime}}</td>
             <td>{{session.state}}</td>
-            <td>{{session.finished - session.started | moment_duration}}</td>
+            <td>{{ session.finished - session.started | moment_duration: timenow }} </td>
             <!--<td ng-bind-html-unsafe="scan.plan.workflow[$index].description|link_bugs"></td>-->
           </tr>
         </table>

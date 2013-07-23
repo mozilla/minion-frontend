@@ -252,6 +252,7 @@ app.controller("ScanController", function($scope, $routeParams, $http, $location
             if (response.success) {
                 var scan = response.data;
                 var issues = [];
+                $scope.timenow = Math.round(+new Date()/1000);
                 var issueCounts = {high: 0, medium: 0, low: 0, info: 0, error: 0};
                 _.each(scan.sessions, function (session) {
                     _.each(session.issues, function (issue) {
@@ -346,10 +347,16 @@ app.filter('scan_datetime_fromnow', function () {
 });
 
 app.filter('moment_duration', function () {
-    return function(input, options) {
-        var start = moment(0);
-        var end = moment(input);
-        return end.from(start, true);
+    return function(input, timenow) {
+        if (input >= 0) {
+            var start = moment(0);
+            var end = moment(input);
+            return end.from(start, true);
+        } else {
+            var start = moment(Math.abs(input));
+            var end = moment(timenow);
+            return end.from(start, true);
+        };
     };
 });
 
