@@ -332,17 +332,20 @@ app.filter('moment', function () {
 
 app.filter('scan_datetime', function () {
     return function(input, options) {
-        if (input) {
+        if (input > 0) {
             return moment.unix(input).format("YYYY-MM-DD HH:mm");
         } else {
-            return "Never";
+            return "---";
         }
     };
 });
 
 app.filter('scan_datetime_fromnow', function () {
     return function(input, options) {
-        return moment.unix(input).fromNow();
+        if (input > 0)
+            return moment.unix(input).fromNow();
+        else
+            return;
     };
 });
 
