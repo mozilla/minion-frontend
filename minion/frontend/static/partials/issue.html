@@ -13,6 +13,10 @@
       <td><b>Summary</b></td>
       <td ng-bind-html-unsafe="issue.Summary|link_bugs"></td>
     </tr>
+    <tr ng-show="issue.Classification">
+      <td><b>Classification</b></td>
+      <td ng-bind-html-unsafe="issue.Classification | classify_issue"></td>
+    </tr>
     <tr>
       <td><b>Severity</b></td>
       <td>{{issue.Severity}}</td>

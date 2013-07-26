@@ -323,6 +323,29 @@ app.controller("SessionFailureController", function($scope, $routeParams, $http)
 
 // Filters
 
+app.filter('classify_issue', function() {
+    return function(input, options) {
+        if (!input)
+            return;
+        output1 = ''
+        output2 = ''
+        var template = '<a href="$url">$name $id</a>'
+        cwe_id = input['cwe_id']
+        wasc_id = input['wasc_id']
+        if (cwe_id && cwe_id.length > 0) {
+            output1 = '<a href="' + input['cwe_url'] 
+                + '">' + 'CWE ' + cwe_id + '</a>'
+        }
+        
+        if (wasc_id && wasc_id.length > 0) {
+            output2 = '<a href="' + input['wasc_url'] 
+                + '">' + 'WASC ' + wasc_id + '</a>'
+        }
+
+        return output1 + ' ' + output2;
+
+    };
+});
 app.filter('moment', function () {
     return function(input, options) {
         return moment(input).format(options.format || "YYYY-MM-DD");
