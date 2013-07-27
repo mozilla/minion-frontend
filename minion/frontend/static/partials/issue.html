@@ -13,6 +13,10 @@
       <td><b>Summary</b></td>
       <td ng-bind-html-unsafe="issue.Summary|link_bugs"></td>
     </tr>
+    <tr ng-show="issue.Classification.cwe_id || issue.Classification.wasc_id">
+      <td><b>Classification</b></td>
+      <td ng-bind-html-unsafe="issue.Classification | classify_issue"></td>
+    </tr>
     <tr>
       <td><b>Severity</b></td>
       <td>{{issue.Severity}}</td>
@@ -45,15 +49,28 @@
     <h3>URLs</h3>
     <p>The issue was found on the following URLs:</p>
 
-    <table class="table table-bordered" ng-repeat="url in issue.URLs">
-      <tr>
-	<td><b>URL</b></td>
-	<td>{{url.URL}}</td>
-      </tr>
-      <tr>
-	<td><b>Extra</b></td>
-	<td>{{url.Extra}}</td>
-      </tr>
+    <table class="table table-borderless table-inner-bordered" ng-repeat="url in issue.URLs">
+    
+    <tr>
+    	<td><b>URL</b></td>
+	    <td><pre>{{url.URL}}</pre></td>
+    </tr>
+    <tr ng-show='url.Attack'>
+        <td><b>Input tested</b></td>
+        <td><pre>{{url.Attack}}</pre></td>
+    </tr>
+    <tr ng-show='url.Parameter'>
+        <td><b>Parameter tested</b></td>
+        <td><pre>{{url.Parameter}}</pre></td>
+    </tr>
+    <tr ng-show='url.Evidence'>
+        <td><b>Evidence found</b></td>
+        <td><pre>{{url.Evidence}}</pre></td>
+    </tr>
+    <tr ng-show='url.Extra'>
+	    <td><b>Extra</b></td>
+	    <td>{{url.Extra}}</td>
+    </tr>
     </table>
 
     <!--
