@@ -22,7 +22,12 @@
   </ul>
 
   <h2>Plugins</h2>
-
+<span class="pull-right">
+          Search: <input ng-model="query">  Sort by:
+          <select ng-model="orderOption">
+              <option value="name">Name (ascending)</option>
+              <option value="-name">Name (descending)</option>
+      </select> </span>
   <div class="row">
     <div class="span12">
       <table class="table table-bordered">
@@ -34,7 +39,7 @@
             <th>Weight</th>
           </tr>
         </thead>
-        <tr ng-repeat="plugin in plugins">
+        <tr ng-repeat="plugin in plugins | filter: query | orderBy: orderOption">
           <td>{{plugin.name}}</td>
           <td>{{plugin.class}}</td>
           <td>{{plugin.version}}</td>
