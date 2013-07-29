@@ -20,8 +20,14 @@
       <a ng-href="#!/admin/invites">Invites</a>
     </li>
   </ul>
+
+    <h2>Sites</h2><span class="pull-right">
+          Search: <input ng-model="query">  Sort by:
+          <select ng-model="orderOption">
+              <option value="url"> URL (ascending)</option>
+              <option value="-url">URL (descending)</option>
+      </select>  <a class="btn btn-small" ng-click="createSite()">Add...</a></span>
   
-  <h2>Sites <span class="pull-right"><a class="btn btn-mini" ng-click="createSite()">Add...</a></span></h2>
   <div class="row">
     <div class="span12">
       <table class="table table-bordered">
