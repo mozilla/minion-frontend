@@ -9,7 +9,7 @@
       <div class="control-group">
         <label class="control-label" for="inputRole">Email</label>
         <div class="controls">
-          <select ng-model="email" ng-options="user.email for user in users" required></select>
+          <select ng-model="email" ng-options="user.email for user in users | orderBy: 'email'" required></select>
         </div>
       </div>
     </div>
