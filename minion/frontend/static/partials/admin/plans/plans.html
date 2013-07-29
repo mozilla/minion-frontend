@@ -21,7 +21,15 @@
     </li>
   </ul>
 
-  <h2>Plans <span class="pull-right"><a class="btn btn-mini" ng-click="createPlan()">Create...</a></span></h2>
+<h2>Plans</h2><span class="pull-right">
+          Search: <input ng-model="query">  Sort by:
+          <select ng-model="orderOption">
+              <option value="name">Name (ascending)</option>
+              <option value="-name">Name (descending)</option>
+              <option value="created">Created on (ascending)</option>
+              <option value="-created">Created on (descending)</option>
+      </select>  <a class="btn btn-small" ng-click="createPlan()">Create...</a></span>
+
   <div class="row">
     <div class="span12">
       <table class="table table-bordered">
@@ -32,7 +40,7 @@
             <th>Description</th>
           </tr>
         </thead>
-        <tr ng-repeat="plan in plans">
+        <tr ng-repeat="plan in plans | filter: query | orderBy: orderOption">
           <td><a ng-href="#!/admin/plans/{{group.name}}">{{plan.name}}</a></td>
           <td>{{plan.created | scan_datetime}}</td>
           <td>{{plan.description}}</td>
