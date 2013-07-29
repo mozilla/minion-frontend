@@ -21,7 +21,18 @@
     </li>
   </ul>
 
-  <h2>Users <span class="pull-right"><a class="btn btn-mini" ng-click="createUser()">Add...</a></span></h2>
+<h2>Users </h2><span class="pull-right">
+          Search: <input ng-model="query">  Sort by:
+          <select ng-model="orderOption">
+              <option value="email">Email (ascending)</option>
+              <option value="-email">Email (descending)</option>
+              <option value="name">Name (ascending)</option>
+              <option value="-name">Name (descending)</option>
+              <option value="created">Created on (ascending)</option>
+              <option value="-created">Created on (descending)</option>
+              <option value="last_login">Last login (ascending)</option>
+             <option value="-last_login">Last login (descending)</option>
+      </select>  <a class="btn btn-small" ng-click="createUser()">Add...</a></span>
   <div class="row">
     <div class="span12">
       <table class="table table-bordered">
@@ -36,7 +47,7 @@
             <th>Actions</th>
           </tr>
         </thead>
-        <tr ng-repeat="user in users">
+        <tr ng-repeat="user in users | filter:query | orderBy: orderOption">
           <td>{{user.email}}</td>
           <td>{{user.created | scan_datetime }}</td>
           <td>{{user.name}}</td>
