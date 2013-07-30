@@ -22,7 +22,15 @@
 
   </ul>
 
-  <h2>Groups <span class="pull-right"><a class="btn btn-mini" ng-click="addGroup()">Add...</a></span></h2>
+<h2>Groups</h2><span class="pull-right">
+          Search: <input ng-model="query">  Sort by:
+          <select ng-model="orderOption">
+              <option value="name">Name (ascending)</option>
+              <option value="-name">Name (descending)</option>
+              <option value="created">Created on (ascending)</option>
+              <option value="-created">Created on (descending)</option>
+      </select>  <a class="btn btn-small" ng-click="addGroup()">Add...</a></span>
+
   <div class="row">
     <div class="span12">
       <table class="table table-bordered">
@@ -34,7 +42,7 @@
             <th>Actions</th>
           </tr>
         </thead>
-        <tr ng-repeat="group in groups">
+        <tr ng-repeat="group in groups | filter:query | orderBy: orderOption">
           <td><a ng-href="#!/admin/groups/{{group.name}}">{{group.name}}</a></td>
           <td>{{group.created | scan_datetime}}</td>
           <td>{{group.description}}</td>
