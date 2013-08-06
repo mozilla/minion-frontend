@@ -146,23 +146,24 @@ app.controller("HomeController", function($scope, $http, $location, $timeout) {
     };
 
     $scope.reload = function () {
-        $http.get('/api/sites').success(function(response, status, headers, config){
-            _.each(response.data, function (r, idx) {
-                r.label = r.target;
-                if (idx > 0) {
-                    if (r.target === response.data[idx-1].target) {
-                        r.label = "";
+        if ($location.path() == "/home/sites" || $location.path() == "/") {
+            $http.get('/api/sites').success(function(response, status, headers, config){
+                _.each(response.data, function (r, idx) {
+                    r.label = r.target;
+                    if (idx > 0) {
+                        if (r.target === response.data[idx-1].target) {
+                            r.label = "";
+                        }
                     }
+                });
+                $scope.report = response.data;
+                if ($scope.report && $scope.report.length > 0) {
+                    $timeout(function () {
+                        $scope.reload();
+                    }, 2500);
                 }
             });
-            $scope.report = response.data;
-            if ($scope.report && $scope.report.length > 0) {
-                $timeout(function () {
-                    $scope.reload();
-                }, 2500);
-            }
-        });
-    };
+    }};
 
     $scope.$on('$viewContentLoaded', function() {
         $scope.reload();
