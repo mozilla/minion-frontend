@@ -118,14 +118,18 @@ app.controller("AdminCreateInviteController", function($scope, dialog, users, gr
     $scope.invite = {sender: $scope.sender, recipient: ""};
     $scope.groups = groups;
     $scope.roles = ["user", "administrator"];
- 
+    $scope.opts = {
+        'accept': true,
+        'decline': true
+    };
     // todo: do cleanup!
     $scope.cancel = function() {
         dialog.close(null);
     };
 
-    $scope.submit = function(user) {
-        dialog.close(user);
+    $scope.submit = function(result) {
+        result.opts = $scope.opts;
+        dialog.close(result);
     }
 });
 
@@ -147,18 +151,25 @@ app.controller("AdminInvitesController", function($scope, $http, $dialog, $filte
                     templateUrl: "static/partials/admin/invites/create-invites.html?x=" + new Date().getTime(),
                     controller: "AdminCreateInviteController",
                     resolve: { users: function() { return $scope.users; },
-                               groups: function() { return response.data; } }
+                               groups: function() { return response.data; }}
                 });
 
-                d.open().then(function(user) {
-                    if(user) {
-                        data1 = {email: user.email, name: user.name, role: user.role, groups: user.groups, invitation: true}
+                d.open().then(function(result) {
+                    if(result) {
+                        data1 = {email: result.email, name: result.name, role: result.role, groups: result.groups, 
+                            invitation: true}
+
                         sender = sessionStorage.getItem("email");
-                        data2 = {sender: sender, recipient: user.email, base_url: base_url}
                         $http.post('/api/admin/users', data1).success(function(response, status, headers, config) {
                             if (response.success) {
                                 reload();
                                 // now we should be able to send an invite
+                                var notify_when = [];
+                                if (result.opts.accept)
+                                    notify_when.push('accept');
+                                if (result.opts.decline)
+                                    notify_when.push('decline');
+                                data2 = {sender: sender, recipient: result.email, base_url: base_url, notify_when: notify_when}
                                 $http.post('/api/admin/invites', data2).success(function(response, status, headers, config) {
                                     if (response.success) {
                                         reload();
