@@ -462,7 +462,9 @@ def api_scan(minion_scan_id):
 @app.route("/api/plan/<minion_plan_name>")
 @requires_session
 def api_plan(minion_plan_name):
-    r = requests.get(config['backend-api']['url'] + "/plans/" + minion_plan_name)
+    r = requests.get(
+        config['backend-api']['url'] + "/plans/" + minion_plan_name,
+        params={"email": session['email']})
     plan = r.json()['plan']
     return jsonify(success=True,data=plan)
 
