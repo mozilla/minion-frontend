@@ -1,20 +1,6 @@
-<div class="container" ng-controller="AdminGroupController">
-
-  <ul class="nav nav-tabs">
-    <li>
-      <a ng-href="#!/admin/users">Users</a>
-    </li>
-    <li>
-      <a ng-href="#!/admin/sites">Sites</a>
-    </li>
-    <li>
-      <a ng-href="#!/admin/groups">Groups</a>
-    </li>
-    <li class="active">
-      <a ng-href="#!/admin/groups/{{group.name}}">Group Editor</a>
-    </li>
-  </ul>
-
+<ng-include src="'static/partials/admin/nav.html'"></ng-include>
+<ng-controller="AdminGroupController">
+  
   <div class="row">
     <div class="span6">
       <h2>Group</h2>
@@ -70,5 +56,4 @@
       </table>
     </div>
   </div>
-
-</div>
+</ng-controller>

@@ -35,6 +35,9 @@ minionAdminSitesModule.controller("AdminCreateSiteController", function ($scope,
 });
 
 minionAdminSitesModule.controller("AdminSitesController", function($scope, $routeParams, $http, $dialog) {
+
+    $scope.navItems = app.navContext('admin');
+
     var reload = function() {
         $http.get('/api/admin/sites')
             .success(function(response, status, headers, config) {

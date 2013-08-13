@@ -4,7 +4,26 @@
 
 var app = angular.module("MinionApp", ["ui.bootstrap", "minionAdminPlansModule", "minionAdminSitesModule", "minionAdminPluginsModule"]);
 
-app.controller("MinionController", function($rootScope, $scope, $http, $location) {
+
+// Return an array of controller sections, dependant on the 
+// `section` passed. Useful for easily compiling a navigation.
+app.navContext = function(section) {
+    return _.filter(app.navItems, function(route, url) {
+        return route.section === section;
+    });
+}
+
+app.controller("MinionController", function($rootScope, $route, $scope, $http, $location) {
+
+    // $route is useful in the scope for knowing "active" tabs, for example.
+    $rootScope.$route = $route;
+
+    // Compile all routes available to the application
+    app.navItems = _.map($route.routes, function(route, url) {
+        route.href = url;
+        return route;
+    });
+
     if (sessionStorage.getItem("email")) {
         $rootScope.session = {email: sessionStorage.getItem("email"), role: sessionStorage.getItem("role")};
     } else {
@@ -87,13 +106,56 @@ app.config(function($routeProvider, $locationProvider) {
         .when("/history", { templateUrl: "static/partials/history.html", controller: "HistoryController" })
         .when("/login", { templateUrl: "static/partials/login.html", controller: "LoginController" })
         // Administration
-        .when("/admin/sites", { templateUrl: "static/partials/admin/sites.html", controller: "AdminSitesController" })
-        .when("/admin/users", { templateUrl: "static/partials/admin/users.html", controller: "AdminUsersController" })
-        .when("/admin/groups", { templateUrl: "static/partials/admin/groups.html", controller: "AdminGroupsController" })
-        .when("/admin/groups/:groupName", { templateUrl: "static/partials/admin/group.html", controller: "AdminGroupController" })
-        .when("/admin/plugins", { templateUrl: "static/partials/admin/plugins/plugins.html", controller: "AdminPluginsController" })
-        .when("/admin/plans", { templateUrl: "static/partials/admin/plans/plans.html", controller: "AdminPlansController" })
-        .when("/admin/invites", { templateUrl: "static/partials/admin/invites.html", controller: "AdminInvitesController" });
+        .when("/admin/sites", {
+            section: "admin",
+            templateUrl: "static/partials/admin/sites.html",
+            controller: "AdminSitesController",
+            label: "Sites",
+            slug: "sites"
+        })
+        .when("/admin/users", {
+            section: "admin",
+            templateUrl: "static/partials/admin/users.html",
+            controller: "AdminUsersController",
+            label: "Users",
+            slug: "users"
+        })
+        .when("/admin/groups", {
+            section: "admin",
+            templateUrl: "static/partials/admin/groups.html",
+            controller: "AdminGroupsController",
+            label: "Groups",
+            slug: "groups"
+        })
+        // Sub nav of groups.
+        .when("/admin/groups/:groupName", {
+            section: "admin:groups",
+            templateUrl: "static/partials/admin/group.html",
+            controller: "AdminGroupController",
+            label: "Group Editor",
+            slug: "group"
+        })
+        .when("/admin/plugins", {
+            section: "admin",
+            templateUrl: "static/partials/admin/plugins/plugins.html",
+            controller: "AdminPluginsController",
+            label: "Plugins",
+            slug: "plugins"
+        })
+        .when("/admin/plans", {
+            section: "admin",
+            templateUrl: "static/partials/admin/plans/plans.html",
+            controller: "AdminPlansController",
+            label: "Plans",
+            slug: "plans"
+        })
+        .when("/admin/invites", {
+            section: "admin",
+            templateUrl: "static/partials/admin/invites.html",
+            controller: "AdminInvitesController",
+            label: "Invites",
+            slug: "invites"
+        });
 });
 
 app.run(function($rootScope, $http, $location) {
