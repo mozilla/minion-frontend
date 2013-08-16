@@ -33,6 +33,8 @@ minionAdminSitesModule.controller("AdminEditSiteController", function ($scope, d
 
     So unless both e and E are set to enable, we show. Otherwise, we hide.
    */
+    if (site.verification == null)
+        site.verification = {'enabled': false, 'value': null}
     $scope.prev_enabled_val = site.verification.enabled;
     $scope.plans = plans;
     $scope.cancel = function () {
