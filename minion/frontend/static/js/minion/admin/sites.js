@@ -109,7 +109,8 @@ minionAdminSitesModule.controller("AdminSitesController", function($scope, $rout
                 });
                 d.open().then(function(site) {
                     if(site) {
-                        $http.post('/api/admin/sites', {url: site.url, plans: site.plans}).success(function(response) {
+                        var verify = {'enabled': site.verification.enabled, 'value': null};
+                        $http.post('/api/admin/sites', {url: site.url, plans: site.plans, verification: verify}).success(function(response) {
                             if (response.success) {
                                 reload();
                             }
