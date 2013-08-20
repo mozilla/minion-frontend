@@ -30,7 +30,7 @@ app.controller("AdminCreateUserController", function ($scope, dialog, users, gro
     };
 
     $scope.submit = function(user) {
-        if (_.find(users, function (u) { return u.email === user.email })) {
+        if (_.find(users, function (u) { return u.email === user.email; })) {
             $scope.error = "The user already exists.";
         } else {
             dialog.close(user);
@@ -42,6 +42,9 @@ app.controller("AdminCreateUserController", function ($scope, dialog, users, gro
 // users.html main controller
 // Dispatch dialog to use other controllers on action
 app.controller("AdminUsersController", function($scope, $http, $dialog) {
+
+    $scope.navItems = app.navContext('admin');
+
     var reload = function() {
         $http.get('/api/admin/users')
             .success(function(response, status, headers, config) {
@@ -122,6 +125,8 @@ app.controller("AdminCreateInviteController", function($scope, dialog, users, gr
         'accept': true,
         'decline': true
     };
+    $scope.navItems = app.navContext('admin');
+
     // todo: do cleanup!
     $scope.cancel = function() {
         dialog.close(null);
@@ -136,6 +141,9 @@ app.controller("AdminCreateInviteController", function($scope, dialog, users, gr
 
 // We don't want to refresh the page to see default orderBy to take place
 app.controller("AdminInvitesController", function($scope, $http, $dialog, $filter, $location) {
+
+    $scope.navItems = app.navContext('admin');
+
     var base_url = $location.absUrl().split("#!")[0] + '#!/invite';
     var reload = function() {
         $http.get('/api/admin/invites')
@@ -217,6 +225,9 @@ app.controller("AdminAddGroupController", function ($scope, dialog, group) {
 });
 
 app.controller("AdminGroupsController", function($scope, $routeParams, $http, $location, $dialog) {
+
+    $scope.navItems = app.navContext('admin');
+
     var reload = function () {
         $http.get('/api/admin/groups')
             .success(function(response, status, headers, config) {
@@ -291,6 +302,19 @@ app.controller("AdminAddSiteController", function ($scope, dialog, sites) {
 });
 
 app.controller("AdminGroupController", function($scope, $routeParams, $http, $location, $dialog) {
+
+    $scope.navItems = app.navContext('admin');
+
+    // TODO: This is incredibly hackish outside of what exists. We may
+    // need a better pattern for sub navigation.
+    var groupRoute = _.first(app.navContext('admin:groups'));
+    groupRoute.href = groupRoute.href.replace(
+                        /:groupName/, $routeParams.groupName);
+
+    // Insert the group nav item after the Groups parent nav.
+    var insertAt = _.indexOf(_.pluck($scope.navItems, 'slug'), 'groups') + 1;
+    $scope.navItems.splice(insertAt, 0, groupRoute);
+
     var reload = function () {
         $http.get('/api/admin/groups/' + $routeParams.groupName).success(function(response) {
             $scope.group = response.data;

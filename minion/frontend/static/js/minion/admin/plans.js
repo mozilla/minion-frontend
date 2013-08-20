@@ -97,6 +97,9 @@ minionAdminPlansModule.controller("AdminEditPlanController", function ($scope, d
 });
 
 minionAdminPlansModule.controller("AdminPlansController", function($scope, $routeParams, $http, $dialog) {
+
+    $scope.navItems = app.navContext('admin');
+
     var reload = function() {
         $http.get('/api/admin/plans').success(function(response) {
             $scope.plans = response.data;

@@ -5,6 +5,9 @@
 var minionAdminPluginsModule = angular.module('minionAdminPluginsModule', []);
 
 minionAdminPluginsModule.controller("AdminPluginsController", function($scope, $routeParams, $http) {
+
+    $scope.navItems = app.navContext('admin');
+
     var reload = function() {
         $http.get('/api/admin/plugins')
             .success(function(response, status, headers, config) {

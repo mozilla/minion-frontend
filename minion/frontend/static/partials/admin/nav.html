@@ -1,0 +1,5 @@
+<ul class='nav nav-tabs'>
+    <li ng-repeat="nav in navItems" ng-class="{active: $route.current.slug == nav.slug}">
+        <a ng-href="#!{{nav.href}}">{{nav.label}}</a>
+    </li>
+</ul>
