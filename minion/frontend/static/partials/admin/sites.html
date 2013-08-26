@@ -23,7 +23,7 @@
         <tr ng-repeat="site in sites">
           <td>{{site.url}}</td>
           <td>{{site.created | scan_datetime}}</td>
-          <td>No</td>
+          <td>{{site.verification.enabled | boolean: "Yes":"No":"No"}}</td>
           <td>
             <ul>
               <li ng-repeat="plan in site.plans">{{plan}}</li>

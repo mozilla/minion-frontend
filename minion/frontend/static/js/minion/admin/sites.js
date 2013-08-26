@@ -5,16 +5,48 @@
 var minionAdminSitesModule = angular.module('minionAdminSitesModule', []);
 
 minionAdminSitesModule.controller("AdminEditSiteController", function ($scope, dialog, site, plans) {
+    
     $scope.site = site;
     $scope.plans = plans;
+    /*
+    First, understand how the backend issues the verificiation code.
+    On every POST request to update the verification option, the backend
+    re-issues a new verification value. This is not really a security check
+    but we do this to simplify the logic (too many if-else makes
+    the code messy).
 
+    So, if the previous enable value is false, and if the user
+    wants to re-enable the verification option, a typical ng-show will
+    show the verification code. But if the user were to submit such
+    request to re-enable verification, there will be a new code.
+
+    We keep the user from seeing this cold value by doing a truth-table check.
+    In the template we only do ng-show="prevous value && current_val" as 
+    a way to short-circuit toggle. The truth table would be like
+        |  e     |  d
+    -----------------------
+     E  | show   |  don't
+    -----------------------
+     D   | don't  |  don't
+
+    e,d are user action and E and D are the previous value (from db).
+
+    So unless both e and E are set to enable, we show. Otherwise, we hide.
+   */
+    if (site.verification == null)
+        site.verification = {'enabled': false, 'value': null}
+    $scope.prev_enabled_val = site.verification.enabled;
+    $scope.plans = plans;
     $scope.cancel = function () {
         dialog.close(null);
     };
 
     $scope.submit = function(site) {
-        dialog.close(site);
-    };
+        if (site.verification.enabled != $scope.prev_enabled_val) {
+            dialog.close(site);
+        } else {
+            dialog.close(null);
+    }};
 });
 
 minionAdminSitesModule.controller("AdminCreateSiteController", function ($scope, dialog, plans, sites) {
@@ -56,7 +88,11 @@ minionAdminSitesModule.controller("AdminSitesController", function($scope, $rout
                 });
                 d.open().then(function(site) {
                     if (site) {
-                        $http.post('/api/admin/sites/' + site.id, {plans: site.plans}).success(function(response) {
+                        var verify = site.verification;
+                        $http.post('/api/admin/sites/' + site.id, 
+                            {plans: site.plans, 
+                             verification: {'enabled': verify.enabled, 'value': verify.value}}
+                        ).success(function(response) {
                             reload();
                         });
                     }
@@ -78,7 +114,8 @@ minionAdminSitesModule.controller("AdminSitesController", function($scope, $rout
                 });
                 d.open().then(function(site) {
                     if(site) {
-                        $http.post('/api/admin/sites', {url: site.url, plans: site.plans}).success(function(response) {
+                        var verify = {'enabled': site.verification.enabled, 'value': null};
+                        $http.post('/api/admin/sites', {url: site.url, plans: site.plans, verification: verify}).success(function(response) {
                             if (response.success) {
                                 reload();
                             }

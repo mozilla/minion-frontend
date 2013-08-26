@@ -20,8 +20,12 @@
       <div class="control-group">
         <div class="controls">
           <label class="checkbox">
-            <input type="checkbox" ng-model="site.ownershipVerification">Requires Ownership Verification
+            <input type="checkbox" ng-model="site.verification.enabled">Requires Ownership Verification
           </label>
+          <label ng-show="prev_enabled_val && site.verification.enabled">
+            Verification code: 
+          </label>
+            <input ng-show="prev_enabled_val && site.verification.enabled" type="text" ng-model="site.verification.value">
         </div>
       </div>
 

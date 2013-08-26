@@ -473,3 +473,15 @@ app.filter('text', function () {
         return result;
     };
 });
+
+app.filter('boolean', function () {
+    return function(input, when_true, when_false, when_null) {
+        if (input && input == true) {
+            return when_true;
+        } else if (input == false) {
+            return when_false;
+        } else {
+            return when_null;
+        }
+    };
+});
