@@ -6,7 +6,7 @@
 
     <div class="container" ng-controller="HomeController">
 
-    <div ng-show="report.length == 0">
+    <div ng-show="report && report.length == 0">
       <h2>Welcome to Minion</h2>
       <p>You do not have any sites in Minion yet. This should become a nice landing page for new users.</p>
     </div>
@@ -25,8 +25,16 @@
       </li>
     </ul>
 
-      <h2>Sites & Scans</h2>
+    <div id="minion-loading-style" ng-show="isLoading"></div>
+    <div id="minion-loading-text-style" ng-show="isLoading">Loading data...</div>
 
+    <h2>Sites & Scans</h2>
+
+      <span class="pull-right">
+            Group view:
+            <select ng-model="group_name" ng-options="group.name for group in groups" ng-change="viewAsGroup()"></select>
+      </span>
+    
       <table class="table">
         <thead>
           <tr>

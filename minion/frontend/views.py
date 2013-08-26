@@ -87,11 +87,13 @@ def get_history_report(user=None):
         return None
     return j.get('report')
 
-def get_status_report(user=None):
+def get_status_report(user=None, group_name=None):
     params = {}
     if user is not None:
         params['user'] = user
-    r = requests.get(config['backend-api']['url'] + "/reports/status", params={'user': session['email']})
+        if group_name is not None:
+            params['group_name'] = group_name
+    r = requests.get(config['backend-api']['url'] + "/reports/status", params=params)
     r.raise_for_status()
     j = r.json()
     if not j.get('success'):
@@ -428,10 +430,19 @@ def api_history():
         return jsonify(success=False, data=None)
     return jsonify(success=True, data=report)
 
+@app.route("/api/profile")
+@requires_session
+def api_profile():
+    user = get_user(session['email'])
+    if not user:
+        return jsonify(success=Flase, data=None)
+    return jsonify(success=True, data=user)
+
 @app.route("/api/sites")
 @requires_session
 def api_sites():
-    report = get_status_report(user=session['email'])
+    group_name = request.args.get("group_name")
+    report = get_status_report(user=session['email'], group_name=group_name)
     if report is None:
         return jsonify(success=False, data=None)
     return jsonify(success=True, data=report)

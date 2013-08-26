@@ -91,9 +91,9 @@ app.controller("MinionController", function($rootScope, $route, $scope, $http, $
 app.config(function($routeProvider, $locationProvider) {
     $locationProvider.hashPrefix('!');
     $routeProvider
-        .when("/", { templateUrl: "static/partials/home.html", controller: "HomeController" })
+        .when("/", { templateUrl: "static/partials/home.html"})
         .when("/404", { templateUrl: "static/partials/404.html", controller: "404Controller" })
-        .when("/home/sites", { templateUrl: "static/partials/home.html", controller: "HomeController" })
+        .when("/home/sites", { templateUrl: "static/partials/home.html"})
         .when("/home/history", { templateUrl: "static/partials/history.html", controller: "HistoryController" })
         .when("/home/issues", { templateUrl: "static/partials/issues.html", controller: "IssuesController" })
         .when("/request", { templateUrl: "static/partials/request.html", controller: "RequestController" })
@@ -203,34 +203,98 @@ app.controller("404Controller", function($scope, $rootScope, $location) {
    // do nothing
 });
 
-app.controller("HomeController", function($scope, $http, $location, $timeout) {
-    var scheduleReload = function () {
+app.controller('HomeController', function($scope, $timeout, $http, $location) {
+    /*
+        In order to kill a timeout, we must save the promise ($timeout
+        returns a promise). We first get all the groups via calling
+        /api/profile to build a <select>.
+
+        We immediately trigger $scope.getAsGroup() to load data to get all 
+        the sites the user is a member of. This function invokes like this
+        state machine:
+
+        o->   .getAsGroup() ===> .getContent() --> $http.get(url)
+                     ^      ===> .reloadAsGroup()
+                     |___________            |
+                                 |           |
+                                 v           |
+           promise_g = $timeout(  , 2.5s)<----
+
+        The main point is that we pass .getAsGroup to timeout to
+        keep it driving the polling process over and over.
+        When we want to kill an in-process timeout, we simply
+        pass promise_g to $timeout.cancel method.
+
+    */
+    $scope.promise_g = 0;
+    $scope.group_name = "";
+    // this is required to prevent the empty option from disappearing
+    // as we select an option from the drowpdown.
+    $scope.groups = [{"name": ""}]
+    $http.get("/api/profile").success(function(response, status, headers, config) {
+        if (response.success) {
+            for (index in response.data["groups"])
+                $scope.groups.push({"name": response.data["groups"][index]})
+        }
+
+    });
+
+    // Refactored out the API call.
+    // When a user chooses a group from the <select> list,
+    // group_name becomes a hash and we can append the name
+    // to the query string.
+    $scope.getContent = function() {
+        var api_url = "/api/sites"
+        if ($scope.group_name && $scope.group_name.name != "") {
+            api_url = api_url + "?group_name=" + $scope.group_name.name;
+        }
+        $http.get(api_url).success(function(response, status, headers, config){
+            _.each(response.data, function (r, idx) {
+                r.label = r.target;
+                if (idx > 0) {
+                    if (r.target === response.data[idx-1].target) {
+                        r.label = "";
+                    }
+                }
+                // At this point we have the data and we can remove
+                // the "Loading data..." message.
+                $scope.isLoading = false;
+                $scope.report = response.data;
+            });
+        // In case the call failed, we make sure isLoading is false
+        $scope.isLoading = false;
+        });
+    };
+    // A group could be an actual group (with names)
+    // or ALL groups (with is "" from the <select>.
+    // Since there is a 2.5 second wait on calling
+    // $scope.getAsGroup, we place a "loading data..."
+    // notice on the page.
+    $scope.viewAsGroup = function() {
+        $scope.isLoading = true;
+        $timeout.cancel($scope.promise_g);
+        $scope.reloadAsGroup();
     };
 
-    $scope.reload = function () {
+    $scope.getAsGroup = function() {
         if ($location.path() == "/home/sites" || $location.path() == "/") {
-            $http.get('/api/sites').success(function(response, status, headers, config){
-                _.each(response.data, function (r, idx) {
-                    r.label = r.target;
-                    if (idx > 0) {
-                        if (r.target === response.data[idx-1].target) {
-                            r.label = "";
-                        }
-                    }
-                });
-                $scope.report = response.data;
-                if ($scope.report && $scope.report.length > 0) {
-                    $timeout(function () {
-                        $scope.reload();
-                    }, 2500);
-                }
-            });
-    }};
+            $scope.getContent();
+            $scope.reloadAsGroup();
+        } else {
+            $timeout.cancel($scope.promise_g);    // in case something left over
+        };
+    };
 
-    $scope.$on('$viewContentLoaded', function() {
-        $scope.reload();
-    });
+    // same the promose to kill it when we navgiate away
+    $scope.reloadAsGroup = function() {
+        $scope.promise_g = $timeout($scope.getAsGroup, 2500);
+    };
+
+    // Call this once to trigger polling
+    $scope.getAsGroup();
+
 });
+
 
 app.controller("IssuesController", function($scope, $http, $location, $timeout) {
     $scope.filterName = 'all';
