@@ -456,11 +456,7 @@ app.filter('moment', function () {
 
 app.filter('scan_datetime', function () {
     return function(input, options) {
-        if (input > 0) {
-            return moment.unix(input).format("YYYY-MM-DD HH:mm");
-        } else {
-            return "---";
-        }
+        return (input > 0) ? moment.unix(input).format("YYYY-MM-DD HH:mm") : undefined;
     };
 });
 
