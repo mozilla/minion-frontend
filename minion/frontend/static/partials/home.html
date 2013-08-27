@@ -25,16 +25,12 @@
       </li>
     </ul>
 
-    <div id="minion-loading-style" ng-show="isLoading"></div>
-    <div id="minion-loading-text-style" ng-show="isLoading">Loading data...</div>
+    <h2>Sites & Scans
+      <div class="pull-right" ng-show="groups.length > 1">
+        <select ng-model="group" ng-options="group for group in groups" ng-change="reloadSites()"></select>
+      </div>
+    </h2>
 
-    <h2>Sites & Scans</h2>
-
-      <span class="pull-right">
-            Group view:
-            <select ng-model="group_name" ng-options="group.name for group in groups" ng-change="viewAsGroup()"></select>
-      </span>
-    
       <table class="table">
         <thead>
           <tr>

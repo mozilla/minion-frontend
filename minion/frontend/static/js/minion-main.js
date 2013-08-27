@@ -5,7 +5,7 @@
 var app = angular.module("MinionApp", ["ui.bootstrap", "minionAdminPlansModule", "minionAdminSitesModule", "minionAdminPluginsModule"]);
 
 
-// Return an array of controller sections, dependant on the 
+// Return an array of controller sections, dependant on the
 // `section` passed. Useful for easily compiling a navigation.
 app.navContext = function(section) {
     return _.filter(app.navItems, function(route, url) {
@@ -209,7 +209,7 @@ app.controller('HomeController', function($scope, $timeout, $http, $location) {
         returns a promise). We first get all the groups via calling
         /api/profile to build a <select>.
 
-        We immediately trigger $scope.getAsGroup() to load data to get all 
+        We immediately trigger $scope.getAsGroup() to load data to get all
         the sites the user is a member of. This function invokes like this
         state machine:
 
@@ -226,27 +226,16 @@ app.controller('HomeController', function($scope, $timeout, $http, $location) {
         pass promise_g to $timeout.cancel method.
 
     */
-    $scope.promise_g = 0;
-    $scope.group_name = "";
-    // this is required to prevent the empty option from disappearing
-    // as we select an option from the drowpdown.
-    $scope.groups = [{"name": ""}]
-    $http.get("/api/profile").success(function(response, status, headers, config) {
-        if (response.success) {
-            for (index in response.data["groups"])
-                $scope.groups.push({"name": response.data["groups"][index]})
-        }
 
-    });
+    var reloadPromise = null;
 
-    // Refactored out the API call.
-    // When a user chooses a group from the <select> list,
-    // group_name becomes a hash and we can append the name
-    // to the query string.
+    $scope.group = null;
+    $scope.groups = [];
+
     $scope.getContent = function() {
-        var api_url = "/api/sites"
-        if ($scope.group_name && $scope.group_name.name != "") {
-            api_url = api_url + "?group_name=" + $scope.group_name.name;
+        var api_url = "/api/sites";
+        if ($scope.group) {
+            api_url = api_url + "?group_name=" + $scope.group;
         }
         $http.get(api_url).success(function(response, status, headers, config){
             _.each(response.data, function (r, idx) {
@@ -256,43 +245,28 @@ app.controller('HomeController', function($scope, $timeout, $http, $location) {
                         r.label = "";
                     }
                 }
-                // At this point we have the data and we can remove
-                // the "Loading data..." message.
-                $scope.isLoading = false;
-                $scope.report = response.data;
             });
-        // In case the call failed, we make sure isLoading is false
-        $scope.isLoading = false;
+            $scope.report = response.data;
         });
-    };
-    // A group could be an actual group (with names)
-    // or ALL groups (with is "" from the <select>.
-    // Since there is a 2.5 second wait on calling
-    // $scope.getAsGroup, we place a "loading data..."
-    // notice on the page.
-    $scope.viewAsGroup = function() {
-        $scope.isLoading = true;
-        $timeout.cancel($scope.promise_g);
-        $scope.reloadAsGroup();
+        // Schedule the next reload
+        reloadPromise = $timeout($scope.reloadSites, 2000);
     };
 
-    $scope.getAsGroup = function() {
+    $scope.reloadSites = function() {
+        $timeout.cancel(reloadPromise);
         if ($location.path() == "/home/sites" || $location.path() == "/") {
             $scope.getContent();
-            $scope.reloadAsGroup();
-        } else {
-            $timeout.cancel($scope.promise_g);    // in case something left over
-        };
+        }
     };
 
-    // same the promose to kill it when we navgiate away
-    $scope.reloadAsGroup = function() {
-        $scope.promise_g = $timeout($scope.getAsGroup, 2500);
-    };
-
-    // Call this once to trigger polling
-    $scope.getAsGroup();
-
+    $http.get("/api/profile").success(function(response) {
+        if (response.success) {
+            $scope.groups = response.data.groups;
+            $scope.group = $scope.groups[0];
+            // Call this once to trigger polling
+            $scope.reloadSites();
+        }
+    });
 });
 
 
@@ -310,7 +284,7 @@ app.controller("IssuesController", function($scope, $http, $location, $timeout) 
 
 app.controller("InviteController", function ($scope, $rootScope, $routeParams, $http, $location) {
     $scope.inviteId = $routeParams.inviteId;
- 
+
     $http.get('/api/invites/' + $scope.inviteId)
         .success(function(response, status, headers, config) {
             if (!response.success) {
@@ -321,16 +295,16 @@ app.controller("InviteController", function ($scope, $rootScope, $routeParams, $
                 accepted_on = response.data['accepted_on'];
                 expire_on = response.data['expire_on'];
                 invite_status = response.data['status'];
-                if (accepted_on || 
+                if (accepted_on ||
                      (invite_status == 'expired' || invite_status == 'used')) {
                     $location.path("/login");
-                } else { 
+                } else {
                     timenow = Math.round(new Date().getTime()/1000);
                     if ((expire_on - timenow) < 0) {
                         $scope.invite_state_msg = "Your invitation is expired."
                         $scope.invite_state = "expired";
                     } else {
-                        $scope.invite_state_msg = "Your invitation will expire on " + 
+                        $scope.invite_state_msg = "Your invitation will expire on " +
                                 moment.unix(expire_on).format("YYYY-MM-DD HH:mm");
                         $scope.invite_state = "available";
                     }
@@ -340,9 +314,9 @@ app.controller("InviteController", function ($scope, $rootScope, $routeParams, $
         $http.put('/api/invites/' + $scope.inviteId, data)
             .success(function(response, status, headers, config) {
                 $rootScope.backToLogin();
-            
+
     })};
-}); 
+});
 
 app.controller("HistoryController", function($scope, $http, $location, $timeout) {
     $scope.openScan = function (scanId) {
@@ -461,12 +435,12 @@ app.filter('classify_issue', function() {
         cwe_id = input['cwe_id']
         wasc_id = input['wasc_id']
         if (cwe_id && cwe_id.length > 0) {
-            output1 = '<a href="' + input['cwe_url'] 
+            output1 = '<a href="' + input['cwe_url']
                 + '">' + 'CWE ' + cwe_id + '</a>'
         }
-        
+
         if (wasc_id && wasc_id.length > 0) {
-            output2 = '<a href="' + input['wasc_url'] 
+            output2 = '<a href="' + input['wasc_url']
                 + '">' + 'WASC ' + wasc_id + '</a>'
         }
 
