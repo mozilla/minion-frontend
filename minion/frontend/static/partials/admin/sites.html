@@ -7,7 +7,7 @@
               <option value="url"> URL (ascending)</option>
               <option value="-url">URL (descending)</option>
       </select>  <a class="btn btn-small" ng-click="createSite()">Add...</a></span>
-  
+
   <div class="row">
     <div class="span12">
       <table class="table table-bordered">
@@ -15,7 +15,6 @@
           <tr>
             <th>URL</th>
             <th>Created</th>
-            <th>Ownership Verification</th>
             <th>Plans</th>
             <th>Actions</th>
           </tr>
@@ -23,7 +22,6 @@
         <tr ng-repeat="site in sites">
           <td>{{site.url}}</td>
           <td>{{site.created | scan_datetime}}</td>
-          <td>{{site.verification.enabled | boolean: "Yes":"No":"No"}}</td>
           <td>
             <ul>
               <li ng-repeat="plan in site.plans">{{plan}}</li>
