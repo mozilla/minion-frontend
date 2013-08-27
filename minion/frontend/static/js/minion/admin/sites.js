@@ -5,7 +5,7 @@
 var minionAdminSitesModule = angular.module('minionAdminSitesModule', []);
 
 minionAdminSitesModule.controller("AdminEditSiteController", function ($scope, dialog, site, plans) {
-    
+
     $scope.site = site;
     $scope.plans = plans;
     /*
@@ -21,7 +21,7 @@ minionAdminSitesModule.controller("AdminEditSiteController", function ($scope, d
     request to re-enable verification, there will be a new code.
 
     We keep the user from seeing this cold value by doing a truth-table check.
-    In the template we only do ng-show="prevous value && current_val" as 
+    In the template we only do ng-show="prevous value && current_val" as
     a way to short-circuit toggle. The truth table would be like
         |  e     |  d
     -----------------------
@@ -50,7 +50,7 @@ minionAdminSitesModule.controller("AdminEditSiteController", function ($scope, d
 });
 
 minionAdminSitesModule.controller("AdminCreateSiteController", function ($scope, dialog, plans, sites) {
-    $scope.site = {url:"",plans:[]};
+    $scope.site = {url:"",plans:[],verification:{enabled:false,value:null}};
     $scope.plans = plans;
 
     $scope.cancel = function () {
@@ -89,8 +89,8 @@ minionAdminSitesModule.controller("AdminSitesController", function($scope, $rout
                 d.open().then(function(site) {
                     if (site) {
                         var verify = site.verification;
-                        $http.post('/api/admin/sites/' + site.id, 
-                            {plans: site.plans, 
+                        $http.post('/api/admin/sites/' + site.id,
+                            {plans: site.plans,
                              verification: {'enabled': verify.enabled, 'value': verify.value}}
                         ).success(function(response) {
                             reload();
