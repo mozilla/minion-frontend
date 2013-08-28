@@ -11,7 +11,7 @@ app.navContext = function(section) {
     return _.filter(app.navItems, function(route, url) {
         return route.section === section;
     });
-}
+};
 
 app.controller("MinionController", function($rootScope, $route, $scope, $http, $location) {
 
@@ -33,7 +33,7 @@ app.controller("MinionController", function($rootScope, $route, $scope, $http, $
     navigator.id.watch({
         loggedInUser: sessionStorage.getItem("email"),
     onlogin: function(assertion) {
-            data = {assertion: assertion, invite_id: $rootScope.inviteId}
+            var data = {assertion: assertion, invite_id: $rootScope.inviteId};
             $http.post('/api/login', data)
                 .success(function(response, status, headers, config) {
                     if (response.success) {
@@ -59,7 +59,7 @@ app.controller("MinionController", function($rootScope, $route, $scope, $http, $
         sessionStorage.removeItem("email");
         sessionStorage.removeItem("role");
         navigator.id.logout();
-        $http.get('/api/logout')
+        $http.get('/api/logout');
         $location.path("/login").replace();
     };
 
@@ -162,7 +162,7 @@ app.run(function($rootScope, $http, $location) {
     $rootScope.backToLogin = function() {
         $rootScope.session = null;
         $location.path("/login");
-    }
+    };
     $rootScope.signIn = function(inviteid) {
         if (inviteid) {
             $rootScope.inviteId = inviteid;
@@ -171,10 +171,10 @@ app.run(function($rootScope, $http, $location) {
             $rootScope.inviteId = null;
             navigator.id.request();
         }
-    }
+    };
     $rootScope.$on( "$routeChangeStart", function(event, next, current) {
         // make  /invites/:inviteId into a whitelist
-        has_invite = $location.url().substring().split('/')[1] == "invite"
+        var has_invite = $location.url().substring().split('/')[1] == "invite";
         if (!has_invite && !$rootScope.session) {
             if (next.$$route.templateUrl !== "static/partials/login.html" ) {
                 $location.path("/login");
@@ -288,34 +288,35 @@ app.controller("InviteController", function ($scope, $rootScope, $routeParams, $
     $http.get('/api/invites/' + $scope.inviteId)
         .success(function(response, status, headers, config) {
             if (!response.success) {
-                $scope.invite_state_msg = "Your invitation link is invalid."
+                $scope.invite_state_msg = "Your invitation link is invalid.";
                 $scope.invite_state = "invalid";
             } else {
-                sent_on = response.data['sent_on'];
-                accepted_on = response.data['accepted_on'];
-                expire_on = response.data['expire_on'];
-                invite_status = response.data['status'];
+                var sent_on = response.data['sent_on'];
+                var accepted_on = response.data['accepted_on'];
+                var expire_on = response.data['expire_on'];
+                var invite_status = response.data['status'];
                 if (accepted_on ||
                      (invite_status == 'expired' || invite_status == 'used')) {
                     $location.path("/login");
                 } else {
-                    timenow = Math.round(new Date().getTime()/1000);
+                    var timenow = Math.round(new Date().getTime()/1000);
                     if ((expire_on - timenow) < 0) {
-                        $scope.invite_state_msg = "Your invitation is expired."
+                        $scope.invite_state_msg = "Your invitation is expired.";
                         $scope.invite_state = "expired";
                     } else {
                         $scope.invite_state_msg = "Your invitation will expire on " +
                                 moment.unix(expire_on).format("YYYY-MM-DD HH:mm");
                         $scope.invite_state = "available";
                     }
-               }}});
+                }
+            }
+        });
     $scope.declineInvite = function() {
-        data = {action: 'decline'}
-        $http.put('/api/invites/' + $scope.inviteId, data)
-            .success(function(response, status, headers, config) {
-                $rootScope.backToLogin();
-
-    })};
+        var data = {action: 'decline'};
+        $http.put('/api/invites/' + $scope.inviteId, data).success(function() {
+            $rootScope.backToLogin();
+        });
+    };
 });
 
 app.controller("HistoryController", function($scope, $http, $location, $timeout) {
@@ -336,20 +337,20 @@ app.controller("HistoryController", function($scope, $http, $location, $timeout)
 
 app.controller("RawController", function ($scope, $routeParams, $http, $location) {
     $scope.$on('$viewContentLoaded', function() {
-        $http.get('/api/scan/' + $routeParams.scanId)
-            .success(function(response, status, headers, config) {
-                if (response.success) {
-                    $scope.scan = response.data;
-                    $scope.formatted_scan = JSON.stringify(response.data, null, 4);
-                } else {
-                    $location.path('/404');
-            }});
+        $http.get('/api/scan/' + $routeParams.scanId).success(function(response) {
+            if (response.success) {
+                $scope.scan = response.data;
+                $scope.formatted_scan = JSON.stringify(response.data, null, 4);
+            } else {
+                $location.path('/404');
+            }
+        });
     });
 });
 
 app.controller("ScanController", function($scope, $routeParams, $http, $location) {
     $scope.$on('$viewContentLoaded', function() {
-        $http.get('/api/scan/' + $routeParams.scanId).success(function(response, status, headers, config) {
+        $http.get('/api/scan/' + $routeParams.scanId).success(function(response) {
             if (response.success) {
                 var scan = response.data;
                 var issues = [];
@@ -382,23 +383,25 @@ app.controller("ScanController", function($scope, $routeParams, $http, $location
             } else {
                 $location.path('/404');
             }
-        var failures = []
-        _.each(scan.sessions, function (session, idx) {
-        if (session.failure) {
-            failures.push({session_idx: idx, plugin: session.plugin, failure: session.failure});
-        }
-        });
+            var failures = [];
+            _.each(scan.sessions, function (session, idx) {
+                if (session.failure) {
+                    failures.push({session_idx: idx,
+                                   plugin: session.plugin,
+                                   failure: session.failure});
+                }
+            });
             $scope.scan = scan;
             $scope.issues = issues;
             $scope.issueCounts = issueCounts;
-        $scope.failures = failures;
+            $scope.failures = failures;
         });
     });
 });
 
 app.controller("PlanController", function($scope, $routeParams, $http, $location) {
     $scope.$on('$viewContentLoaded', function() {
-        $http.get('/api/plan/' + $routeParams.planName).success(function(response, status, headers, config) {
+        $http.get('/api/plan/' + $routeParams.planName).success(function(response) {
             $scope.plan = response.data;
         });
     });
@@ -427,25 +430,25 @@ app.controller("SessionFailureController", function($scope, $routeParams, $http)
 
 app.filter('classify_issue', function() {
     return function(input, options) {
-        if (!input)
-            return;
-        output1 = ''
-        output2 = ''
-        var template = '<a href="$url">$name $id</a>'
-        cwe_id = input['cwe_id']
-        wasc_id = input['wasc_id']
+        if (!input) {
+            return undefined;
+        }
+        var output1 = '';
+        var output2 = '';
+        var template = '<a href="$url">$name $id</a>';
+        var cwe_id = input['cwe_id'];
+        var wasc_id = input['wasc_id'];
         if (cwe_id && cwe_id.length > 0) {
             output1 = '<a href="' + input['cwe_url']
-                + '">' + 'CWE ' + cwe_id + '</a>'
+                + '">' + 'CWE ' + cwe_id + '</a>';
         }
 
         if (wasc_id && wasc_id.length > 0) {
             output2 = '<a href="' + input['wasc_url']
-                + '">' + 'WASC ' + wasc_id + '</a>'
+                + '">' + 'WASC ' + wasc_id + '</a>';
         }
 
         return output1 + ' ' + output2;
-
     };
 });
 app.filter('moment', function () {
@@ -462,22 +465,20 @@ app.filter('scan_datetime', function () {
 
 app.filter('scan_datetime_fromnow', function () {
     return function(input, options) {
-        if (input > 0)
-            return moment.unix(input).fromNow();
-        else
-            return;
+        return (input > 0) ? moment.unix(input).fromNow() : undefined;
     };
 });
 
 app.filter('moment_duration', function () {
     return function(input, timenow) {
+        var start, end;
         if (input >= 0) {
-            var start = moment(0);
-            var end = moment(input);
+            start = moment(0);
+            end = moment(input);
             return end.from(start, true);
         } else {
-            var start = moment(Math.abs(input));
-            var end = moment(timenow);
+            start = moment(Math.abs(input));
+            end = moment(timenow);
             return end.from(start, true);
         };
     };
