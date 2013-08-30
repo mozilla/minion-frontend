@@ -24,12 +24,7 @@
           </tr>
           <tr>
             <td><b>Started</b></td>
-            <td ng-show="scan.sessions[0].started">
-            {{scan.sessions[0].started | scan_datetime }} ({{scan.sessions[0].started | scan_datetime_fromnow }})
-            </td>
-            <td ng-show="!scan.sessions[0].started">
-            {{scan.sessions[0].started | scan_datetime }}
-            </td>
+            <td>{{(scan.started | scan_datetime) || "-"}} <span ng-show="scan.started">({{scan.started | scan_datetime_fromnow }})</span></td>
           </tr>
           <tr>
             <td><b>State</b></td>
