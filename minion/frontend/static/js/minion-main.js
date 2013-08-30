@@ -259,10 +259,20 @@ app.controller('HomeController', function($scope, $timeout, $http, $location) {
         }
     };
 
+    $scope.changeGroup = function() {
+        sessionStorage.setItem("HomeController.group", $scope.group);
+        $scope.reloadSites();
+    };
+
     $http.get("/api/profile").success(function(response) {
         if (response.success) {
             $scope.groups = response.data.groups;
-            $scope.group = $scope.groups[0];
+            var selectedGroup = sessionStorage.getItem("HomeController.group");
+            if (selectedGroup && $scope.groups.indexOf(selectedGroup) != -1) {
+                $scope.group = selectedGroup;
+            } else {
+                $scope.group = $scope.groups[0];
+            }
             // Call this once to trigger polling
             $scope.reloadSites();
         }

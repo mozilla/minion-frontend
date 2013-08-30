@@ -27,7 +27,7 @@
 
     <h2>Sites & Scans
       <div class="pull-right" ng-show="groups.length > 1">
-        <select ng-model="group" ng-options="group for group in groups" ng-change="reloadSites()"></select>
+        <select ng-model="group" ng-options="group for group in groups" ng-change="changeGroup()"></select>
       </div>
     </h2>
 
