@@ -435,7 +435,7 @@ def api_history():
 def api_profile():
     user = get_user(session['email'])
     if not user:
-        return jsonify(success=Flase, data=None)
+        return jsonify(success=False, data=None)
     return jsonify(success=True, data=user)
 
 @app.route("/api/sites")
@@ -493,7 +493,7 @@ def api_scan_start():
                       headers={'Content-Type': 'application/json'},
                       data=json.dumps({
                           'user': session['email'],
-                          'plan': plan, 
+                          'plan': plan,
                           'configuration': { 'target': target }}))
     r.raise_for_status()
     scan = r.json()['scan']
