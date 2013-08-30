@@ -484,6 +484,19 @@ app.filter('moment_duration', function () {
     };
 });
 
+app.filter('session_duration', function () {
+    return function(session, options) {
+        var start, end;
+        if (session.started && session.finished) {
+            start = moment(session.started);
+            end = moment(session.finished);
+            return end.from(start, true);
+        } else {
+            return undefined;
+        };
+    };
+});
+
 app.filter('link_bugs', function () {
     return function(input, options) {
         if (!input) {
