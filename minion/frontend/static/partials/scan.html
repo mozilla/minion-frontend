@@ -64,6 +64,11 @@
 
       <div class="span8">
 
+        <div class="alert alert-error" ng-show="scan.failure">
+          <p><strong>This scan failed unexpectedly:</strong> {{scan.failure.message}}</p>
+          <pre ng-show="scan.failure.exception">{{scan.failure.exception}}</pre>
+        </div>
+
         <h3>Found Issues</h3>
 
         <table class="table table-bordered">
