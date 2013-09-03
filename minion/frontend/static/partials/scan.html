@@ -69,7 +69,7 @@
           <pre ng-show="scan.failure.exception">{{scan.failure.exception}}</pre>
         </div>
 
-        <div class="alert alert-error" ng-show="scan.state=='ABORTED && scan.failure">
+        <div class="alert alert-error" ng-show="scan.state=='ABORTED' && scan.failure">
           <p><strong>This scan was aborted:</strong> {{scan.failure.message}}</p>
         </div>
 
