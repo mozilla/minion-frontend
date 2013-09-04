@@ -6,7 +6,7 @@
 
 <div class="container" ng-controller="IssueController">
 
-  <h2>Issue Details</h2>
+  <h2>Issue Details <span class="pull-right "><small>&larr; <a ng-href="#!/scan/{{scan.id}}">Scan Results</a></small></span></h2>
 
   <table class="table table-bordered">
     <tr>
@@ -50,7 +50,7 @@
     <p>The issue was found on the following URLs:</p>
 
     <table class="table table-borderless table-inner-bordered" ng-repeat="url in issue.URLs">
-    
+
     <tr>
     	<td><b>URL</b></td>
 	    <td><pre>{{url.URL}}</pre></td>
