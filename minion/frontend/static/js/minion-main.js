@@ -24,22 +24,22 @@ app.controller("MinionController", function($rootScope, $route, $scope, $http, $
         return route;
     });
 
-    if (sessionStorage.getItem("email")) {
-        $rootScope.session = {email: sessionStorage.getItem("email"), role: sessionStorage.getItem("role")};
+    if (localStorage.getItem("email")) {
+        $rootScope.session = {email: localStorage.getItem("email"), role: localStorage.getItem("role")};
     } else {
         $rootScope.session = null;
     }
     navigator.id.logout();
     navigator.id.watch({
-        loggedInUser: sessionStorage.getItem("email"),
+        loggedInUser: localStorage.getItem("email"),
     onlogin: function(assertion) {
             var data = {assertion: assertion, invite_id: $rootScope.inviteId};
             $http.post('/api/login', data)
                 .success(function(response, status, headers, config) {
                     if (response.success) {
                         $rootScope.session = response.data;
-                        sessionStorage.setItem("email", response.data.email);
-                        sessionStorage.setItem("role", response.data.role);
+                        localStorage.setItem("email", response.data.email);
+                        localStorage.setItem("role", response.data.role);
                         $location.path("/home/sites").replace();
                     } else {
                         $scope.logInStatus = response.reason;
@@ -49,15 +49,15 @@ app.controller("MinionController", function($rootScope, $route, $scope, $http, $
     },
     onlogout: function() {
             //$rootScope.session = null;
-            //sessionStorage.removeItem("email");
-            //sessionStorage.removeItem("role");
+            //localStorage.removeItem("email");
+            //localStorage.removeItem("role");
     }
     });
 
     $rootScope.signOut = function() {
         $rootScope.session = null;
-        sessionStorage.removeItem("email");
-        sessionStorage.removeItem("role");
+        localStorage.removeItem("email");
+        localStorage.removeItem("role");
         navigator.id.logout();
         $http.get('/api/logout');
         $location.path("/login").replace();
@@ -260,14 +260,14 @@ app.controller('HomeController', function($scope, $timeout, $http, $location) {
     };
 
     $scope.changeGroup = function() {
-        sessionStorage.setItem("HomeController.group", $scope.group);
+        localStorage.setItem("HomeController.group", $scope.group);
         $scope.reloadSites();
     };
 
     $http.get("/api/profile").success(function(response) {
         if (response.success) {
             $scope.groups = response.data.groups;
-            var selectedGroup = sessionStorage.getItem("HomeController.group");
+            var selectedGroup = localStorage.getItem("HomeController.group");
             if (selectedGroup && $scope.groups.indexOf(selectedGroup) != -1) {
                 $scope.group = selectedGroup;
             } else {

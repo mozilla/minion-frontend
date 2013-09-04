@@ -117,7 +117,7 @@ app.controller("AdminUsersController", function($scope, $http, $dialog) {
 
 // Controller for creating invites dialog
 app.controller("AdminCreateInviteController", function($scope, dialog, users, groups) {
-    $scope.sender = sessionStorage.getItem("email")
+    $scope.sender = localStorage.getItem("email")
     $scope.invite = {sender: $scope.sender, recipient: ""};
     $scope.groups = groups;
     $scope.roles = ["user", "administrator"];
@@ -164,10 +164,10 @@ app.controller("AdminInvitesController", function($scope, $http, $dialog, $filte
 
                 d.open().then(function(result) {
                     if(result) {
-                        data1 = {email: result.email, name: result.name, role: result.role, groups: result.groups, 
+                        data1 = {email: result.email, name: result.name, role: result.role, groups: result.groups,
                             invitation: true}
 
-                        sender = sessionStorage.getItem("email");
+                        sender = localStorage.getItem("email");
                         $http.post('/api/admin/users', data1).success(function(response, status, headers, config) {
                             if (response.success) {
                                 reload();
@@ -182,7 +182,7 @@ app.controller("AdminInvitesController", function($scope, $http, $dialog, $filte
                                     if (response.success) {
                                         reload();
                                     }
-                                }); 
+                                });
                             } else {
                                 // TODO Show an error dialog
                             }
@@ -209,7 +209,7 @@ app.controller("AdminInvitesController", function($scope, $http, $dialog, $filte
                 }
             });
     };
-    
+
     $scope.$on('$viewContentLoaded', function() {
         reload();
     });
