@@ -120,9 +120,11 @@ minionAdminPlansModule.controller("AdminPlansController", function($scope, $rout
                            plugins: function() { return $scope.plugins; } }
             });
             d.open().then(function(plan) {
-                $http.post('/api/admin/plans/' + plan.name, plan).success(function(response) {
-                    reload();
-                });
+                if (plan) {
+                    $http.post('/api/admin/plans/' + plan.name, plan).success(function(response) {
+                        reload();
+                    });
+                }
             });
         });
     };

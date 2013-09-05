@@ -5,6 +5,7 @@
 
 var minionAdminUsersModule = angular.module('minionAdminUsersModule', []);
 
+
 minionAdminUsersModule.controller("AdminEditUserController", function ($scope, dialog, user, groups) {
     $scope.user = user;
     $scope.groups = groups;
@@ -36,12 +37,10 @@ minionAdminUsersModule.controller("AdminCreateUserController", function ($scope,
             dialog.close(user);
         }
     };
-
 });
 
 
 minionAdminUsersModule.controller("AdminUsersController", function($scope, $http, $dialog) {
-
     $scope.navItems = app.navContext('admin');
 
     var reload = function() {
@@ -76,7 +75,7 @@ minionAdminUsersModule.controller("AdminUsersController", function($scope, $http
         var btns = [{result:false, label: 'Cancel'}, {result:true, label: 'OK', cssClass: 'btn-primary'}];
         $dialog.messageBox(title, msg, btns).open().then(function(result) {
             if (result) {
-                $http.delete('/api/admin/users/' + user.email).success(function(response, status, headers, config) {
+                $http.delete('/api/admin/users/' + user.email).success(function() {
                     reload();
                 });
             }
@@ -84,28 +83,28 @@ minionAdminUsersModule.controller("AdminUsersController", function($scope, $http
     };
 
     $scope.createUser = function () {
-        $http.get('/api/admin/groups')
-            .success(function(response, status, headers, config) {
-                var d = $dialog.dialog({
-                    templateUrl: "static/partials/admin/users/create-user.html?x=" + new Date().getTime(),
-                    controller: "AdminCreateUserController",
-                    resolve: { users: function() { return $scope.users; },
-                               groups: function() { return response.data; } }
-                });
-                d.open().then(function(user) {
-                    if(user) {
-                        data = {email: user.email, name: user.name, role: user.role, groups: user.groups};
-                        $http.post('/api/admin/users', data).success(function(response, status, headers, config) {
-                            if (response.success) {
-                                reload();
-                            } else {
-                                // TODO Show an error dialog
-                            }
-                        });
-                    }
-                });
+        $http.get('/api/admin/groups').success(function(response) {
+            var d = $dialog.dialog({
+                templateUrl: "static/partials/admin/users/create-user.html?x=" + new Date().getTime(),
+                controller: "AdminCreateUserController",
+                resolve: { users: function() { return $scope.users; },
+                           groups: function() { return response.data; } }
             });
+            d.open().then(function(user) {
+                if(user) {
+                    data = {email: user.email, name: user.name, role: user.role, groups: user.groups};
+                    $http.post('/api/admin/users', data).success(function(response) {
+                        if (response.success) {
+                            reload();
+                        } else {
+                            // TODO Show an error dialog
+                        }
+                    });
+                }
+            });
+        });
     };
+
     $scope.$on('$viewContentLoaded', function() {
         reload();
     });

@@ -2,7 +2,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
 var minionAdminSitesModule = angular.module('minionAdminSitesModule', []);
+
 
 minionAdminSitesModule.controller("AdminEditSiteController", function ($scope, dialog, site, plans) {
     $scope.site = site;
@@ -16,6 +18,7 @@ minionAdminSitesModule.controller("AdminEditSiteController", function ($scope, d
         dialog.close(site);
     };
 });
+
 
 minionAdminSitesModule.controller("AdminCreateSiteController", function ($scope, dialog, plans, sites) {
     $scope.site = {url:"",plans:[],verification:{enabled:false,value:null}};
@@ -34,8 +37,8 @@ minionAdminSitesModule.controller("AdminCreateSiteController", function ($scope,
     };
 });
 
-minionAdminSitesModule.controller("AdminSitesController", function($scope, $routeParams, $http, $dialog) {
 
+minionAdminSitesModule.controller("AdminSitesController", function($scope, $routeParams, $http, $dialog) {
     $scope.navItems = app.navContext('admin');
 
     var reload = function() {
