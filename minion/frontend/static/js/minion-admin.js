@@ -117,7 +117,7 @@ app.controller("AdminUsersController", function($scope, $http, $dialog) {
 
 // Controller for creating invites dialog
 app.controller("AdminCreateInviteController", function($scope, dialog, users, groups) {
-    $scope.sender = localStorage.getItem("email")
+    $scope.sender = localStorage.getItem("session.email");
     $scope.invite = {sender: $scope.sender, recipient: ""};
     $scope.groups = groups;
     $scope.roles = ["user", "administrator"];
@@ -167,7 +167,7 @@ app.controller("AdminInvitesController", function($scope, $http, $dialog, $filte
                         data1 = {email: result.email, name: result.name, role: result.role, groups: result.groups,
                             invitation: true}
 
-                        sender = localStorage.getItem("email");
+                        sender = localStorage.getItem("session.email");
                         $http.post('/api/admin/users', data1).success(function(response, status, headers, config) {
                             if (response.success) {
                                 reload();

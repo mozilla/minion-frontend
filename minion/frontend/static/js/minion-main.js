@@ -14,6 +14,39 @@ app.navContext = function(section) {
 };
 
 app.controller("MinionController", function($rootScope, $route, $scope, $http, $location) {
+    $rootScope.signOut = function() {
+        $http.get('/api/logout').success(function() {
+            $rootScope.session = null;
+            localStorage.removeItem("session.email");
+            localStorage.removeItem("session.role");
+            navigator.id.logout();
+            $location.path("/login").replace();
+        });
+    };
+
+    $rootScope.openScan = function (scanId) {
+        if (scanId) {
+            $location.path("/scan/" + scanId); // .replace();
+        }
+    };
+
+    $rootScope.openIssue = function (scanId, issueId) {
+        if (scanId) {
+            $location.path("/scan/" + scanId + "/issue/" + issueId);
+        }
+    };
+
+    $rootScope.startScan = function (target, plan) {
+        $http.put('/api/scan/start', {target: target, plan: plan }).success(function() {
+            //$scope.reload();
+        });
+    };
+
+    $rootScope.stopScan = function (scanId) {
+        $http.put('/api/scan/stop', {scanId: scanId}).success(function() {
+            //$scope.reload();
+        });
+    };
 
     // $route is useful in the scope for knowing "active" tabs, for example.
     $rootScope.$route = $route;
@@ -23,210 +56,272 @@ app.controller("MinionController", function($rootScope, $route, $scope, $http, $
         route.href = url;
         return route;
     });
+});
 
-    if (localStorage.getItem("email")) {
-        $rootScope.session = {email: localStorage.getItem("email"), role: localStorage.getItem("role")};
-    } else {
-        $rootScope.session = null;
-    }
-    navigator.id.logout();
-    navigator.id.watch({
-        loggedInUser: localStorage.getItem("email"),
-    onlogin: function(assertion) {
-            var data = {assertion: assertion, invite_id: $rootScope.inviteId};
-            $http.post('/api/login', data)
-                .success(function(response, status, headers, config) {
-                    if (response.success) {
-                        $rootScope.session = response.data;
-                        localStorage.setItem("email", response.data.email);
-                        localStorage.setItem("role", response.data.role);
-                        $location.path("/home/sites").replace();
-                    } else {
-                        $scope.logInStatus = response.reason;
-                        $location.path("/login").replace();
-                    }
-                });
-    },
-    onlogout: function() {
-            //$rootScope.session = null;
-            //localStorage.removeItem("email");
-            //localStorage.removeItem("role");
-    }
+app.config(function($routeProvider, $locationProvider, $httpProvider) {
+    // Configure routes. Every route has an access field that contains either public
+    // user or administrator. We use that in the $routeChangeStart event handler to
+    // check if the user has access to that page.
+
+    $locationProvider.hashPrefix('!');
+
+    // Main route, redirects to the default page
+
+    $routeProvider.when("/", {
+        redirectTo: "/home/sites"
     });
 
-    $rootScope.signOut = function() {
-        $rootScope.session = null;
-        localStorage.removeItem("email");
-        localStorage.removeItem("role");
-        navigator.id.logout();
-        $http.get('/api/logout');
-        $location.path("/login").replace();
-    };
+    // Routes for session Management
 
-    $rootScope.openScan = function (scanId) {
-        if (scanId)
-            $location.path("/scan/" + scanId); // .replace();
-    };
+    $routeProvider.when("/login", {
+        templateUrl: "static/partials/login.html",
+        controller: "LoginController",
+        access: "public"
+    });
 
-    $rootScope.openIssue = function (scanId, issueId) {
-        if (scanId)
-            $location.path("/scan/" + scanId + "/issue/" + issueId);
-    };
+    // Routes for error pages
 
-    $rootScope.startScan = function (target, plan) {
-        $http.put('/api/scan/start', {target: target, plan: plan })
-            .success(function(response, status, headers, config) {
-                //$scope.reload();
-            });
-    };
+    $routeProvider.when("/404", {
+        templateUrl: "static/partials/404.html",
+        controller: "404Controller",
+        access: "public"
+    });
 
-    $rootScope.stopScan = function (scanId) {
-    $http.put('/api/scan/stop', {scanId: scanId})
-        .success(function(response, status, headers, config) {
-        //$scope.reload();
-        });
-    };
-});
+    // Routes for reports
 
-app.config(function($routeProvider, $locationProvider) {
-    $locationProvider.hashPrefix('!');
-    $routeProvider
-        .when("/", { templateUrl: "static/partials/home.html"})
-        .when("/404", { templateUrl: "static/partials/404.html", controller: "404Controller" })
-        .when("/home/sites", { templateUrl: "static/partials/home.html"})
-        .when("/home/history", { templateUrl: "static/partials/history.html", controller: "HistoryController" })
-        .when("/home/issues", { templateUrl: "static/partials/issues.html", controller: "IssuesController" })
-        .when("/request", { templateUrl: "static/partials/request.html", controller: "RequestController" })
-        .when("/invite/:inviteId", { templateUrl: "static/partials/invite.html", controller: "InviteController" })
-        .when("/scan/:scanId", { templateUrl: "static/partials/scan.html", controller: "ScanController" })
-        .when("/scan/:scanId/raw", { templateUrl: "static/partials/raw.html", controller: "RawController" })
-        .when("/scan/:scanId/issue/:issueId", { templateUrl: "static/partials/issue.html", controller: "IssueController" })
-        .when("/scan/:scanId/session/:sessionIdx/failure", { templateUrl: "static/partials/session-failure.html", controller: "SessionFailureController" })
-        .when("/plan/:planName", { templateUrl: "static/partials/plan.html", controller: "PlanController" })
-        .when("/history", { templateUrl: "static/partials/history.html", controller: "HistoryController" })
-        .when("/login", { templateUrl: "static/partials/login.html", controller: "LoginController" })
-        // Administration
-        .when("/admin/sites", {
-            section: "admin",
-            templateUrl: "static/partials/admin/sites.html",
-            controller: "AdminSitesController",
-            label: "Sites",
-            slug: "sites"
-        })
-        .when("/admin/users", {
-            section: "admin",
-            templateUrl: "static/partials/admin/users.html",
-            controller: "AdminUsersController",
-            label: "Users",
-            slug: "users"
-        })
-        .when("/admin/groups", {
-            section: "admin",
-            templateUrl: "static/partials/admin/groups.html",
-            controller: "AdminGroupsController",
-            label: "Groups",
-            slug: "groups"
-        })
-        // Sub nav of groups.
-        .when("/admin/groups/:groupName", {
-            section: "admin:groups",
-            templateUrl: "static/partials/admin/group.html",
-            controller: "AdminGroupController",
-            label: "Group Editor",
-            slug: "group"
-        })
-        .when("/admin/plugins", {
-            section: "admin",
-            templateUrl: "static/partials/admin/plugins/plugins.html",
-            controller: "AdminPluginsController",
-            label: "Plugins",
-            slug: "plugins"
-        })
-        .when("/admin/plans", {
-            section: "admin",
-            templateUrl: "static/partials/admin/plans/plans.html",
-            controller: "AdminPlansController",
-            label: "Plans",
-            slug: "plans"
-        })
-        .when("/admin/invites", {
-            section: "admin",
-            templateUrl: "static/partials/admin/invites.html",
-            controller: "AdminInvitesController",
-            label: "Invites",
-            slug: "invites"
-        });
-});
+    $routeProvider.when("/home/sites", {
+        templateUrl: "static/partials/home.html",
+        controller: "SitesController",
+        access: "user"
+    });
 
-app.run(function($rootScope, $http, $location) {
-    $rootScope.backToLogin = function() {
-        $rootScope.session = null;
-        $location.path("/login");
-    };
-    $rootScope.signIn = function(inviteid) {
-        if (inviteid) {
-            $rootScope.inviteId = inviteid;
-            navigator.id.request();
-        } else {
-            $rootScope.inviteId = null;
-            navigator.id.request();
+    $routeProvider.when("/home/history", {
+        templateUrl: "static/partials/history.html",
+        controller: "HistoryController",
+        access: "user"
+    });
+
+    $routeProvider.when("/home/issues", {
+        templateUrl: "static/partials/issues.html",
+        controller: "IssuesController",
+        access: "user"
+    });
+
+    // Routes for invites
+
+    $routeProvider.when("/invite/:inviteId", {
+        templateUrl: "static/partials/invite.html",
+        controller: "InviteController",
+        access: "public"
+    });
+
+    // Routes for inspecting plans, issues and scans
+
+    $routeProvider.when("/scan/:scanId", {
+        templateUrl: "static/partials/scan.html",
+        controller: "ScanController",
+        access: "user"
+    });
+
+    $routeProvider.when("/scan/:scanId/raw", {
+        templateUrl: "static/partials/raw.html",
+        controller: "RawController",
+        access: "user"
+    });
+
+    $routeProvider.when("/scan/:scanId/issue/:issueId", {
+        templateUrl: "static/partials/issue.html",
+        controller: "IssueController",
+        access: "user"
+    });
+
+    $routeProvider.when("/scan/:scanId/session/:sessionIdx/failure", {
+        templateUrl: "static/partials/session-failure.html",
+        controller: "SessionFailureController",
+        access: "user"
+    });
+
+    $routeProvider.when("/plan/:planName", {
+        templateUrl: "static/partials/plan.html",
+        controller: "PlanController",
+        access: "user"
+    });
+
+    // Routes for the administration pages
+
+    $routeProvider.when("/admin/sites", {
+        section: "admin",
+        templateUrl: "static/partials/admin/sites.html",
+        controller: "AdminSitesController",
+        label: "Sites",
+        slug: "sites",
+        access: "administrator"
+    });
+
+    $routeProvider.when("/admin/users", {
+        section: "admin",
+        templateUrl: "static/partials/admin/users.html",
+        controller: "AdminUsersController",
+        label: "Users",
+        slug: "users",
+        access: "administrator"
+    });
+
+    $routeProvider.when("/admin/groups", {
+        section: "admin",
+        templateUrl: "static/partials/admin/groups.html",
+        controller: "AdminGroupsController",
+        label: "Groups",
+        slug: "groups",
+        access: "administrator"
+    });
+
+    $routeProvider.when("/admin/groups/:groupName", {
+        section: "admin:groups",
+        templateUrl: "static/partials/admin/group.html",
+        controller: "AdminGroupController",
+        label: "Group Editor",
+        slug: "group",
+        access: "administrator"
+    });
+
+    $routeProvider.when("/admin/plugins", {
+        section: "admin",
+        templateUrl: "static/partials/admin/plugins/plugins.html",
+        controller: "AdminPluginsController",
+        label: "Plugins",
+        slug: "plugins",
+        access: "administrator"
+    });
+
+    $routeProvider.when("/admin/plans", {
+        section: "admin",
+        templateUrl: "static/partials/admin/plans/plans.html",
+        controller: "AdminPlansController",
+        label: "Plans",
+        slug: "plans",
+        access: "administrator"
+    });
+
+    $routeProvider.when("/admin/invites", {
+        section: "admin",
+        templateUrl: "static/partials/admin/invites.html",
+        controller: "AdminInvitesController",
+        label: "Invites",
+        slug: "invites",
+        access: "administrator"
+    });
+
+    // Unknown routes go to / which will redirect to either the default page or
+    // to the login page.
+
+    $routeProvider.otherwise({
+        redirectTo: "/"
+    });
+
+    // This http interceptor looks at the responses of API requests and redirects
+    // the user to login if any of them fail with a false success and
+    // 'not-logged-in' as the reason.
+
+    var interceptor = ['$rootScope','$q', '$location', function(scope, $q, $location) {
+        function success(response) {
+            if (_.isObject(response.data)) {
+                if (response.data.success === false) {
+                    if (response.data.reason === "not-logged-in") {
+                        $location.path("/login");
+                        return $q.reject(response);
+                    }
+                }
+            }
+            return response;
         }
-    };
-    $rootScope.$on( "$routeChangeStart", function(event, next, current) {
-        // make  /invites/:inviteId into a whitelist
-        var has_invite = $location.url().substring().split('/')[1] == "invite";
-        if (!has_invite && !$rootScope.session) {
-            if (next.$$route.templateUrl !== "static/partials/login.html" ) {
+
+        function error(response) {
+            return response;
+        }
+
+        return function(promise) {
+            return promise.then(success, error);
+        };
+    }];
+
+    $httpProvider.responseInterceptors.push(interceptor);
+});
+
+app.run(function($rootScope, $location) {
+    // If we have (or had) an active session then retrieve that. If the session has expired
+    // then the first API call that returns a 401 will trigger a logout via the above
+    // interceptor.
+
+    if (localStorage.getItem('session.email') && localStorage.getItem('session.role')) {
+        $rootScope.session = {
+            email: localStorage.getItem('session.email'),
+            role: localStorage.getItem('session.role')
+        };
+    }
+
+    // Before each route change, check if the destination is public. If it is not then
+    // check if we are logged in. If we are not then remember the destination url and
+    // redirect to the login page.
+
+    $rootScope.$on('$routeChangeStart', function(event, next, current) {
+        if (next.access !== "public") {
+            if (!$rootScope.session) {
+                sessionStorage.setItem('nextPath', $location.path());
                 $location.path("/login");
             }
         }
     });
-    if (0)
-    $http.get('/api/session').success(function(response, status, headers, config) {
-        if (response.success) {
-            $rootScope.session = response.data;
-            $location.path("/home/sites").replace();
-        } else {
-            $rootScope.session = null;
-            $location.path("/login").replace();
-        }
-    });
 });
 
-app.controller("LoginController", function($scope, $rootScope, $location) {
-    //$rootScope.ssignIn = function() {
-    //    navigator.id.request();
-    //};
+app.controller("LoginController", function($scope, $rootScope, $location, $http) {
+    $scope.signIn = function() {
+        navigator.id.request();
+    };
+
+    $scope.$on('$viewContentLoaded', function() {
+        // When the login screen is loaded, we logout from Persona and kill our session
+        // from both the root scope and from localStorage.
+
+        navigator.id.logout();
+        $rootScope.session = null;
+        localStorage.setItem('session.email', null);
+        localStorage.setItem('session.role', null);
+
+        navigator.id.watch({
+            onlogin: function(assertion) {
+                var data = {assertion: assertion, invite_id: $rootScope.inviteId};
+                $http.post('/api/login', data).success(function(response) {
+                    if (response.success) {
+                        // Remember the session in the scope
+                        $rootScope.session = response.data;
+                        // Remember the session in local storage
+                        localStorage.setItem('session.email', response.data.email);
+                        localStorage.setItem('session.role', response.data.role);
+                        localStorage.setItem('session', response.data);
+                        // Go to either the nextPath or to the main page
+                        var nextPath = sessionStorage.getItem('nextPath');
+                        if (nextPath) {
+                            $location.path(nextPath).replace();
+                            sessionStorage.setItem(nextPath, null);
+                        } else {
+                            $location.path("/").replace();
+                        }
+                    }
+                });
+            },
+            onlogout: function() {
+                // Not used
+            }
+        });
+    });
 });
 
 app.controller("404Controller", function($scope, $rootScope, $location) {
    // do nothing
 });
 
-app.controller('HomeController', function($scope, $timeout, $http, $location) {
-    /*
-        In order to kill a timeout, we must save the promise ($timeout
-        returns a promise). We first get all the groups via calling
-        /api/profile to build a <select>.
-
-        We immediately trigger $scope.getAsGroup() to load data to get all
-        the sites the user is a member of. This function invokes like this
-        state machine:
-
-        o->   .getAsGroup() ===> .getContent() --> $http.get(url)
-                     ^      ===> .reloadAsGroup()
-                     |___________            |
-                                 |           |
-                                 v           |
-           promise_g = $timeout(  , 2.5s)<----
-
-        The main point is that we pass .getAsGroup to timeout to
-        keep it driving the polling process over and over.
-        When we want to kill an in-process timeout, we simply
-        pass promise_g to $timeout.cancel method.
-
-    */
-
+app.controller('SitesController', function($scope, $timeout, $http, $location) {
     var reloadPromise = null;
 
     $scope.group = null;
@@ -264,18 +359,20 @@ app.controller('HomeController', function($scope, $timeout, $http, $location) {
         $scope.reloadSites();
     };
 
-    $http.get("/api/profile").success(function(response) {
-        if (response.success) {
-            $scope.groups = response.data.groups;
-            var selectedGroup = localStorage.getItem("HomeController.group");
-            if (selectedGroup && $scope.groups.indexOf(selectedGroup) != -1) {
-                $scope.group = selectedGroup;
-            } else {
-                $scope.group = $scope.groups[0];
+    $scope.$on('$viewContentLoaded', function() {
+        $http.get("/api/profile").success(function(response) {
+            if (response.success) {
+                $scope.groups = response.data.groups;
+                var selectedGroup = localStorage.getItem("HomeController.group");
+                if (selectedGroup && $scope.groups.indexOf(selectedGroup) != -1) {
+                    $scope.group = selectedGroup;
+                } else {
+                    $scope.group = $scope.groups[0];
+                }
+                // Call this once to trigger polling
+                $scope.reloadSites();
             }
-            // Call this once to trigger polling
-            $scope.reloadSites();
-        }
+        });
     });
 });
 
@@ -294,7 +391,6 @@ app.controller("IssuesController", function($scope, $http, $location, $timeout) 
 
 app.controller("InviteController", function ($scope, $rootScope, $routeParams, $http, $location) {
     $scope.inviteId = $routeParams.inviteId;
-
     $http.get('/api/invites/' + $scope.inviteId)
         .success(function(response, status, headers, config) {
             if (!response.success) {
