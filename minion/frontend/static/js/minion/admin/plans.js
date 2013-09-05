@@ -2,7 +2,9 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+
 var minionAdminPlansModule = angular.module('minionAdminPlansModule', []);
+
 
 minionAdminPlansModule.controller("AdminCreatePlanController", function ($scope, dialog, plugins) {
     var workflow = [{
@@ -51,6 +53,7 @@ minionAdminPlansModule.controller("AdminCreatePlanController", function ($scope,
     };
 });
 
+
 minionAdminPlansModule.controller("AdminEditPlanController", function ($scope, dialog, plan, plugins) {
     $scope.plan = plan;
     $scope.plan.workflow = JSON.stringify($scope.plan.workflow, null, "  ");
@@ -95,6 +98,7 @@ minionAdminPlansModule.controller("AdminEditPlanController", function ($scope, d
         dialog.close(plan);
     };
 });
+
 
 minionAdminPlansModule.controller("AdminPlansController", function($scope, $routeParams, $http, $dialog) {
 
