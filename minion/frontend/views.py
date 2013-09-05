@@ -147,7 +147,8 @@ def _backend_update_site(site_id, site):
         return None
     return j.get('site')
 
-def _backend_add_invite(invite):
+def _backend_add_invite(invite, sender):
+    invite['sender'] = sender
     r = requests.post(config['backend-api']['url'] + "/invites",
                       headers={'Content-Type': 'application/json'},
                       data=json.dumps(invite))
@@ -580,7 +581,7 @@ def post_api_admin_users():
 @app.route("/api/admin/invites", methods=['POST'])
 @requires_session('administrator')
 def post_api_admin_invite():
-    invitation = _backend_add_invite(request.json)
+    invitation = _backend_add_invite(request.json, session['email'])
     return jsonify(success=True, data=invitation)
 
 @app.route("/api/admin/invites", methods=['GET'])

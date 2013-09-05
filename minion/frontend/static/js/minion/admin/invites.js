@@ -7,8 +7,7 @@ var minionAdminInvitesModule = angular.module('minionAdminInvitesModule', []);
 
 
 minionAdminInvitesModule.controller("AdminCreateInviteController", function($scope, dialog, users, groups) {
-    $scope.sender = localStorage.getItem("session.email");
-    $scope.invite = {sender: $scope.sender, recipient: ""};
+    $scope.invite = {recipient: ""};
     $scope.groups = groups;
     $scope.roles = ["user", "administrator"];
     $scope.opts = {
@@ -50,21 +49,20 @@ minionAdminInvitesModule.controller("AdminInvitesController", function($scope, $
 
             d.open().then(function(result) {
                 if(result) {
-                    data1 = {email: result.email, name: result.name, role: result.role, groups: result.groups,
-                             invitation: true};
+                    var data1 = {email: result.email, name: result.name, role: result.role, groups: result.groups,
+                                 invitation: true};
 
-                    sender = localStorage.getItem("session.email");
                     $http.post('/api/admin/users', data1).success(function(response) {
                         if (response.success) {
-                            reload();
                             // now we should be able to send an invite
                             var notify_when = [];
-                            if (result.opts.accept)
+                            if (result.opts.accept) {
                                 notify_when.push('accept');
-                            if (result.opts.decline)
+                            }
+                            if (result.opts.decline) {
                                 notify_when.push('decline');
-                            data2 = {sender: sender, recipient: result.email, base_url: base_url,
-                                     notify_when: notify_when};
+                            }
+                            var data2 = {recipient: result.email, base_url: base_url, notify_when: notify_when};
                             $http.post('/api/admin/invites', data2).success(function(response) {
                                 if (response.success) {
                                     reload();
