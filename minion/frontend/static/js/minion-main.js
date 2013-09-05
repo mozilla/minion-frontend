@@ -290,7 +290,7 @@ app.controller("LoginController", function($scope, $rootScope, $location, $http)
 
         navigator.id.watch({
             onlogin: function(assertion) {
-                var data = {assertion: assertion, invite_id: $rootScope.inviteId};
+                var data = {assertion: assertion};
                 $http.post('/api/login', data).success(function(response) {
                     if (response.success) {
                         // Remember the session in the scope
@@ -298,7 +298,7 @@ app.controller("LoginController", function($scope, $rootScope, $location, $http)
                         // Remember the session in local storage
                         localStorage.setItem('session.email', response.data.email);
                         localStorage.setItem('session.role', response.data.role);
-                        localStorage.setItem('session', response.data);
+                        localStorage.setItem('invitation.id', null);
                         // Go to either the nextPath or to the main page
                         var nextPath = sessionStorage.getItem('nextPath');
                         if (nextPath) {
@@ -390,39 +390,89 @@ app.controller("IssuesController", function($scope, $http, $location, $timeout) 
 });
 
 app.controller("InviteController", function ($scope, $rootScope, $routeParams, $http, $location) {
-    $scope.inviteId = $routeParams.inviteId;
-    $http.get('/api/invites/' + $scope.inviteId)
-        .success(function(response, status, headers, config) {
+    // To decline an invitation, we simply post it back to the backend to mark it as
+    // declined and then go the Minion home page.
+
+    $scope.declineInvite = function(invite) {
+        var data = {action: 'decline'};
+        $http.put('/api/invites/' + invite['id'], data).success(function() {
+            $location.path("/");
+        });
+    };
+
+    // To accept an invitation, we remember the invitation id in session storage and then
+    // start the Persona login flow. At the end of the login flow we pass the invitation
+    // id to /api/login which will do the right thing.
+
+    $scope.acceptInvite = function(invite) {
+        sessionStorage.setItem("invitation.id", invite['id']);
+        navigator.id.request();
+    };
+
+    $scope.$on('$viewContentLoaded', function() {
+        // To avoid confusion, we always log the currently logged in user out.
+        $rootScope.session = null;
+        localStorage.removeItem("session.email");
+        localStorage.removeItem("session.role");
+        sessionStorage.removeItem("nextPath");
+        navigator.id.logout();
+
+        $http.get('/api/invites/' + $routeParams.inviteId).success(function(response) {
             if (!response.success) {
                 $scope.invite_state_msg = "Your invitation link is invalid.";
                 $scope.invite_state = "invalid";
-            } else {
-                var sent_on = response.data['sent_on'];
-                var accepted_on = response.data['accepted_on'];
-                var expire_on = response.data['expire_on'];
-                var invite_status = response.data['status'];
-                if (accepted_on ||
-                     (invite_status == 'expired' || invite_status == 'used')) {
-                    $location.path("/login");
-                } else {
-                    var timenow = Math.round(new Date().getTime()/1000);
-                    if ((expire_on - timenow) < 0) {
-                        $scope.invite_state_msg = "Your invitation is expired.";
-                        $scope.invite_state = "expired";
-                    } else {
-                        $scope.invite_state_msg = "Your invitation will expire on " +
-                                moment.unix(expire_on).format("YYYY-MM-DD HH:mm");
-                        $scope.invite_state = "available";
-                    }
-                }
+                return;
             }
+
+            $scope.invite = response.data;
+            var sent_on = response.data['sent_on'];
+            var accepted_on = response.data['accepted_on'];
+            var expire_on = response.data['expire_on'];
+            var invite_status = response.data['status'];
+
+            if (invite_status === 'declined' || invite_status === 'expired' || invite_status === 'used') {
+                $location.path("/login");
+                return;
+            }
+
+            var timenow = Math.round(new Date().getTime()/1000);
+            if ((expire_on - timenow) < 0) {
+                $scope.invite_state_msg = "Your invitation is expired.";
+                $scope.invite_state = "expired";
+                return;
+            }
+
+            $scope.invite_state_msg = "Your invitation will expire on "
+                + moment.unix(expire_on).format("YYYY-MM-DD HH:mm");
+            $scope.invite_state = "available";
+
+            // Setup Persona and its callbacks. There is a lot of code duplication code from the
+            // LoginController. We should see if we can extract this and put it into an Angular.JS
+            // service. There is also probably a proper way to wrap a library like Persona.
+
+            navigator.id.watch({
+                onlogin: function(assertion) {
+                    var data = {assertion: assertion, invite_id: sessionStorage.getItem("invitation.id")};
+                    sessionStorage.removeItem("invitation.id");
+                    $http.post('/api/login', data).success(function(response) {
+                        if (response.success) {
+                            // Remember the session in the scope
+                            $rootScope.session = response.data;
+                            // Remember the session in local storage
+                            localStorage.setItem('session.email', response.data.email);
+                            localStorage.setItem('session.role', response.data.role);
+                            localStorage.setItem('invitation.id', null);
+                            // Go to the main page
+                            $location.path("/").replace();
+                        }
+                    });
+                },
+                onlogout: function() {
+                    // Not used. Why would you want this?
+                }
+            });
         });
-    $scope.declineInvite = function() {
-        var data = {action: 'decline'};
-        $http.put('/api/invites/' + $scope.inviteId, data).success(function() {
-            $rootScope.backToLogin();
-        });
-    };
+    });
 });
 
 app.controller("HistoryController", function($scope, $http, $location, $timeout) {
