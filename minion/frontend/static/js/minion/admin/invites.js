@@ -41,7 +41,7 @@ minionAdminInvitesModule.controller("AdminInvitesController", function($scope, $
     $scope.createInvite = function () {
         $http.get('/api/admin/groups').success(function(response) {
             var d = $dialog.dialog({
-                templateUrl: "static/partials/admin/invites/create-invites.html?x=" + new Date().getTime(),
+                templateUrl: "static/partials/admin/invites/create-invites.html",
                 controller: "AdminCreateInviteController",
                 resolve: { users: function() { return $scope.users; },
                            groups: function() { return response.data; }}

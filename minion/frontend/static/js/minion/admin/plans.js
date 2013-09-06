@@ -114,7 +114,7 @@ minionAdminPlansModule.controller("AdminPlansController", function($scope, $rout
         $http.get('/api/admin/plugins').success(function(response) {
             $scope.plugins = response.data;
             var d = $dialog.dialog({
-                templateUrl: "static/partials/admin/plans/edit.html?x=" + new Date().getTime(),
+                templateUrl: "static/partials/admin/plans/edit.html",
                 controller: "AdminEditPlanController",
                 resolve: { plan: function() { return angular.copy(plan); },
                            plugins: function() { return $scope.plugins; } }
@@ -133,7 +133,7 @@ minionAdminPlansModule.controller("AdminPlansController", function($scope, $rout
         $http.get('/api/admin/plugins').success(function(response) {
             $scope.plugins = response.data;
             var d = $dialog.dialog({
-                templateUrl: "static/partials/admin/plans/create-plan.html?x=" + new Date().getTime(),
+                templateUrl: "static/partials/admin/plans/create-plan.html",
                 controller: "AdminCreatePlanController",
                 resolve: { plugins: function() { return $scope.plugins; } }
 

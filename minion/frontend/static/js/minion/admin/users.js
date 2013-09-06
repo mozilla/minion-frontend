@@ -54,7 +54,7 @@ minionAdminUsersModule.controller("AdminUsersController", function($scope, $http
         $http.get('/api/admin/groups').success(function(response) {
             $scope.groups = response.data;
                 var d = $dialog.dialog({
-                    templateUrl: "static/partials/admin/users/edit-user.html?x=" + new Date().getTime(),
+                    templateUrl: "static/partials/admin/users/edit-user.html",
                     controller: "AdminEditUserController",
                     resolve: { groups: function() { return $scope.groups; },
                                user: function() { return angular.copy(user); } }
@@ -85,7 +85,7 @@ minionAdminUsersModule.controller("AdminUsersController", function($scope, $http
     $scope.createUser = function () {
         $http.get('/api/admin/groups').success(function(response) {
             var d = $dialog.dialog({
-                templateUrl: "static/partials/admin/users/create-user.html?x=" + new Date().getTime(),
+                templateUrl: "static/partials/admin/users/create-user.html",
                 controller: "AdminCreateUserController",
                 resolve: { users: function() { return $scope.users; },
                            groups: function() { return response.data; } }

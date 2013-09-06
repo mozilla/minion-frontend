@@ -52,7 +52,7 @@ minionAdminSitesModule.controller("AdminSitesController", function($scope, $rout
         $http.get('/api/admin/plans').success(function(response) {
             $scope.plans = response.data;
                 var d = $dialog.dialog({
-                    templateUrl: "static/partials/admin/sites/edit-site.html?x=" + new Date().getTime(),
+                    templateUrl: "static/partials/admin/sites/edit-site.html",
                     controller: "AdminEditSiteController",
                     resolve: { plans: function() { return $scope.plans; },
                                site: function() { return angular.copy(site); } }
@@ -79,7 +79,7 @@ minionAdminSitesModule.controller("AdminSitesController", function($scope, $rout
             $http.get('/api/admin/sites').success(function(response) {
                 $scope.sites = response.data;
                 var d = $dialog.dialog({
-                    templateUrl: "static/partials/admin/sites/create-site.html?x=" + new Date().getTime(),
+                    templateUrl: "static/partials/admin/sites/create-site.html",
                     controller: "AdminCreateSiteController",
                     resolve: { plans: function() { return $scope.plans; },
                                sites: function() { return $scope.sites; } }

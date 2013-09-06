@@ -43,7 +43,7 @@ minionAdminGroupsModule.controller("AdminGroupsController", function($scope, $ro
     $scope.addGroup = function(){
         var group = {name:"", description:""};
         var d = $dialog.dialog({
-            templateUrl: "static/partials/admin/add-group-dialog.html?" + new Date().getTime(),
+            templateUrl: "static/partials/admin/add-group-dialog.html",
             controller: "AdminAddGroupController",
             resolve: {
                 group: function () {
@@ -118,7 +118,8 @@ minionAdminGroupsModule.controller("AdminGroupController", function($scope, $rou
             });
             // Show the dialog
             var r = { users: function () { return users; } };
-            var d = $dialog.dialog({templateUrl: "static/partials/admin/add-user-dialog.html?" + new Date().getTime(), controller: "AdminAddUserController", resolve: r });
+            var d = $dialog.dialog({templateUrl: "static/partials/admin/add-user-dialog.html",
+                                    controller: "AdminAddUserController", resolve: r });
             d.open().then(function(user) {
                 if (user) {
                     var patch = {addUsers:[user.email]};
@@ -156,7 +157,8 @@ minionAdminGroupsModule.controller("AdminGroupController", function($scope, $rou
             });
             // Show the dialog
             var r = { sites: function () { return sites; } };
-            var d = $dialog.dialog({templateUrl: "static/partials/admin/add-site-dialog.html?" + new Date().getTime(), controller: "AdminAddSiteController", resolve: r });
+            var d = $dialog.dialog({templateUrl: "static/partials/admin/add-site-dialog.html",
+                                    controller: "AdminAddSiteController", resolve: r });
             d.open().then(function(site) {
                 if (site) {
                     var patch = {addSites:[site.url]};
