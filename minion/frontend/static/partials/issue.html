@@ -84,6 +84,13 @@
 
   </div>
 
+  <div ng-show="issue.Ports.length">
+    <h3>Ports</h3>
+    <ul>
+      <li ng-repeat="port in issue.Ports">{{port}}</li>
+    </ul>
+  </div>
+
   <div ng-show="issue.Solution.length">
     <h3>Remediation</h3>
     <p ng-bind-html-unsafe="issue.Solution|text"></p>
