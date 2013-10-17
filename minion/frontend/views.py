@@ -8,7 +8,7 @@ import json
 import pprint
 import sys
 
-from flask import render_template, redirect, url_for, session, jsonify, request, session
+from flask import render_template, redirect, url_for, session, jsonify, request, session, Response, g
 
 from minion.frontend import app
 from minion.frontend.persona import verify_assertion
@@ -314,6 +314,14 @@ def _backend_patch_group(group_name, patch):
         return None
     return True
 
+def _backend_get_scans(site_id, plan_name):
+    params = {'site_id': site_id, 'plan_name': plan_name}
+    r = requests.get(config['backend-api']['url'] + "/scans", params=params)
+    r.raise_for_status()
+    j = r.json()
+    if not j.get('success'):
+        return None
+    return j.get('scans')
 
 #
 # Basic API for session management
@@ -700,3 +708,59 @@ def post_api_admin_groups_group_name_sites(group_name):
     if not _backend_patch_group(group_name, request.json):
         return jsonify(success=False, reason='unknown')
     return jsonify(success=True)
+
+# Basic API mainly for Overlord now
+
+def requires_ws_auth(*decorator_args):
+    """
+    Check if the request has an X-Minion-Api-Key and X-Minion-Api-User header. If
+    it does, then match it against the user and store the user in g.api_user so
+    that handlers can use it.
+    """
+    def decorator(view):
+        @functools.wraps(view)
+        def check_api_key(*args, **kwargs):
+            api_user = request.headers.get('x-minion-api-user')
+            if not api_user:
+                return jsonify(success=False, reason='missing-api-user')
+            user = get_user(api_user)
+            if not user:
+                return jsonify(success=False, reason='invalid-api-auth')
+            api_key = request.headers.get('x-minion-api-key')
+            if not api_key:
+                return jsonify(success=False, reason='missing-api-key')
+            if len(user.get('api_key', '')) == 0 or user.get('api_key') != api_key:
+                return jsonify(success=False, reason='invalid-api-auth')
+            g.api_user = user
+            return view(*args, **kwargs)
+        return check_api_key
+    if len(decorator_args) == 1 and callable(decorator_args[0]):
+        return decorator(decorator_args[0])
+    else:
+        return decorator
+
+@app.route("/ws/whoami", methods=['GET'])
+@requires_ws_auth
+def ws_whoami():
+    return Response(json.dumps({'success': True, 'user': { 'email': g.api_user['email'] } }, indent=4) + "\n", mimetype="application/json")
+
+@app.route("/ws/sites", methods=['GET'])
+@requires_ws_auth
+def ws_sites():
+    sites = _backend_get_sites()
+    return Response(json.dumps({'success': True, 'sites': sites}, indent=4) + "\n", mimetype="application/json")
+
+@app.route("/ws/scans", methods=['GET'])
+@requires_ws_auth
+def ws_scans():
+    scanz = _backend_get_scans(request.args.get('site_id'), request.args.get('plan_name'))
+    return Response(json.dumps({'success': True, 'scans': scanz}, indent=4) + "\n", mimetype="application/json")
+
+@app.route("/ws/scans/<scan_id>", methods=['GET'])
+@requires_ws_auth
+def ws_scan(scan_id):
+    r = requests.get(config['backend-api']['url'] + "/scans/" + scan_id) # TODO , params={'email': session['email']})
+    if r.json()['success']:
+        return jsonify(success=True, scan=r.json()['scan'])
+    else:
+        return jsonify(success=r.json()['success'], reason=r.json().get('reason'))
