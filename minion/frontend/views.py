@@ -119,13 +119,25 @@ def _backend_get_plugins():
         return None
     return j.get('plugins')
 
-def _backend_get_sites():
-    r = requests.get(config['backend-api']['url'] + "/sites")
+def _backend_get_sites(url=None):
+    params = {}
+    if url:
+        params['url'] = url
+    r = requests.get(config['backend-api']['url'] + "/sites", params=params)
     r.raise_for_status()
     j = r.json()
     if not j.get('success'):
         return None
     return j.get('sites')
+
+def _backend_get_site(site_id):
+    r = requests.get(config['backend-api']['url'] + "/sites/" + site_id)
+    r.raise_for_status()
+    j = r.json()
+    if not j.get('success'):
+        return None
+    return j.get('site')
+
 
 def _backend_add_site(site):
     r = requests.post(config['backend-api']['url'] + "/sites",
@@ -134,8 +146,8 @@ def _backend_add_site(site):
     r.raise_for_status()
     j = r.json()
     if not j.get('success'):
-        return None
-    return j.get('site')
+        return None,j.get('reason')
+    return j.get('site'),None
 
 def _backend_update_site(site_id, site):
     r = requests.post(config['backend-api']['url'] + "/sites/" + site_id,
@@ -190,8 +202,11 @@ def _backend_delete_invite(id):
     j = r.json()
     return j
 
-def _backend_get_plans():
-    r = requests.get(config['backend-api']['url'] + "/plans")
+def _backend_get_plans(name=None):
+    params = {}
+    if name:
+        params['name'] = name
+    r = requests.get(config['backend-api']['url'] + "/plans", params=params)
     r.raise_for_status()
     j = r.json()
     if not j.get('success'):
@@ -314,8 +329,8 @@ def _backend_patch_group(group_name, patch):
         return None
     return True
 
-def _backend_get_scans(site_id, plan_name):
-    params = {'site_id': site_id, 'plan_name': plan_name}
+def _backend_get_scans(site_id, plan_name, limit=3):
+    params = {'site_id': site_id, 'plan_name': plan_name, 'limit': limit}
     r = requests.get(config['backend-api']['url'] + "/scans", params=params)
     r.raise_for_status()
     j = r.json()
@@ -744,23 +759,107 @@ def requires_ws_auth(*decorator_args):
 def ws_whoami():
     return Response(json.dumps({'success': True, 'user': { 'email': g.api_user['email'] } }, indent=4) + "\n", mimetype="application/json")
 
+#
+# Retrieve all sites. Or search for a specific one.
+#
+#  GET /ws/sites          retrieve all sites visible to user
+#  GET /ws/sites?url=$URL retrieve all sites that match url (only direct match now, returns 1 result)
+#
+# Returns a site structure.
+#
+
 @app.route("/ws/sites", methods=['GET'])
 @requires_ws_auth
-def ws_sites():
-    sites = _backend_get_sites()
+def ws_get_sites():
+    sites = _backend_get_sites(url=request.args.get('url'))
     return Response(json.dumps({'success': True, 'sites': sites}, indent=4) + "\n", mimetype="application/json")
+
+@app.route("/ws/sites/<site_id>", methods=['GET'])
+@requires_ws_auth
+def ws_get_site(site_id):
+    sites = _backend_get_site(site_id)
+    return Response(json.dumps({'success': True, 'site': sites}, indent=4) + "\n", mimetype="application/json")
+
+#
+# Create a site.
+#
+#  POST /ws/sites
+#
+# Returns a site record.
+#
+
+@app.route("/ws/sites", methods=['POST'])
+@requires_ws_auth
+def ws_post_sites():
+    site,reason = _backend_add_site(request.json)
+    if not site:
+        return jsonify(success=False, reason=reason)
+    return jsonify(success=True, site=site)
+
+#
+# Retrieve plans
+#
+
+@app.route("/ws/plans", methods=["GET"])
+@requires_ws_auth
+def ws_get_plans():
+    planz = _backend_get_plans(name=request.args.get('name'))
+    return Response(json.dumps({'success': True, 'plans': planz}, indent=4) + "\n", mimetype="application/json")
+
+#
+# Retrieve scans
+#
 
 @app.route("/ws/scans", methods=['GET'])
 @requires_ws_auth
-def ws_scans():
-    scanz = _backend_get_scans(request.args.get('site_id'), request.args.get('plan_name'))
+def ws_get_scans():
+    limit = request.args.get('limit')
+    if limit: limit = int(limit)
+    scanz = _backend_get_scans(request.args.get('site_id'), request.args.get('plan_name'), limit)
     return Response(json.dumps({'success': True, 'scans': scanz}, indent=4) + "\n", mimetype="application/json")
+
+#
+# Retrieve a specific scan
+#
 
 @app.route("/ws/scans/<scan_id>", methods=['GET'])
 @requires_ws_auth
-def ws_scan(scan_id):
+def ws_get_scan(scan_id):
     r = requests.get(config['backend-api']['url'] + "/scans/" + scan_id) # TODO , params={'email': session['email']})
     if r.json()['success']:
+        print "SCAN", r.json()['scan']
         return jsonify(success=True, scan=r.json()['scan'])
     else:
         return jsonify(success=r.json()['success'], reason=r.json().get('reason'))
+
+#
+# Create and start a scan
+#
+
+@app.route("/ws/scans/create", methods=["PUT"])
+@requires_ws_auth
+def put_ws_scans():
+    # Find the plan and site
+    plan = request.json["planName"]
+    siteId = request.json["siteId"]
+
+    site = _backend_get_site(siteId)
+
+    configuration = { "target": site["url"], "callback": { "url": request.json["callbackURL"], "events": ['scan-state'] } }
+
+    # Create a scan
+    r = requests.post(config["backend-api"]["url"] + "/scans",
+                      headers={"Content-Type": "application/json"},
+                      data=json.dumps({"user": g.api_user["email"],
+                                       "plan": plan,
+                                       "configuration": configuration}))
+    r.raise_for_status()
+    scan = r.json()["scan"]
+
+    # Start the scan
+    r = requests.put(config["backend-api"]["url"] + "/scans/" + scan["id"] + "/control",
+                     headers={"Content-Type": "text/plain"},
+                     data="START")
+    r.raise_for_status()
+
+    return ws_get_scan(scan["id"])
