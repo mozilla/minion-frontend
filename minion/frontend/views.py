@@ -863,3 +863,21 @@ def put_ws_scans():
     r.raise_for_status()
 
     return ws_get_scan(scan["id"])
+
+#
+# GET /ws/issues
+#
+
+@app.route("/ws/issues", methods=["GET"])
+@requires_ws_auth
+def get_ws_issues():
+    params = { "group_name": request.args.get("group_name"),
+               "plan_name": request.args.get("plan_name"),
+               "issue_code": request.args.getlist("issue_code") }
+    r = requests.get(config["backend-api"]["url"] + "/issues", params=params)
+    r.raise_for_status()
+    j = r.json()
+    if j["success"]:
+        return jsonify(success=j["success"], issues=j["issues"])
+    else:
+        return jsonify(success=r.json()["success"], reason=r.json().get("reason"))
