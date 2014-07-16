@@ -4,6 +4,7 @@
 
 
 var dependencies = [
+    "ngRoute",
     "ui.bootstrap",
     "minionAdminGroupsModule",
     "minionAdminInvitesModule",
@@ -59,6 +60,10 @@ app.controller("MinionController", function($rootScope, $route, $scope, $http, $
         });
     };
 
+    $rootScope.showScheduler = function (target) { 
+        console.log("ShowScheduler: ");
+        console.log(target);
+    }
     // $route is useful in the scope for knowing "active" tabs, for example.
     $rootScope.$route = $route;
 
