@@ -494,6 +494,7 @@ app.controller("HistoryController", function($scope, $http, $location, $timeout)
     $scope.reload = function () {
         $http.get('/api/history').success(function(response, status, headers, config){
             $scope.history = response.data;
+            $scope.querySite=($location.search()).site;
         });
     };
 
