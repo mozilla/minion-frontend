@@ -6,10 +6,10 @@
 
 <div class="container" ng-controller="IssueController">
 
-  <h2>Issue Details <span class="pull-right "><small>&larr; <a ng-href="#!/scan/{{scan.id}}">Scan Results</a></small></span></h2>
+  <h2>Issue Details <span class="pull-right "><small>← <a ng-href="#!/scan/{{scan.id}}">Scan Results</a></small></span></h2>
 
   <table class="table table-bordered">
-    <tr>
+    <tbody><tr>
       <td><b>Summary</b></td>
       <td ng-bind-html-unsafe="issue.Summary|link_bugs"></td>
     </tr>
@@ -33,7 +33,7 @@
       <td><b>Plugin</b></td>
       <td>{{session.plugin.name}} {{session.plugin.version}}</td>
     </tr>
-  </table>
+  </tbody></table>
 
   <ul class="icons" ng-show="social">
     <li><i class="icon-double-angle-right"></i><a href="#">Request help with this issue</a></li>
@@ -51,27 +51,27 @@
 
     <table class="table table-borderless table-inner-bordered" ng-repeat="url in issue.URLs">
 
-    <tr>
+    <tbody><tr>
     	<td><b>URL</b></td>
 	    <td><pre>{{url.URL}}</pre></td>
     </tr>
-    <tr ng-show='url.Attack'>
+    <tr ng-show="url.Attack">
         <td><b>Input tested</b></td>
         <td><pre>{{url.Attack}}</pre></td>
     </tr>
-    <tr ng-show='url.Parameter'>
+    <tr ng-show="url.Parameter">
         <td><b>Parameter tested</b></td>
         <td><pre>{{url.Parameter}}</pre></td>
     </tr>
-    <tr ng-show='url.Evidence'>
+    <tr ng-show="url.Evidence">
         <td><b>Evidence found</b></td>
         <td><pre>{{url.Evidence}}</pre></td>
     </tr>
-    <tr ng-show='url.Extra'>
+    <tr ng-show="url.Extra">
 	    <td><b>Extra</b></td>
 	    <td>{{url.Extra}}</td>
     </tr>
-    </table>
+    </tbody></table>
 
     <!--
 	<ul>

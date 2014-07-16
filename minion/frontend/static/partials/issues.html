@@ -8,7 +8,7 @@
 
     <ul class="nav nav-tabs">
       <li>
-        <a ng-href="#!/home/sites">Sites & Scans</a>
+        <a ng-href="#!/home/sites">Sites &amp; Scans</a>
       </li>
       <li>
         <a ng-href="#!/home/history">Scan History</a>
@@ -56,7 +56,7 @@
     <h4>{{r.target}}</h4>
     <ul class="minion-issues-list">
       <li ng-repeat="issue in r.issues">
-        <span class="label severity-{{issue.severity}} minion-severity-label">{{issue.severity}}</span>
+        <span class="label severity-{{issue.severity}} minion-severity-label label-default">{{issue.severity}}</span>
         <a ng-href="#!/scan/{{issue.scan.id}}/issue/{{issue.id}}">
           {{issue.summary}}
         </a>

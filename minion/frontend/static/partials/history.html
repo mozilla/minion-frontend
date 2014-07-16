@@ -1,26 +1,26 @@
 <!--
-    This Source Code Form is subject to the terms of the Mozilla Public
-    License, v. 2.0. If a copy of the MPL was not distributed with this
-    file, You can obtain one at http://mozilla.org/MPL/2.0/.
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at http://mozilla.org/MPL/2.0/.    
 -->
 
 <div class="container" ng-controller="HistoryController">
 
-    <ul class="nav nav-tabs">
-      <li>
-        <a ng-href="#!/home/sites">Sites & Scans</a>
-      </li>
-      <li class="active">
-        <a ng-href="#!/home/history">Scan History</a>
-      </li>
-      <li>
-        <a ng-href="#!/home/issues">All Issues</a>
-      </li>
-    </ul>
+  <ul class="nav nav-tabs">  
+    <li>
+    <a ng-href="#!/home/sites">Sites &amp; Scans</a>
+    </li>
+    <li class="active">      
+    <a ng-href="#!/home/history">Scan History</a>
+    </li>                    
+    <li>
+    <a ng-href="#!/home/issues">All Issues</a>
+    </li>
+  </ul>
 
   <h2>Scan History</h2>
-  <div class="span4">
-    Search: <input ng-model="querySite">
+  <div class="col-sm-4 col-md-4">
+    Search: <input class="form-control" ng-model="querySite">
   </div>
 
   <table class="table">
@@ -37,21 +37,23 @@
         <th></th>
       </tr>
     </thead>
-    <tr ng-repeat="h in history | filter:querySite">
-      <td><a href="{{h.configuration.site}}" target="_blank">{{h.configuration.target}}</a></td>
-      <td>{{h.plan.name}}</td>
-      <td>{{h.created | scan_datetime }}</td>
-      <td>{{h.state || "-"}}</td>
-      <td><span class="label warning-high minion-issue-count-label">{{h.issues.high || "-"}}</span></td>
-      <td><span class="label warning-medium minion-issue-count-label">{{h.issues.medium || "-"}}</span></td>
-      <td><span class="label warning-low minion-issue-count-label">{{h.issues.low || "-"}}</span></td>
-      <td><span class="label warning-info minion-issue-count-label">{{h.issues.info || "-"}}</span></td>
-      <td>
-        <button class="btn btn-mini btn-primary minion-btn" ng-class="{disabled: !h.finished}" type="button" ng-click="openScan(h.id)">Details</button>
-        <button class="btn btn-mini btn-primary minion-btn" type="button" ng-click="startScan(h.configuration.target, h.plan.name)" ng-show="h.state != 'STARTED' && h.state != 'QUEUED'">Scan</button>
-        <button class="btn btn-mini btn-primary minion-btn" type="button" ng-click="cancelScan()" ng-show="h.state == 'STARTED' || h.state == 'QUEUED'">Cancel</button>
-      </td>
-    </tr>
-  </table>
+    <tbody><tr ng-repeat="h in history | filter:querySite">
+        <td><a href="{{h.configuration.site}}" target="_blank">{{h.configuration.target}}</a></td>
+        <td>{{h.plan.name}}</td>
+        <td>{{h.created | scan_datetime }}</td>
+        <td>{{h.state || "-"}}</td>     
+        <td><span class="label warning-high minion-issue-count-label label-default">{{h.issues.high || "-"}}</span></td>
+        <td><span class="label warning-medium minion-issue-count-label label-default">{{h.issues.medium || "-"}}</span></td>
+        <td><span class="label warning-low minion-issue-count-label label-default">{{h.issues.low || "-"}}</span></td>
+        <td><span class="label warning-info minion-issue-count-label label-default">{{h.issues.info || "-"}}</span></td>
+        <td>
+          <button class="btn btn-primary minion-btn btn-xs" ng-class="{disabled: !h.finished}" type="button" ng-click="openScan(h.id)">Details</button>
+          <button class="btn btn-primary minion-btn btn-xs" type="button" ng-click="startScan(h.configuration.target, h.plan.name)" ng-show="h.state != 'STARTED' &amp;&amp; h.state != 'QUEUED'">Scan</button>
+          <button class="btn btn-primary minion-btn btn-xs" type="button" ng-click="cancelScan()" ng-show="h.state == 'STARTED' || h.state == 'QUEUED'">Cancel</button>
+        </td>
+      </tr>
+  </tbody></table>
 
 </div>
+
+

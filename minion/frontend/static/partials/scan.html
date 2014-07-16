@@ -8,13 +8,13 @@
 
   <div class="container">
 
-    <h2>Scan Results <span class="pull-right"><a ng-href="#!/scan/{{scan.id}}/raw" class="btn btn-mini">JSON</a></span></h2>
+    <h2>Scan Results <span class="pull-right"><a ng-href="#!/scan/{{scan.id}}/raw" class="btn btn-default btn-xs">JSON</a></span></h2>
 
     <div class="row">
-      <div class="span4">
+      <div class="col-sm-4 col-md-4">
         <h3>Summary</h3>
         <table class="table table-bordered">
-          <tr>
+          <tbody><tr>
             <td><b>Plan</b></td>
             <td>{{scan.plan.name}}</td>
           </tr>
@@ -34,7 +34,7 @@
             <td><b>Started by</b></td>
             <td>{{scan.meta.user}}</td>
           </tr>
-        </table>
+        </tbody></table>
 <!--
         <h3>Issue Counts</h3>
         <table class="table table-bordered">
@@ -62,14 +62,14 @@
 -->
       </div>
 
-      <div class="span8">
+      <div class="col-sm-8 col-md-8">
 
-        <div class="alert alert-error" ng-show="scan.state=='FAILED' && scan.failure">
+        <div class="alert alert-error alert-warning" ng-show="scan.state=='FAILED' &amp;&amp; scan.failure">
           <p><strong>This scan failed unexpectedly:</strong> {{scan.failure.message}}</p>
           <pre ng-show="scan.failure.exception">{{scan.failure.exception}}</pre>
         </div>
 
-        <div class="alert alert-error" ng-show="scan.state=='ABORTED' && scan.failure">
+        <div class="alert alert-error alert-warning" ng-show="scan.state=='ABORTED' &amp;&amp; scan.failure">
           <p><strong>This scan was aborted:</strong> {{scan.failure.message}}</p>
         </div>
 
@@ -83,12 +83,12 @@
               <th>Risk Summary</th>
             </tr>
           </thead>
-          <tr ng-repeat="issue in issues">
-            <td><span class="label severity-{{issue.Severity}} minion-severity-label">{{issue.Severity}}</span></td>
+          <tbody><tr ng-repeat="issue in issues">
+            <td><span class="label severity-{{issue.Severity}} minion-severity-label label-default">{{issue.Severity}}</span></td>
             <td>{{issue.session.plugin.name}} (v{{issue.session.plugin.version}})</td>
             <td><a ng-href="#!/scan/{{scan.id}}/issue/{{issue.Id}}">{{issue.Summary}}</a></td>
           </tr>
-        </table>
+        </tbody></table>
 
         <h3>Workflow</h3>
 
@@ -102,14 +102,14 @@
               <!--<td>Description</td>-->
             </tr>
           </thead>
-          <tr ng-repeat="session in scan.sessions">
+          <tbody><tr ng-repeat="session in scan.sessions">
             <td>{{session.plugin.name}} (v{{session.plugin.version}})</td>
             <td>{{(session.started | scan_datetime) || "-"}}</td>
             <td>{{session.state}}</td>
             <td>{{(session|session_duration) || "-"}}</td>
             <!--<td ng-bind-html-unsafe="scan.plan.workflow[$index].description|link_bugs"></td>-->
           </tr>
-        </table>
+        </tbody></table>
 
         <div ng-show="failures.length > 0">
 
@@ -122,11 +122,11 @@
                 <th>Reason</th>
 	      </tr>
             </thead>
-            <tr ng-repeat="failure in failures">
+            <tbody><tr ng-repeat="failure in failures">
 	      <td>{{failure.plugin.name}}</td>
 	      <td><a ng-href="#!/scan/{{scan.id}}/session/{{failure.session_idx}}/failure">{{failure.failure.message}}</a></td>
             </tr>
-          </table>
+          </tbody></table>
 
         </div>
 

@@ -1,15 +1,13 @@
 <!--
-    This Source Code Form is subject to the terms of the Mozilla Public
-    License, v. 2.0. If a copy of the MPL was not distributed with this
-    file, You can obtain one at http://mozilla.org/MPL/2.0/.
+This Source Code Form is subject to the terms of the Mozilla Public
+License, v. 2.0. If a copy of the MPL was not distributed with this
+file, You can obtain one at http://mozilla.org/MPL/2.0/.
 -->
 
-<!DOCTYPE html>
 
-<html ng-app="MinionApp" ng-csp>
-
-  <head>
-    <meta charset='utf-8'>
+<!doctype html>
+<html ng-app="MinionApp" ng-csp=""><head>
+    <meta charset="utf-8">
     <title>Minion</title>
     <link rel="stylesheet" href="static/css/normalize.css">
     <link rel="stylesheet" href="static/css/font-awesome.css">
@@ -25,7 +23,7 @@
     <script src="static/js/angular-resource.js"></script>
     <script src="static/js/angular-route.js"></script>
     <script src="static/js/bootstrap.js"></script>
-    <script src="static/js/ui-bootstrap-tpls-0.3.0.js"></script>
+    <script src="static/js/ui-bootstrap-tpls-0.11.0.js"></script>
     <script src="static/js/minion/admin/groups.js"></script>
     <script src="static/js/minion/admin/invites.js"></script>
     <script src="static/js/minion/admin/plans.js"></script>
@@ -35,22 +33,22 @@
     <script src="static/js/minion-main.js"></script>
   </head>
 
-  <body ng-Controller="MinionController">
+  <body ng-controller="MinionController">
 
-    <div class="navbar navbar-fixed-top" ng-show="session">
-      <div class="navbar-inner">
-        <div class="container">
-          <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+    <div class="navbar navbar-fixed-top navbar-default" ng-show="session">
+      <div class="container">
+        <div class="container"><div class="navbar-header"><a class="navbar-brand" href="#!">Minion</a></div>
+          <button type="button" class="btn btn-navbar btn-default" data-toggle="collapse" data-target=".nav-collapse">
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="brand" href="#!">Minion</a>
-          <div class="nav-collapse collapse">
+
+          <div class="collapse navbar-collapse">
             <p class="navbar-text pull-right">
-              Logged in as {{session.email}} - <a ng-click="signOut()">Sign out</a>
+            Logged in as {{session.email}} - <a ng-click="signOut()">Sign out</a>
             </p>
-            <ul class="nav">
+            <ul class="nav navbar-nav">
               <li ng-show="session.role == 'administrator'"><a ng-href="#!/admin/users">Administration</a></li>
             </ul>
           </div>
@@ -59,7 +57,7 @@
     </div>
 
     <div class="container">
-        <ng-view></ng-view>
+      <ng-view></ng-view>
     </div>
 
     <p>&nbsp;</p>
@@ -68,6 +66,5 @@
       <p><small>minion 0.4 - source code on <a href="https://github.com/mozilla/minion" target="_blank">github.com/mozilla/minion</a></small></p>
     </center>
 
-  </body>
+</body></html>
 
-</html>

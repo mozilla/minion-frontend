@@ -5,9 +5,9 @@
   <h2>Plan Details</h2>
 
   <div class="row">
-    <div class="span12">
+    <div class="col-sm-12 col-md-12">
       <table class="table table-bordered">
-        <tr>
+        <tbody><tr>
           <td><b>Plan</b></td>
           <td>{{plan.name}}</td>
         </tr>
@@ -15,14 +15,14 @@
           <td><b>Description</b></td>
           <td>{{plan.description}}</td>
         </tr>
-      </table>
+      </tbody></table>
     </div>
 
   </div>
 
   <div class="row">
 
-    <div class="span12">
+    <div class="col-sm-12 col-md-12">
 
       <h3>Workflow</h3>
 
@@ -34,15 +34,15 @@
             <th>Description</th>
           </tr>
         </thead>
-        <tr ng-repeat="step in plan.workflow">
+        <tbody><tr ng-repeat="step in plan.workflow">
           <td>#{{$index+1}}</td>
           <td>{{step.plugin_name}} {{step.plugin.version}}</td>
           <td ng-bind-html-unsafe="step.description|link_bugs"></td>
         </tr>
-      </table>
+      </tbody></table>
 
     </div>
 
   </div>
 
-</div>
+</div></div>
