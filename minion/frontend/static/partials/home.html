@@ -46,7 +46,7 @@
           </tr>
         </thead>
         <tr ng-repeat="r in report">
-          <td><a href="{{r.label}}" target="_blank">{{r.label}}</a></td>
+          <td><a href="#!/home/history?site={{r.label}}">{{r.label}}</a></td>
           <td><a ng-href="#!/plan/{{r.plan}}">{{r.plan}}</a></td>
           <td>{{(r.scan.created | scan_datetime) || "-" }}</td>
           <td>{{r.scan.state || "-"}}</td>
