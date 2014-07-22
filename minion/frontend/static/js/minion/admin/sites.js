@@ -6,39 +6,39 @@
 var minionAdminSitesModule = angular.module('minionAdminSitesModule', []);
 
 
-minionAdminSitesModule.controller("AdminEditSiteController", function ($scope, dialog, site, plans) {
+minionAdminSitesModule.controller("AdminEditSiteController", function ($scope, modal, site, plans) {
     $scope.site = site;
     $scope.plans = plans;
 
     $scope.cancel = function () {
-        dialog.close(null);
+        modal.close(null);
     };
 
     $scope.submit = function(site) {
-        dialog.close(site);
+        modal.close(site);
     };
 });
 
 
-minionAdminSitesModule.controller("AdminCreateSiteController", function ($scope, dialog, plans, sites) {
+minionAdminSitesModule.controller("AdminCreateSiteController", function ($scope, modal, plans, sites) {
     $scope.site = {url:"",plans:[],verification:{enabled:false,value:null}};
     $scope.plans = plans;
 
     $scope.cancel = function () {
-        dialog.close(null);
+        modal.close(null);
     };
 
     $scope.submit = function(site) {
         if (_.find(sites, function (s) { return s.url === site.url; })) {
             $scope.error = "The site already exists.";
         } else {
-            dialog.close(site);
+            modal.close(site);
         }
     };
 });
 
 
-minionAdminSitesModule.controller("AdminSitesController", function($scope, $routeParams, $http, $dialog) {
+minionAdminSitesModule.controller("AdminSitesController", function($scope, $routeParams, $http, $modal) {
     $scope.navItems = app.navContext('admin');
 
     var reload = function() {
@@ -51,7 +51,7 @@ minionAdminSitesModule.controller("AdminSitesController", function($scope, $rout
     $scope.editSite = function (site) {
         $http.get('/api/admin/plans').success(function(response) {
             $scope.plans = response.data;
-                var d = $dialog.dialog({
+                var d = $modal.modal({
                     templateUrl: "static/partials/admin/sites/edit-site.html",
                     controller: "AdminEditSiteController",
                     resolve: { plans: function() { return $scope.plans; },
@@ -78,7 +78,7 @@ minionAdminSitesModule.controller("AdminSitesController", function($scope, $rout
             $scope.plans = response.data;
             $http.get('/api/admin/sites').success(function(response) {
                 $scope.sites = response.data;
-                var d = $dialog.dialog({
+                var d = $modal.modal({
                     templateUrl: "static/partials/admin/sites/create-site.html",
                     controller: "AdminCreateSiteController",
                     resolve: { plans: function() { return $scope.plans; },
