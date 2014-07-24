@@ -6,33 +6,33 @@
 var minionAdminSitesModule = angular.module('minionAdminSitesModule', []);
 
 
-minionAdminSitesModule.controller("AdminEditSiteController", function ($scope, modal, site, plans) {
+minionAdminSitesModule.controller("AdminEditSiteController", function ($scope, $modalInstance, site, plans) {
     $scope.site = site;
     $scope.plans = plans;
 
     $scope.cancel = function () {
-        modal.close(null);
+        $modalInstance.close(null);
     };
 
     $scope.submit = function(site) {
-        modal.close(site);
+        $modalInstance.close(site);
     };
 });
 
 
-minionAdminSitesModule.controller("AdminCreateSiteController", function ($scope, modal, plans, sites) {
+minionAdminSitesModule.controller("AdminCreateSiteController", function ($scope, $modalInstance, plans, sites) {
     $scope.site = {url:"",plans:[],verification:{enabled:false,value:null}};
     $scope.plans = plans;
 
     $scope.cancel = function () {
-        modal.close(null);
+        $modalInstance.close(null);
     };
 
     $scope.submit = function(site) {
         if (_.find(sites, function (s) { return s.url === site.url; })) {
             $scope.error = "The site already exists.";
         } else {
-            modal.close(site);
+            $modalInstance.close(site);
         }
     };
 });
@@ -51,13 +51,13 @@ minionAdminSitesModule.controller("AdminSitesController", function($scope, $rout
     $scope.editSite = function (site) {
         $http.get('/api/admin/plans').success(function(response) {
             $scope.plans = response.data;
-                var d = $modal.modal({
+                var d = $modal.open({
                     templateUrl: "static/partials/admin/sites/edit-site.html",
                     controller: "AdminEditSiteController",
                     resolve: { plans: function() { return $scope.plans; },
                                site: function() { return angular.copy(site); } }
                 });
-                d.open().then(function(site) {
+                d.result.then(function(site) {
                     if (site) {
                         var verify = site.verification;
                         $http.post('/api/admin/sites/' + site.id,
@@ -78,13 +78,13 @@ minionAdminSitesModule.controller("AdminSitesController", function($scope, $rout
             $scope.plans = response.data;
             $http.get('/api/admin/sites').success(function(response) {
                 $scope.sites = response.data;
-                var d = $modal.modal({
+                var d = $modal.open({
                     templateUrl: "static/partials/admin/sites/create-site.html",
                     controller: "AdminCreateSiteController",
                     resolve: { plans: function() { return $scope.plans; },
                                sites: function() { return $scope.sites; } }
                 });
-                d.open().then(function(site) {
+                d.result.then(function(site) {
                     if(site) {
                         var verify = {'enabled': site.verification.enabled, 'value': null};
                         $http.post('/api/admin/sites', {url: site.url, plans: site.plans, verification: verify}).success(function(response) {

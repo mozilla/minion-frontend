@@ -6,6 +6,7 @@
 var dependencies = [
     "ngRoute",
     "ui.bootstrap",
+    "ui.bootstrap.modal.dialog",
     "minionAdminGroupsModule",
     "minionAdminInvitesModule",
     "minionAdminPlansModule",

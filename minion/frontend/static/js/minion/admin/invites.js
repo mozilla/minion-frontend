@@ -6,7 +6,7 @@
 var minionAdminInvitesModule = angular.module('minionAdminInvitesModule', []);
 
 
-minionAdminInvitesModule.controller("AdminCreateInviteController", function($scope, modal, users, groups) {
+minionAdminInvitesModule.controller("AdminCreateInviteController", function($scope, $modalInstance, users, groups) {
     $scope.invite = {recipient: ""};
     $scope.groups = groups;
     $scope.roles = ["user", "administrator"];
@@ -18,12 +18,12 @@ minionAdminInvitesModule.controller("AdminCreateInviteController", function($sco
 
     // todo: do cleanup!
     $scope.cancel = function() {
-        modal.close(null);
+        $modalInstance.close(null);
     };
 
     $scope.submit = function(result) {
         result.opts = $scope.opts;
-        modal.close(result);
+        $modalInstance.close(result);
     };
 });
 

@@ -6,41 +6,41 @@
 var minionAdminUsersModule = angular.module('minionAdminUsersModule', []);
 
 
-minionAdminUsersModule.controller("AdminEditUserController", function ($scope, modal, user, groups) {
+minionAdminUsersModule.controller("AdminEditUserController", function ($scope, $modalInstance, user, groups) {
     $scope.user = user;
     $scope.groups = groups;
     $scope.roles = ["user", "administrator"];
 
     $scope.cancel = function () {
-        modal.close(null);
+        $modalInstance.close(null);
     };
 
     $scope.submit = function() {
-        modal.close($scope.user);
+        $modalInstance.close($scope.user);
     };
 });
 
 
-minionAdminUsersModule.controller("AdminCreateUserController", function ($scope, modal, users, groups) {
+minionAdminUsersModule.controller("AdminCreateUserController", function ($scope, $modalInstance, users, groups) {
     $scope.user = {email:"", name: "", groups:[], role: "user"};
     $scope.groups = groups;
     $scope.roles = ["user", "administrator"];
 
     $scope.cancel = function () {
-        modal.close(null);
+        $modalInstance.close(null);
     };
 
     $scope.submit = function(user) {
         if (_.find(users, function (u) { return u.email === user.email; })) {
             $scope.error = "The user already exists.";
         } else {
-            modal.close(user);
+            $modalInstance.close(user);
         }
     };
 });
 
 
-minionAdminUsersModule.controller("AdminUsersController", function($scope, $http, $modal) {
+minionAdminUsersModule.controller("AdminUsersController", function($scope, $http, $modal, $dialog) {
     $scope.navItems = app.navContext('admin');
 
     var reload = function() {
@@ -53,13 +53,13 @@ minionAdminUsersModule.controller("AdminUsersController", function($scope, $http
     $scope.editUser = function (user) {
         $http.get('/api/admin/groups').success(function(response) {
             $scope.groups = response.data;
-                var d = $modal.modal({
+                var d = $modal.open({
                     templateUrl: "static/partials/admin/users/edit-user.html",
                     controller: "AdminEditUserController",
                     resolve: { groups: function() { return $scope.groups; },
                                user: function() { return angular.copy(user); } }
                 });
-                d.open().then(function(user) {
+                d.result.then(function(user) {
                     if (user) {
                         $http.post('/api/admin/users/' + user.email, user).success(function(response) {
                             reload();
@@ -73,7 +73,7 @@ minionAdminUsersModule.controller("AdminUsersController", function($scope, $http
         var title = 'Remove User';
         var msg = 'Are you sure you want to remove ' + user.email + ' from minion?';
         var btns = [{result:false, label: 'Cancel'}, {result:true, label: 'OK', cssClass: 'btn-primary'}];
-        $modal.messageBox(title, msg, btns).open().then(function(result) {
+        $dialog.messageBox(title, msg, btns).open().then(function(result) {
             if (result) {
                 $http.delete('/api/admin/users/' + user.email).success(function() {
                     reload();
@@ -84,13 +84,13 @@ minionAdminUsersModule.controller("AdminUsersController", function($scope, $http
 
     $scope.createUser = function () {
         $http.get('/api/admin/groups').success(function(response) {
-            var d = $modal.modal({
+            var d = $modal.open({
                 templateUrl: "static/partials/admin/users/create-user.html",
                 controller: "AdminCreateUserController",
                 resolve: { users: function() { return $scope.users; },
                            groups: function() { return response.data; } }
             });
-            d.open().then(function(user) {
+            d.result.then(function(user) {
                 if(user) {
                     data = {email: user.email, name: user.name, role: user.role, groups: user.groups};
                     $http.post('/api/admin/users', data).success(function(response) {
@@ -98,6 +98,7 @@ minionAdminUsersModule.controller("AdminUsersController", function($scope, $http
                             reload();
                         } else {
                             // TODO Show an error modal
+                            console.log("/api/admin/users: response failed");
                         }
                     });
                 }

@@ -6,7 +6,7 @@
 var minionAdminPlansModule = angular.module('minionAdminPlansModule', []);
 
 
-minionAdminPlansModule.controller("AdminCreatePlanController", function ($scope, modal, plugins) {
+minionAdminPlansModule.controller("AdminCreatePlanController", function ($scope, $modalInstance, plugins) {
     var workflow = [{
         plugin_name: "minion.plugins.basic.AlivePlugin",
         description: "",
@@ -15,7 +15,7 @@ minionAdminPlansModule.controller("AdminCreatePlanController", function ($scope,
     $scope.plan = { name: null, workflow: JSON.stringify(workflow, null, "  ") };
 
     $scope.cancel = function () {
-        modal.close(null);
+        $modalInstance.close(null);
     };
 
     var parseWorkflow = function (workflowString) {
@@ -49,17 +49,17 @@ minionAdminPlansModule.controller("AdminCreatePlanController", function ($scope,
             }
         }
         var plan = { name: $scope.plan.name, description: $scope.plan.description, workflow: workflow };
-        modal.close(plan);
+        $modalInstance.close(plan);
     };
 });
 
 
-minionAdminPlansModule.controller("AdminEditPlanController", function ($scope, modal, plan, plugins) {
+minionAdminPlansModule.controller("AdminEditPlanController", function ($scope, $modalInstance, plan, plugins) {
     $scope.plan = plan;
     $scope.plan.workflow = JSON.stringify($scope.plan.workflow, null, "  ");
 
     $scope.cancel = function () {
-        modal.close(null);
+        $modalInstance.close(null);
     };
 
     // TODO Refactor the following two - move them to the module? What to do in Angular.js?
@@ -95,12 +95,12 @@ minionAdminPlansModule.controller("AdminEditPlanController", function ($scope, m
             }
         }
         var plan = { name: $scope.plan.name, description: $scope.plan.description, workflow: workflow };
-        modal.close(plan);
+        $modalInstance.close(plan);
     };
 });
 
 
-minionAdminPlansModule.controller("AdminPlansController", function($scope, $routeParams, $http, $modal) {
+minionAdminPlansModule.controller("AdminPlansController", function($scope, $routeParams, $http, $modal, $dialog) {
 
     $scope.navItems = app.navContext('admin');
 
@@ -113,13 +113,13 @@ minionAdminPlansModule.controller("AdminPlansController", function($scope, $rout
     $scope.editPlan = function (plan) {
         $http.get('/api/admin/plugins').success(function(response) {
             $scope.plugins = response.data;
-            var d = $modal.modal({
+            var d = $modal.open({
                 templateUrl: "static/partials/admin/plans/edit.html",
                 controller: "AdminEditPlanController",
                 resolve: { plan: function() { return angular.copy(plan); },
                            plugins: function() { return $scope.plugins; } }
             });
-            d.open().then(function(plan) {
+            d.result.then(function(plan) {
                 if (plan) {
                     $http.post('/api/admin/plans/' + plan.name, plan).success(function(response) {
                         reload();
@@ -132,13 +132,13 @@ minionAdminPlansModule.controller("AdminPlansController", function($scope, $rout
     $scope.createPlan = function () {
         $http.get('/api/admin/plugins').success(function(response) {
             $scope.plugins = response.data;
-            var d = $modal.modal({
+            var d = $modal.open({
                 templateUrl: "static/partials/admin/plans/create-plan.html",
                 controller: "AdminCreatePlanController",
                 resolve: { plugins: function() { return $scope.plugins; } }
 
             });
-            d.open().then(function(plan) {
+            d.result.then(function(plan) {
                 if (plan) {
                     $http.post('/api/admin/plans', plan).success(function(response) {
                         reload();
@@ -152,7 +152,7 @@ minionAdminPlansModule.controller("AdminPlansController", function($scope, $rout
         var title = 'Remove Plan';
         var msg = 'Are you sure you want to remove the ' + plan.name + ' plan?';
         var btns = [{result:false, label: 'Cancel'}, {result:true, label: 'OK', cssClass: 'btn-primary'}];
-        $modal.messageBox(title, msg, btns).open().then(function(result) {
+        $dialog.messageBox(title, msg, btns).open().then(function(result) {
             if (result) {
                 $http.delete('/api/admin/plans/' + plan.name).success(function(response) {
                     reload();
