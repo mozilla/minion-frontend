@@ -5,12 +5,35 @@
 -->
 
 <div class="container" ng-controller="LoginController">
-  <form class="form-signin" id="signin-form">
+  <form class="form-signin" id="signin-form" name="signinform">
     <h2 class="form-signin-heading">Welcome to Minion</h2>
-    <p><b>Note:</b> This application requires Persona to sign in.</p>
+
     <div class="alert alert-error" ng-show="logInStatus == 'banned'">
         <b>Oh snap!</b> You are banned so you cannot proceed to login.
     </div>
-    <p><a class="btn btn-large btn-primary" ng-click="signIn()"><i class="icon-user"></i> Sign in with Persona</a></p>
+
+    <div class="alert alert-error" ng-show="logInStatus == 'error'">
+        <b>Oh snap!</b> An error occured, please contact the administrator of Minion.
+    </div>
+
+    <div class="alert alert-error" ng-show="logInStatus == 'not_authorized'">
+        <b>Oh snap!</b> You are not authorized to log in Minion. If you think it's an error, please contact the administrator of Minion.
+    </div>
+
+    <div class="alert alert-error" ng-show="logInStatus == 'invalid_cred'">
+        Bad username or password.
+    </div>
+
+    <div ng-show="login_type == 'persona' && logInStatus != 'banned'">
+        <p><b>Note:</b> This application requires Persona to sign in.</p>
+        <p><a class="btn btn-large btn-primary" ng-click="signIn()"><i class="icon-user"></i> Sign in with Persona</a></p>
+    </div>
+
+    <div ng-show="login_type == 'ldap' && logInStatus != 'banned'">
+        <p>Username: <input type="text" ng-model="ldap.user" required /></p>
+        <p>Password: <input type="password" ng-model="ldap.password" required /></p>
+
+        <p><button class="btn btn-large btn-primary" ng-click="ldapSignIn()" ng-disabled="signinform.$invalid"><i class="icon-user"></i> Sign in with LDAP</button></p>
+    </div>
   </form>
 </div>

@@ -11,7 +11,15 @@ import os
 DEFAULT_FRONTEND_CONFIG = {
     'backend-api': {
         'url': 'http://127.0.0.1:8383'
+    },
+    'login_conf': {
+       'login_type': 'persona', # persona OR ldap
+
+       'ldap_uri': 'ldaps://ldap.server/',
+       'ldap_base': 'ou=test,dc=test_dc',
+       'ldap_authorized_groups': ['groupTest1', 'groupTest2']
     }
+
 }
 
 
