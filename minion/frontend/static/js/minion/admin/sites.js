@@ -38,6 +38,9 @@ minionAdminSitesModule.controller("AdminCreateSiteController", function ($scope,
 });
 
 
+
+
+
 minionAdminSitesModule.controller("AdminSitesController", function($scope, $routeParams, $http, $modal) {
     $scope.navItems = app.navContext('admin');
 

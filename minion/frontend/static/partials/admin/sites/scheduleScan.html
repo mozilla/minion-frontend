@@ -1,0 +1,25 @@
+
+<form class="form-horizontal" name="siteForm">
+
+  <div class="modal-header">
+    <h1>Set Scan-Schedules</h1>
+  </div>
+
+  <form>
+    <div class="modal-body">
+
+      <div ng-show="error" class="alert alert-error"><strong>Oh snap!</strong> {{error}}</div>
+        Minute: <input type="text" ng-model="schedule.minute" /><br />
+        Hour: <input type="text" ng-model="schedule.hour" /><br />
+        Day of Week: <input type="text" ng-model="schedule.dayofWeek" /><br />
+        Day of Month: <input type="text" ng-model="schedule.dayOfMonth" /><br />
+        Day of Year: <input type="text" ng-model="schedule.dayOfYear" /><br />
+    </div>
+  </form>
+
+  <div class="modal-footer">
+    <button ng-click="cancel()" class="btn">Cancel</button>
+    <button ng-click="submit(site)" class="btn btn-primary" ng-disabled="siteForm.$invalid">Update</button>
+  </div>
+
+</form>

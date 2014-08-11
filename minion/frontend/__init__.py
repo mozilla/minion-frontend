@@ -12,6 +12,7 @@ from minion.frontend.utils import frontend_config
 def configure_app(app, production=True, debug=True):
     app.debug = debug
     app.use_evalex = False
+    app.config.update(SEND_FILE_MAX_AGE_DEFAULT=0)
     if production:
         config = frontend_config()
         if config.get('session-secret') is None:

@@ -26,7 +26,19 @@ app.navContext = function(section) {
     });
 };
 
-app.controller("MinionController", function($rootScope, $route, $scope, $http, $location) {
+app.controller("ScheduleController", function ($scope, $modalInstance) {
+    $scope.schedule = {};
+    $scope.cancel = function () {
+        $modalInstance.close(null);
+    };
+
+    $scope.submit = function() {
+      $modalInstance.close($scope.schedule);
+    };
+});
+
+
+app.controller("MinionController", function($rootScope, $route, $scope, $http, $location, $modal) {
     $rootScope.signOut = function() {
         $http.get('/api/logout').success(function() {
             $rootScope.session = null;
@@ -61,10 +73,33 @@ app.controller("MinionController", function($rootScope, $route, $scope, $http, $
         });
     };
 
-    $rootScope.showScheduler = function (target) { 
-        console.log("ShowScheduler: ");
-        console.log(target);
-    }
+    $rootScope.showScheduler = function (target, plan, scan_id) { 
+        var d = $modal.open({
+            templateUrl: "static/partials/admin/sites/scheduleScan.html?date=" + new Date(),
+            controller: "ScheduleController",
+        });
+
+        d.result.then(function(schedule) {
+            if (schedule) {
+              console.log(schedule);
+              var data = {
+                target: target,
+                plan: plan, 
+                scan_id: scan_id, 
+                schedule: schedule
+              };
+
+              $http.put('api/scanschedule', data).
+                success(function(data, status) {
+                  // Success Handler
+                }).
+                error(function(data, status) {
+                  // Error handler
+                });
+            }
+        });
+        
+    };
     // $route is useful in the scope for knowing "active" tabs, for example.
     $rootScope.$route = $route;
 
