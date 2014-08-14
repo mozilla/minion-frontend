@@ -885,13 +885,8 @@ def get_ws_issues():
 
 @app.route("/api/scanschedule", methods=["PUT"])
 def scanschedule():
-  #target = request.json["target"]
-  #scan_id = request.json["scan_id"]
-  #plan = request.json["plan"]
   r = requests.post(config["backend-api"]["url"] + "/scanschedule",
                     headers={"Content-Type": "application/json"},
                     data=json.dumps(request.json))
-  #r = requests.get(config["backend-api"]["url"] + "/scanschedule")
   r.raise_for_status()
-  #r = requests.get("http://127.0.0.1:8383/scanschedule")
   return  str(r.text)

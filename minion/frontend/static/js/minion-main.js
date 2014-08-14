@@ -26,8 +26,15 @@ app.navContext = function(section) {
     });
 };
 
-app.controller("ScheduleController", function ($scope, $modalInstance) {
+app.controller("ScheduleController", function ($scope, $modalInstance, crontab) {
     $scope.schedule = {};
+    if (crontab) {
+      $scope.schedule.minute = crontab.minute;
+      $scope.schedule.hour = crontab.hour;
+      $scope.schedule.dayOfWeek = crontab.day_of_week;
+      $scope.schedule.dayOfMonth = crontab.day_of_month;
+      $scope.schedule.monthOfYear = crontab.month_of_year;
+    }
     $scope.cancel = function () {
         $modalInstance.close(null);
     };
@@ -73,19 +80,22 @@ app.controller("MinionController", function($rootScope, $route, $scope, $http, $
         });
     };
 
-    $rootScope.showScheduler = function (target, plan, scan_id) { 
+    $rootScope.showScheduler = function (target, plan, crontab) {
         var d = $modal.open({
-            templateUrl: "static/partials/admin/sites/scheduleScan.html?date=" + new Date(),
+            templateUrl: "static/partials/admin/scan-schedule-dialog.html?date=" + new Date(),
             controller: "ScheduleController",
+            resolve: {
+              crontab: function ()  {
+                return crontab;
+              }
+            }
         });
 
         d.result.then(function(schedule) {
             if (schedule) {
-              console.log(schedule);
               var data = {
                 target: target,
                 plan: plan, 
-                scan_id: scan_id, 
                 schedule: schedule
               };
 
