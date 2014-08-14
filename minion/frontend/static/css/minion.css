@@ -90,6 +90,10 @@ body {
     width: 60px;
 }
 
+.minion-btn-wide {
+    width: 110px;
+}
+
 .minion-issue-count-label {
     width: 30px;
     margin-right: 6px;
