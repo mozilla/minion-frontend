@@ -9,13 +9,16 @@
     <div class="modal-body">
 
       <div ng-show="error" class="alert alert-error"><strong>Oh snap!</strong> {{error}}</div>
-        Minute: <input type="text" ng-model="schedule.minute" /><br />
-        Hour: <input type="text" ng-model="schedule.hour" /><br />
-        Day of Week: <input type="text" ng-model="schedule.dayOfWeek" /><br />
-        Day of Month: <input type="text" ng-model="schedule.dayOfMonth" /><br />
-        Month of Year: <input type="text" ng-model="schedule.monthOfYear" /><br />
+      <table class="table table-borderless">
+        <tr><td>Minute:</td><td> <input type="text" ng-model="schedule.minute" /><br /></td></tr>
+        <tr><td>Hour:</td><td> <input type="text" ng-model="schedule.hour" /><br /></td></tr>
+        <tr><td>Day of Week:</td><td> <input type="text" ng-model="schedule.dayOfWeek" /><br /></td></tr>
+        <tr><td>Day of Month:</td><td> <input type="text" ng-model="schedule.dayOfMonth" /><br /></td></tr>
+        <tr><td>Month of Year:</td><td> <input type="text" ng-model="schedule.monthOfYear" /><br /></td></tr>
+        </table>
     </div>
   </form>
+  <div> <em> Note: Input expected in cronjob style </em> </div>
 
   <div class="modal-footer">
     <button ng-click="cancel()" class="btn">Cancel</button>

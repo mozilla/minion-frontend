@@ -44,7 +44,6 @@ app.controller("ScheduleController", function ($scope, $modalInstance, crontab) 
       $modalInstance.close($scope.schedule);
     };
     $scope.removeSchedule = function() {
-      console.log("Attempting to remove")
       $scope.schedule.remove = true;
       $modalInstance.close($scope.schedule);
     };

@@ -12,7 +12,7 @@ body {
     max-height: 800px;
 }
 .table-borderless td, .table-borderless th {
-    border: 0;
+    border: None;
 }
 
 .warning-high {
