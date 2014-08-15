@@ -28,6 +28,7 @@ app.navContext = function(section) {
 
 app.controller("ScheduleController", function ($scope, $modalInstance, crontab) {
     $scope.schedule = {};
+    $scope.crontab = crontab;
     if (crontab) {
       $scope.schedule.minute = crontab.minute;
       $scope.schedule.hour = crontab.hour;
@@ -40,6 +41,11 @@ app.controller("ScheduleController", function ($scope, $modalInstance, crontab) 
     };
 
     $scope.submit = function() {
+      $modalInstance.close($scope.schedule);
+    };
+    $scope.removeSchedule = function() {
+      console.log("Attempting to remove")
+      $scope.schedule.remove = true;
       $modalInstance.close($scope.schedule);
     };
 });
