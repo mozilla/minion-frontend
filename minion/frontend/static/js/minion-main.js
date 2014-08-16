@@ -26,10 +26,11 @@ app.navContext = function(section) {
     });
 };
 
-app.controller("ScheduleController", function ($scope, $modalInstance, crontab) {
+app.controller("ScheduleController", function ($scope, $modalInstance, items) {
     $scope.schedule = {};
-    $scope.crontab = crontab;
-    if (crontab) {
+    var crontab = items.crontab;
+    $scope.scheduleEnabled = items.scheduleEnabled;
+    if (crontab && items.scheduleEnabled) {
       $scope.schedule.minute = crontab.minute;
       $scope.schedule.hour = crontab.hour;
       $scope.schedule.dayOfWeek = crontab.day_of_week;
@@ -44,6 +45,7 @@ app.controller("ScheduleController", function ($scope, $modalInstance, crontab) 
       $modalInstance.close($scope.schedule);
     };
     $scope.removeSchedule = function() {
+      // Sending remove parameter to schedule will disable it
       $scope.schedule.remove = true;
       $modalInstance.close($scope.schedule);
     };
@@ -85,13 +87,18 @@ app.controller("MinionController", function($rootScope, $route, $scope, $http, $
         });
     };
 
-    $rootScope.showScheduler = function (target, plan, crontab) {
+    $rootScope.showScheduler = function (target, plan, crontab, scheduleEnabled) {
+        console.log(scheduleEnabled);
+        var items = {
+          crontab: crontab,
+          scheduleEnabled: scheduleEnabled
+        };
         var d = $modal.open({
             templateUrl: "static/partials/admin/scan-schedule-dialog.html?date=" + new Date(),
             controller: "ScheduleController",
             resolve: {
-              crontab: function ()  {
-                return crontab;
+              items: function ()  {
+                return items;
               }
             }
         });

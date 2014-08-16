@@ -22,8 +22,8 @@
 
   <div class="modal-footer">
     <button ng-click="cancel()" class="btn">Cancel</button>
-    <button ng-show="crontab" ng-click="submit(site)" class="btn btn-success" ng-disabled="siteForm.$invalid">Update Schedule</button>
-    <button ng-show="!crontab" ng-click="submit(site)" class="btn btn-success" ng-disabled="siteForm.$invalid">Set Schedule</button>
-    <button ng-show="crontab" ng-click="removeSchedule(site)" class="btn btn-danger">Remove Schedule</button>
+    <button ng-show="scheduleEnabled" ng-click="submit(site)" class="btn btn-success" ng-disabled="siteForm.$invalid">Update Schedule</button>
+    <button ng-show="!scheduleEnabled" ng-click="submit(site)" class="btn btn-success" ng-disabled="siteForm.$invalid">Set Schedule</button>
+    <button ng-show="scheduleEnabled" ng-click="removeSchedule(site)" class="btn btn-danger">Remove Schedule</button>
   </div>
 </form>
