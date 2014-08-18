@@ -10,19 +10,21 @@
 
       <div ng-show="error" class="alert alert-error"><strong>Oh snap!</strong> {{error}}</div>
 
-      <div class="control-group">
-        <label class="control-label" for="inputUrl">URL</label>
-        <div class="controls">
-          {{site.url}}
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="inputUrl">URL</label>
+        <div class="col-sm-9">
+            <div class="form-control">{{site.url}}</div>
         </div>
+        <div class="col-sm-1 hidden"></div>
       </div>
 
-      <div class="control-group">
-        <label class="control-label" for="inputPassword">Plans</label>
-        <div class="controls">
-          <select size="8" multiple ng-multiple="true" ng-model="site.plans" ng-options="p.name as p.name for p in plans">
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="inputPassword">Plans</label>
+        <div class="col-sm-9">
+          <select class="form-control" size="8" multiple ng-multiple="true" ng-model="site.plans" ng-options="p.name as p.name for p in plans">
           </select>
         </div>
+        <div class="col-sm-1 hidden"></div>
       </div>
     </div>
   </form>

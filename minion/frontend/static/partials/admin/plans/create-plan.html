@@ -4,37 +4,40 @@
     <h1>Create Plan</h1>
   </div>
 
-  <form>
     <div class="modal-body">
 
       <div ng-show="error" class="alert alert-error"><strong>Oh snap!</strong> {{error}}</div>
 
-      <div class="control-group">
-        <label class="control-label" for="inputName">Name</label>
-        <div class="controls">
-          <input type="text" ng-model="plan.name" placeholder="plan name" required ng-pattern="/^[a-zA-Z0-9][a-zA-Z0-9_-]{2,}?$/">
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="inputName">Name</label>
+        <div class="col-sm-9">
+          <input class="form-control" type="text" ng-model="plan.name" placeholder="plan name" required ng-pattern="/^[a-zA-Z0-9][a-zA-Z0-9_-]{2,}?$/">
         </div>
+        <div class="col-sm-1 hidden"></div>
       </div>
 
-      <div class="control-group">
-        <label class="control-label" for="inputName">Description</label>
-        <div class="controls">
-          <input type="text" ng-model="plan.description" placeholder="description" required>
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="inputName">Description</label>
+        <div class="col-sm-9">
+          <input class="form-control" type="text" ng-model="plan.description" placeholder="description" required>
         </div>
+        <div class="col-sm-1 hidden"></div>
       </div>
 
-      <div class="control-group">
-        <div class="controls">
-          <label class="checkbox">
-            <input type="checkbox" ng-model="plan.requiresAdministrator">Can only be executed by administrators
-          </label>
+      <div class="form-group">
+        <div class="col-sm-offset-2 col-sm-9">
+          <div class="checkbox">
+            <label>
+              <input type="checkbox" ng-model="plan.requiresAdministrator">Can only be executed by administrators
+            </label>
+          </div>
         </div>
+        <div class="col-sm-1 hidden"></div>
       </div>
 
-      <textarea ng-model="plan.workflow" class="input-xxlarge minion-dialog-textbox" id="textarea" rows="9"></textarea>
+      <textarea class="form-control" ng-model="plan.workflow" class="input-xxlarge minion-dialog-textbox" id="textarea" rows="9"></textarea>
 
     </div>
-  </form>
 
   <div class="modal-footer">
     <button ng-click="cancel()" class="btn">Cancel</button>

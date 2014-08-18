@@ -5,41 +5,43 @@
     <h1>Edit User</h1>
   </div>
 
-  <form>
-    <div class="modal-body">
+  <div class="modal-body">
 
-      <div ng-show="error" class="alert alert-error"><strong>Oh snap!</strong> {{error}}</div>
+    <div ng-show="error" class="alert alert-error"><strong>Oh snap!</strong> {{error}}</div>
 
-      <div class="control-group">
-        <label class="control-label" for="inputEmail">Email {{userForm.$valid}}</label>
-        <div class="controls">
-          <div>{{user.email}}</div>
-        </div>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="inputEmail">Email</label>
+      <div class="col-sm-9">
+        <div class="form-control" >{{user.email}}</div>
       </div>
-
-      <div class="control-group">
-        <label class="control-label" for="inputName">Name</label>
-        <div class="controls">
-          <input type="text" ng-model="user.name" placeholder="Some Person">
-        </div>
-      </div>
-
-      <div class="control-group">
-        <label class="control-label" for="inputRole">Role</label>
-        <div class="controls">
-          <select ng-model="user.role" ng-options="role for role in roles"></select>
-        </div>
-      </div>
-
-      <div class="control-group">
-        <label class="control-label" for="inputGroups">Groups</label>
-        <div class="controls">
-          <select size="8" multiple ng-multiple="true" ng-model="user.groups" ng-options="g.name as g.name for g in groups">
-          </select>
-        </div>
-      </div>
+      <div class="col-sm-1 hidden"></div>
     </div>
-  </form>
+
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="inputName">Name</label>
+      <div class="col-sm-9">
+        <input class="form-control" type="text" ng-model="user.name" placeholder="Some Person">
+      </div>
+      <div class="col-sm-1 hidden"></div>
+    </div>
+
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="inputRole">Role</label>
+      <div class="col-sm-9">
+        <select class="form-control" ng-model="user.role" ng-options="role for role in roles"></select>
+      </div>
+      <div class="col-sm-1 hidden"></div>
+    </div>
+
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="inputGroups">Groups</label>
+      <div class="col-sm-9">
+        <select class="form-control" size="8" multiple ng-multiple="true" ng-model="user.groups" ng-options="g.name as g.name for g in groups">
+        </select>
+      </div>
+      <div class="col-sm-1 hidden"></div>
+    </div>
+  </div>
 
   <div class="modal-footer">
     <button ng-click="cancel()" class="btn">Cancel</button>

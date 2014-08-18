@@ -47,7 +47,7 @@ minionAdminGroupsModule.controller("AdminGroupsController", function($scope, $ro
             controller: "AdminAddGroupController",
             resolve: {
                 group: function () {
-                    return angular.copy(group)
+                    return angular.copy(group);
                 }
             }
         });

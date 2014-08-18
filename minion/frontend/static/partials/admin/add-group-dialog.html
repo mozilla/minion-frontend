@@ -1,18 +1,30 @@
-<form class="form-horizontal" name="groupForm">
-
+<form class="form-horizontal" name="groupForm" novalidate>
   <div class="modal-header">
     <h1>Add Group</h1>
   </div>
 
-  <form novalidate class="css-form">
-    <div class="modal-body">
-     <p>Name: <input type="text" ng-model="group.name" required /></p>
-     <p>Description: <input type="text" ng-model="group.description" required /></p>
+  <div class="modal-body">
+
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="inputName">Name</label>
+      <div class="col-sm-9">
+        <input class="form-control" type="text" ng-model="group.name" placeholder="Group name" required>
+      </div>
+      <div class="col-sm-1 hidden"></div>
     </div>
     
-    <div class="modal-footer">
-      <button ng-click="close(result)" class="btn btn-primary" ng-disabled="groupForm.$invalid">Add</button>
+    <div class="form-group">
+      <label class="control-label col-sm-2" for="inputName">Description</label>
+      <div class="col-sm-9">
+        <input class="form-control" type="text" ng-model="group.description" placeholder="Group Description" required>
+      </div>
+      <div class="col-sm-1 hidden"></div>
     </div>
-  </form>
+
+  </div>
+
+  <div class="modal-footer">
+    <button ng-click="close(result)" class="btn btn-primary" ng-disabled="groupForm.$invalid">Add</button>
+  </div>
 </form>
 

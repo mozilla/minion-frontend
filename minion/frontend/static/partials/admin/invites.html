@@ -1,16 +1,18 @@
 <ng-include src="'static/partials/admin/nav.html'"></ng-include>
 <ng-controller="AdminInvitesController">
 
+  <div class="row">
   <h2>Invitations </h2><span>
-          Search: <input ng-model="query">  Sort by:
-          <select ng-model="orderOption">
-              <option value="sent_on">Sent on (ascending)</option>
-              <option value="-sent_on">Sent on (descending)</option>
-              <option value="accepted_on">Accepted on (ascending)</option>
-              <option value="-accepted_on">Accepted on (descending)</option>
-              <option value="expire_on">Expire on (ascending)</option>
-              <option value="-expire_on">Expire on (descending)</option>
-      </select>  <a class="btn btn-small" ng-click="createInvite()">Invite...</a></span>
+    Search: <input ng-model="query">  Sort by:
+    <select ng-model="orderOption">
+        <option value="sent_on">Sent on (ascending)</option>
+        <option value="-sent_on">Sent on (descending)</option>
+        <option value="accepted_on">Accepted on (ascending)</option>
+        <option value="-accepted_on">Accepted on (descending)</option>
+        <option value="expire_on">Expire on (ascending)</option>
+        <option value="-expire_on">Expire on (descending)</option>
+    </select>  <a class="btn btn-small" ng-click="createInvite()">Invite...</a></span>
+  </div>
   <div class="row">
     <div class="span12">
       <table class="table table-bordered">

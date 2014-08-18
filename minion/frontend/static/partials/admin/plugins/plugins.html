@@ -2,12 +2,15 @@
 <ng-controller="AdminPluginsController">
 
   <h2>Plugins</h2>
-<span>
-          Search: <input ng-model="query">  Sort by:
-          <select ng-model="orderOption">
-              <option value="name">Name (ascending)</option>
-              <option value="-name">Name (descending)</option>
-      </select> </span>
+  <div class="row">
+    <span>
+      Search: <input ng-model="query">  Sort by:
+      <select ng-model="orderOption">
+          <option value="name">Name (ascending)</option>
+          <option value="-name">Name (descending)</option>
+      </select>
+    </span>
+  </div>
   <div class="row">
     <div class="span12">
       <table class="table table-bordered">
