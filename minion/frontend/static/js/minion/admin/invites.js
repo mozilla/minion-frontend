@@ -40,14 +40,14 @@ minionAdminInvitesModule.controller("AdminInvitesController", function($scope, $
 
     $scope.createInvite = function () {
         $http.get('/api/admin/groups').success(function(response) {
-            var d = $modal.modal({
+            var d = $modal.open({
                 templateUrl: "static/partials/admin/invites/create-invites.html",
                 controller: "AdminCreateInviteController",
                 resolve: { users: function() { return $scope.users; },
                            groups: function() { return response.data; }}
             });
 
-            d.open().then(function(result) {
+            d.result.then(function(result) {
                 if(result) {
                     var data1 = {email: result.email, name: result.name, role: result.role, groups: result.groups,
                                  invitation: true};
