@@ -90,7 +90,7 @@ minionAdminGroupsModule.controller("AdminAddSiteController", function ($scope, $
 });
 
 
-minionAdminGroupsModule.controller("AdminGroupController", function($scope, $routeParams, $http, $location, $modal) {
+minionAdminGroupsModule.controller("AdminGroupController", function($scope, $routeParams, $http, $location, $modal, $dialog) {
 
     $scope.navItems = app.navContext('admin');
 
@@ -137,7 +137,7 @@ minionAdminGroupsModule.controller("AdminGroupController", function($scope, $rou
         var title = 'Delete User';
         var msg = 'Are you sure you want to remove ' + email + ' from the group?';
         var btns = [{result:false, label: 'Cancel'}, {result:true, label: 'OK', cssClass: 'btn-primary'}];
-        $modal.messageBox(title, msg, btns).open().then(function(result) {
+        $dialog.messageBox(title, msg, btns).open().then(function(result) {
             if (result) {
                 var patch = {removeUsers:[email]};
                 var url = '/api/admin/groups/' + $routeParams.groupName;
@@ -176,7 +176,7 @@ minionAdminGroupsModule.controller("AdminGroupController", function($scope, $rou
         var title = 'Remove Site';
         var msg = 'Are you sure you want to remove ' + site + ' from the group?';
         var btns = [{result:false, label: 'Cancel'}, {result:true, label: 'OK', cssClass: 'btn-primary'}];
-        $modal.messageBox(title, msg, btns).open().then(function(result){
+        $dialog.messageBox(title, msg, btns).open().then(function(result){
             if (result) {
                 var patch = {removeSites:[site]};
                 var url = '/api/admin/groups/' + $routeParams.groupName;
