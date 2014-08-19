@@ -30,6 +30,7 @@ app.controller("ScheduleController", function ($scope, $modalInstance, items) {
     $scope.schedule = {};
     var crontab = items.crontab;
     $scope.scheduleEnabled = items.scheduleEnabled;
+    $scope.schedule.time = new Date();
     if (crontab && items.scheduleEnabled) {
       $scope.schedule.minute = crontab.minute;
       $scope.schedule.hour = crontab.hour;
@@ -48,6 +49,26 @@ app.controller("ScheduleController", function ($scope, $modalInstance, items) {
       // Sending remove parameter to schedule will disable it
       $scope.schedule.remove = true;
       $modalInstance.close($scope.schedule);
+    };
+    
+    $scope.changeRepeat = function(repeat) {
+      
+      switch(repeat){
+        case 'daily':
+          $scope.schedule.dayOfWeek = '*';
+          $scope.schedule.dayOfMonth = '*';
+          $scope.schedule.monthOfYear = '*';
+          break;
+
+        case 'weekly':
+          $scope.schedule.dayOfMonth = '*';
+          $scope.schedule.monthOfYear = '*';
+          break;
+
+        case 'monthly':
+          $scope.schedule.monthOfYear = '*';
+          break;
+      }
     };
 });
 
