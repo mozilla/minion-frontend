@@ -5,20 +5,57 @@
     <h1>Set Scan-Schedules</h1>
   </div>
 
-  <form>
     <div class="modal-body">
 
       <div ng-show="error" class="alert alert-error"><strong>Oh snap!</strong> {{error}}</div>
-      <table class="table table-borderless">
-        <tr><td>Minute:</td><td> <input type="text" ng-model="schedule.minute" /><br /></td></tr>
-        <tr><td>Hour:</td><td> <input type="text" ng-model="schedule.hour" /><br /></td></tr>
-        <tr><td>Day of Week:</td><td> <input type="text" ng-model="schedule.dayOfWeek" /><br /></td></tr>
-        <tr><td>Day of Month:</td><td> <input type="text" ng-model="schedule.dayOfMonth" /><br /></td></tr>
-        <tr><td>Month of Year:</td><td> <input type="text" ng-model="schedule.monthOfYear" /><br /></td></tr>
-        </table>
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="minute">Minute</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="text" ng-model="schedule.minute" />
+        </div>
+        <div class="col-sm-1 hidden"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="minute">Hour</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="text" ng-model="schedule.hour" />
+        </div>
+        <div class="col-sm-1 hidden"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="minute">Day of Week</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="text" ng-model="schedule.dayOfWeek" />
+        </div>
+        <div class="col-sm-1 hidden"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="minute">Day of Month</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="text" ng-model="schedule.dayOfMonth" />
+        </div>
+        <div class="col-sm-1 hidden"></div>
+      </div>
+
+
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="minute">Month of Year</label>
+        <div class="col-sm-8">
+          <input class="form-control" type="text" ng-model="schedule.monthOfYear" />
+        </div>
+        <div class="col-sm-1 hidden"></div>
+      </div>
+
     </div>
-  </form>
-  <div> <em> Note: Input expected in cronjob style </em> </div>
+
+  <div class="form-group">
+   <div class="col-sm-offset-3 col-sm-9">
+     <em> Note: Input expected in cronjob style </em>
+   </div>
+  </div>
 
   <div class="modal-footer">
     <button ng-click="cancel()" class="btn">Cancel</button>
