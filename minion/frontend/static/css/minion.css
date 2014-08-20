@@ -85,6 +85,9 @@ body {
     padding: 7px 9px;
 }
 
+input.ng-invalid.ng-dirty {
+    border: 1px solid #fa787e;
+}
 
 .minion-btn {
     width: 60px;

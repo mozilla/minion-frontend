@@ -31,6 +31,22 @@ app.controller("ScheduleController", function ($scope, $modalInstance, items) {
     var crontab = items.crontab;
     $scope.scheduleEnabled = items.scheduleEnabled;
     $scope.schedule.time = new Date();
+
+    /*
+     * Read the regular expressions carefully before changing
+     * They should match almost all cases from  http://celery.readthedocs.org/en/latest/reference/celery.schedules.html#celery.schedules.crontab
+     */
+    $scope.cron_patterns = {
+      minute:/^\*(\/([1-5][0-9]|[1-9]))?$|^([1-5][0-9]|[0-9])(\-([1-5][0-9]|[0-9])(\/[1-9])?)?(\,([1-5][0-9]|[0-9])(\-([1-5][0-9]|[0-9])(\/[1-9])?)?)*$/,
+      hour:/^\*(\/([1-9]))?$|^([2][0-3]|[1][0-9]|[0-9])(\-([2][0-3]|[1][0-9]|[0-9])(\/[1-9])?)?(\,([2][0-3]|[1][0-9]|[0-9])(\-([2][0-3]|[1][0-9]|[0-9])(\/[1-9])?)?)*$/,
+      dayOfWeek:/^\*(\/([1-6]))?$|^([0-6])(\-([0-6])(\/[1-6])?)?(\,([0-6])(\-([0-6])(\/[1-6])?)?)*$|^(sun|mon|tue|wed|thu|fri|sat)(\,(sun|mon|tue|wed|thu|fri|sat))*$/,
+      dayOfMonth:/^\*(\/([3][0-1]|[1-2][0-9]|[1-9]))?$|^([3][0-1]|[1-2][0-9]|[1-9])(\-([3][0-1]|[1-2][1-9]|[0-9])(\/[1-9])?)?(\,([3][0-1]|[1-2][0-9]|[1-9])(\-([3][0-1]|[1-2][0-9]|[1-9])(\/[1-9])?)?)*$/,
+      monthOfYear:/^\*(\/([1][0-2]|[1-9]))?$|^([1][0-2]|[1-9])(\-([1][0-2]|[1-9])(\/[1-9])?)?(\,([1][0-2]|[1-9])(\-([1][0-2]|[1-9])(\/[1-9])?)?)*$/
+    };
+
+    $scope.schedule.dayOfMonth = "*";
+    $scope.schedule.monthOfYear = "*";
+
     if (crontab && items.scheduleEnabled) {
       $scope.schedule.minute = crontab.minute;
       $scope.schedule.hour = crontab.hour;
