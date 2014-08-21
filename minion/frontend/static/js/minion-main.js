@@ -4,6 +4,8 @@
 
 
 var dependencies = [
+    "ngAnimate",
+    "toaster",
     "ngRoute",
     "ui.bootstrap",
     "ui.bootstrap.modal.dialog",
@@ -89,7 +91,7 @@ app.controller("ScheduleController", function ($scope, $modalInstance, items) {
 });
 
 
-app.controller("MinionController", function($rootScope, $route, $scope, $http, $location, $modal) {
+app.controller("MinionController", function($rootScope, $route, $scope, $http, $location, $modal, toaster) {
     $rootScope.signOut = function() {
         $http.get('/api/logout').success(function() {
             $rootScope.session = null;
@@ -125,7 +127,6 @@ app.controller("MinionController", function($rootScope, $route, $scope, $http, $
     };
 
     $rootScope.showScheduler = function (target, plan, crontab, scheduleEnabled) {
-        console.log(scheduleEnabled);
         var items = {
           crontab: crontab,
           scheduleEnabled: scheduleEnabled
@@ -150,10 +151,17 @@ app.controller("MinionController", function($rootScope, $route, $scope, $http, $
 
               $http.put('api/scanschedule', data).
                 success(function(data, status) {
-                  // Success Handler
+                    // Success Handler
+                    if(data.success) {
+                        toaster.pop('success', 'Schedule Updated', data.message, 5000);
+                    }
+                    else {
+                        toaster.pop('error', 'Schedule Error', data.message, 5000);
+                    }
                 }).
                 error(function(data, status) {
-                  // Error handler
+                    // Error handler
+                    toaster.pop('error', 'Schedule Error', 'Oh Snap! Something went wrong.', 5000);
                 });
             }
         });
