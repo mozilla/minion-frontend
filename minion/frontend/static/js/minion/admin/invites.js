@@ -6,7 +6,7 @@
 var minionAdminInvitesModule = angular.module('minionAdminInvitesModule', []);
 
 
-minionAdminInvitesModule.controller("AdminCreateInviteController", function($scope, dialog, users, groups) {
+minionAdminInvitesModule.controller("AdminCreateInviteController", function($scope, $modalInstance, users, groups) {
     $scope.invite = {recipient: ""};
     $scope.groups = groups;
     $scope.roles = ["user", "administrator"];
@@ -18,17 +18,17 @@ minionAdminInvitesModule.controller("AdminCreateInviteController", function($sco
 
     // todo: do cleanup!
     $scope.cancel = function() {
-        dialog.close(null);
+        $modalInstance.close(null);
     };
 
     $scope.submit = function(result) {
         result.opts = $scope.opts;
-        dialog.close(result);
+        $modalInstance.close(result);
     };
 });
 
 
-minionAdminInvitesModule.controller("AdminInvitesController", function($scope, $http, $dialog, $filter, $location) {
+minionAdminInvitesModule.controller("AdminInvitesController", function($scope, $http, $modal, $filter, $location) {
     $scope.navItems = app.navContext('admin');
 
     var base_url = $location.absUrl().split("#!")[0] + '#!/invite';
@@ -40,14 +40,14 @@ minionAdminInvitesModule.controller("AdminInvitesController", function($scope, $
 
     $scope.createInvite = function () {
         $http.get('/api/admin/groups').success(function(response) {
-            var d = $dialog.dialog({
+            var d = $modal.open({
                 templateUrl: "static/partials/admin/invites/create-invites.html",
                 controller: "AdminCreateInviteController",
                 resolve: { users: function() { return $scope.users; },
                            groups: function() { return response.data; }}
             });
 
-            d.open().then(function(result) {
+            d.result.then(function(result) {
                 if(result) {
                     var data1 = {email: result.email, name: result.name, role: result.role, groups: result.groups,
                                  invitation: true};
@@ -69,7 +69,7 @@ minionAdminInvitesModule.controller("AdminInvitesController", function($scope, $
                                 }
                             });
                         } else {
-                            // TODO Show an error dialog
+                            // TODO Show an error modal
                         }
                     });
                 }

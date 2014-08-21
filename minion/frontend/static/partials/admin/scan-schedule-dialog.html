@@ -1,0 +1,65 @@
+
+<form class="form-horizontal" name="siteForm" novalidate>
+
+  <div class="modal-header">
+    <h1>Set Scan-Schedules</h1>
+  </div>
+
+    <div class="modal-body">
+
+      <div ng-show="error" class="alert alert-error"><strong>Oh snap!</strong> {{error}}</div>
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="minute">Minute</label>
+        <div class="col-sm-8">
+          <input name="minute" class="form-control" type="text" ng-model="schedule.minute" ng-pattern="cron_patterns.minute" required/>
+        </div>
+        <div class="col-sm-1 hidden"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="minute">Hour</label>
+        <div class="col-sm-8">
+          <input name="hour" class="form-control" type="text" ng-model="schedule.hour" ng-pattern="cron_patterns.hour" ng-pattern="cron_patterns.hour" required />
+        </div>
+        <div class="col-sm-1 hidden"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="minute">Day of Week</label>
+        <div class="col-sm-8">
+          <input name="dayOfWeek" class="form-control" type="text" ng-model="schedule.dayOfWeek" ng-pattern="cron_patterns.dayOfWeek" required />
+        </div>
+        <div class="col-sm-1 hidden"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="minute">Day of Month</label>
+        <div class="col-sm-8">
+          <input name="dayOfMonth" class="form-control" type="text" ng-model="schedule.dayOfMonth" ng-pattern="cron_patterns.dayOfMonth" required />
+        </div>
+        <div class="col-sm-1 hidden"></div>
+      </div>
+
+      <div class="form-group">
+        <label class="control-label col-sm-3" for="minute">Month of Year</label>
+        <div class="col-sm-8">
+          <input name="monthOfYear" class="form-control" type="text" ng-model="schedule.monthOfYear" ng-pattern="cron_patterns.monthOfYear" required />
+        </div>
+        <div class="col-sm-1 hidden"></div>
+      </div>
+
+    </div>
+
+  <div class="form-group">
+   <div class="col-sm-offset-3 col-sm-9">
+     <a href="http://celery.readthedocs.org/en/latest/reference/celery.schedules.html#celery.schedules.crontab" target="_blank"><em> Need help with crontab schedules? </em></a>
+   </div>
+  </div>
+
+  <div class="modal-footer">
+    <button ng-click="cancel()" class="btn">Cancel</button>
+    <button ng-show="scheduleEnabled" ng-click="submit(site)" class="btn btn-success" ng-disabled="siteForm.$invalid">Update Schedule</button>
+    <button ng-show="!scheduleEnabled" ng-click="submit(site)" class="btn btn-success" ng-disabled="siteForm.$invalid">Set Schedule</button>
+    <button ng-show="scheduleEnabled" ng-click="removeSchedule(site)" class="btn btn-danger">Remove Schedule</button>
+  </div>
+</form>

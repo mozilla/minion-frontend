@@ -6,7 +6,7 @@
 
     <div class="container">
 
-    <div ng-show="report && report.length == 0">
+    <div ng-show="report &amp;&amp; report.length == 0">
       <h2>Welcome to Minion</h2>
       <p>You do not have any sites in Minion yet. This should become a nice landing page for new users.</p>
     </div>
@@ -15,7 +15,7 @@
 
     <ul class="nav nav-tabs">
       <li class="active">
-        <a ng-href="#!/home/sites">Sites & Scans</a>
+        <a ng-href="#!/home/sites">Sites &amp; Scans</a>
       </li>
       <li>
         <a ng-href="#!/home/history">Scan History</a>
@@ -24,8 +24,8 @@
         <a ng-href="#!/home/issues">All Issues</a>
       </li>
     </ul>
-
-    <h2>Sites & Scans
+    
+    <h2>Sites &amp; Scans
       <div class="pull-right" ng-show="groups.length > 1">
         <select ng-model="group" ng-options="group for group in groups" ng-change="changeGroup()"></select>
       </div>
@@ -45,22 +45,24 @@
             <th></th>
           </tr>
         </thead>
-        <tr ng-repeat="r in report">
-          <td><a href="{{r.label}}" target="_blank">{{r.label}}</a></td>
+        <tbody><tr ng-repeat="r in report">
+          <td><a href="#!/home/history?site={{r.label}}">{{r.label}}</a></td>
           <td><a ng-href="#!/plan/{{r.plan}}">{{r.plan}}</a></td>
           <td>{{(r.scan.created | scan_datetime) || "-" }}</td>
           <td>{{r.scan.state || "-"}}</td>
-          <td><span class="label warning-high minion-issue-count-label">{{r.scan.issues.high || "-"}}</span></td>
-          <td><span class="label warning-medium minion-issue-count-label">{{r.scan.issues.medium || "-"}}</span></td>
-          <td><span class="label warning-low minion-issue-count-label">{{r.scan.issues.low || "-"}}</span></<td></td>
-          <td><span class="label warning-info minion-issue-count-label">{{r.scan.issues.info || "-"}}</span></td>
+          <td><span class="label warning-high minion-issue-count-label label-default">{{r.scan.issues.high || "-"}}</span></td>
+          <td><span class="label warning-medium minion-issue-count-label label-default">{{r.scan.issues.medium || "-"}}</span></td>
+          <td><span class="label warning-low minion-issue-count-label label-default">{{r.scan.issues.low || "-"}}</span><!--<td--></td>
+          <td><span class="label warning-info minion-issue-count-label label-default">{{r.scan.issues.info || "-"}}</span></td>
           <td>
-            <button class="btn btn-mini btn-primary minion-btn" type="button" ng-click="openScan(r.scan.id)" ng-disabled="!r.scan" >Details</button>
-            <button class="btn btn-mini btn-primary minion-btn" type="button" ng-click="startScan(r.target, r.plan)" ng-show="r.scan.state != 'STARTED' && r.scan.state != 'QUEUED'">Scan</button>
-            <button class="btn btn-mini btn-primary minion-btn" type="button" ng-click="stopScan(r.scan.id)" ng-show="r.scan.state == 'STARTED' || r.scan.state == 'QUEUED'">Stop</button>
+            <button class="btn btn-primary minion-btn btn-xs" type="button" ng-click="openScan(r.scan.id)" ng-disabled="!r.scan">Details</button>
+            <button class="btn btn-primary minion-btn btn-xs" type="button" ng-click="startScan(r.target, r.plan)" ng-show="r.scan.state != 'STARTED' &amp;&amp; r.scan.state != 'QUEUED'">Scan</button>
+            <button class="btn btn-primary minion-btn btn-xs" type="button" ng-click="stopScan(r.scan.id)" ng-show="r.scan.state == 'STARTED' || r.scan.state == 'QUEUED'">Stop</button>
+            <button ng-show="r.scheduleEnabled" class="btn btn-warning minion-btn-wide btn-xs" type="button" ng-click="showScheduler(r.target, r.plan, r.crontab, r.scheduleEnabled)">Modify Schedule</button>
+            <button ng-show="!r.scheduleEnabled" class="btn btn-primary minion-btn-wide btn-xs" type="button" ng-click="showScheduler(r.target, r.plan, r.crontab, r.scheduleEnabled)">Schedule</button>
           </td>
         </tr>
-      </table>
+      </tbody></table>
 
       <ul class="icons" ng-show="social">
         <li><i class="icon-double-angle-right"></i><a href="#">Request a new site to be added to Minion</a></li>

@@ -6,7 +6,7 @@
 var minionAdminPlansModule = angular.module('minionAdminPlansModule', []);
 
 
-minionAdminPlansModule.controller("AdminCreatePlanController", function ($scope, dialog, plugins) {
+minionAdminPlansModule.controller("AdminCreatePlanController", function ($scope, $modalInstance, plugins) {
     var workflow = [{
         plugin_name: "minion.plugins.basic.AlivePlugin",
         description: "",
@@ -15,7 +15,7 @@ minionAdminPlansModule.controller("AdminCreatePlanController", function ($scope,
     $scope.plan = { name: null, workflow: JSON.stringify(workflow, null, "  ") };
 
     $scope.cancel = function () {
-        dialog.close(null);
+        $modalInstance.close(null);
     };
 
     var parseWorkflow = function (workflowString) {
@@ -49,17 +49,17 @@ minionAdminPlansModule.controller("AdminCreatePlanController", function ($scope,
             }
         }
         var plan = { name: $scope.plan.name, description: $scope.plan.description, workflow: workflow };
-        dialog.close(plan);
+        $modalInstance.close(plan);
     };
 });
 
 
-minionAdminPlansModule.controller("AdminEditPlanController", function ($scope, dialog, plan, plugins) {
+minionAdminPlansModule.controller("AdminEditPlanController", function ($scope, $modalInstance, plan, plugins) {
     $scope.plan = plan;
     $scope.plan.workflow = JSON.stringify($scope.plan.workflow, null, "  ");
 
     $scope.cancel = function () {
-        dialog.close(null);
+        $modalInstance.close(null);
     };
 
     // TODO Refactor the following two - move them to the module? What to do in Angular.js?
@@ -95,12 +95,12 @@ minionAdminPlansModule.controller("AdminEditPlanController", function ($scope, d
             }
         }
         var plan = { name: $scope.plan.name, description: $scope.plan.description, workflow: workflow };
-        dialog.close(plan);
+        $modalInstance.close(plan);
     };
 });
 
 
-minionAdminPlansModule.controller("AdminPlansController", function($scope, $routeParams, $http, $dialog) {
+minionAdminPlansModule.controller("AdminPlansController", function($scope, $routeParams, $http, $modal, $dialog) {
 
     $scope.navItems = app.navContext('admin');
 
@@ -113,13 +113,13 @@ minionAdminPlansModule.controller("AdminPlansController", function($scope, $rout
     $scope.editPlan = function (plan) {
         $http.get('/api/admin/plugins').success(function(response) {
             $scope.plugins = response.data;
-            var d = $dialog.dialog({
+            var d = $modal.open({
                 templateUrl: "static/partials/admin/plans/edit.html",
                 controller: "AdminEditPlanController",
                 resolve: { plan: function() { return angular.copy(plan); },
                            plugins: function() { return $scope.plugins; } }
             });
-            d.open().then(function(plan) {
+            d.result.then(function(plan) {
                 if (plan) {
                     $http.post('/api/admin/plans/' + plan.name, plan).success(function(response) {
                         reload();
@@ -132,13 +132,13 @@ minionAdminPlansModule.controller("AdminPlansController", function($scope, $rout
     $scope.createPlan = function () {
         $http.get('/api/admin/plugins').success(function(response) {
             $scope.plugins = response.data;
-            var d = $dialog.dialog({
+            var d = $modal.open({
                 templateUrl: "static/partials/admin/plans/create-plan.html",
                 controller: "AdminCreatePlanController",
                 resolve: { plugins: function() { return $scope.plugins; } }
 
             });
-            d.open().then(function(plan) {
+            d.result.then(function(plan) {
                 if (plan) {
                     $http.post('/api/admin/plans', plan).success(function(response) {
                         reload();

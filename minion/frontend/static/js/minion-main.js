@@ -4,7 +4,9 @@
 
 
 var dependencies = [
+    "ngRoute",
     "ui.bootstrap",
+    "ui.bootstrap.modal.dialog",
     "minionAdminGroupsModule",
     "minionAdminInvitesModule",
     "minionAdminPlansModule",
@@ -24,7 +26,70 @@ app.navContext = function(section) {
     });
 };
 
-app.controller("MinionController", function($rootScope, $route, $scope, $http, $location) {
+app.controller("ScheduleController", function ($scope, $modalInstance, items) {
+    $scope.schedule = {};
+    var crontab = items.crontab;
+    $scope.scheduleEnabled = items.scheduleEnabled;
+    $scope.schedule.time = new Date();
+
+    /*
+     * Read the regular expressions carefully before changing
+     * They should match almost all cases from  http://celery.readthedocs.org/en/latest/reference/celery.schedules.html#celery.schedules.crontab
+     */
+    $scope.cron_patterns = {
+      minute:/^\*(\/([1-5][0-9]|[1-9]))?$|^([1-5][0-9]|[0-9])(\-([1-5][0-9]|[0-9])(\/[1-9])?)?(\,([1-5][0-9]|[0-9])(\-([1-5][0-9]|[0-9])(\/[1-9])?)?)*$/,
+      hour:/^\*(\/([1-9]))?$|^([2][0-3]|[1][0-9]|[0-9])(\-([2][0-3]|[1][0-9]|[0-9])(\/[1-9])?)?(\,([2][0-3]|[1][0-9]|[0-9])(\-([2][0-3]|[1][0-9]|[0-9])(\/[1-9])?)?)*$/,
+      dayOfWeek:/^\*(\/([1-6]))?$|^([0-6])(\-([0-6])(\/[1-6])?)?(\,([0-6])(\-([0-6])(\/[1-6])?)?)*$|^(sun|mon|tue|wed|thu|fri|sat)(\,(sun|mon|tue|wed|thu|fri|sat))*$/,
+      dayOfMonth:/^\*(\/([3][0-1]|[1-2][0-9]|[1-9]))?$|^([3][0-1]|[1-2][0-9]|[1-9])(\-([3][0-1]|[1-2][1-9]|[0-9])(\/[1-9])?)?(\,([3][0-1]|[1-2][0-9]|[1-9])(\-([3][0-1]|[1-2][0-9]|[1-9])(\/[1-9])?)?)*$/,
+      monthOfYear:/^\*(\/([1][0-2]|[1-9]))?$|^([1][0-2]|[1-9])(\-([1][0-2]|[1-9])(\/[1-9])?)?(\,([1][0-2]|[1-9])(\-([1][0-2]|[1-9])(\/[1-9])?)?)*$/
+    };
+
+    $scope.schedule.dayOfMonth = "*";
+    $scope.schedule.monthOfYear = "*";
+
+    if (crontab && items.scheduleEnabled) {
+      $scope.schedule.minute = crontab.minute;
+      $scope.schedule.hour = crontab.hour;
+      $scope.schedule.dayOfWeek = crontab.day_of_week;
+      $scope.schedule.dayOfMonth = crontab.day_of_month;
+      $scope.schedule.monthOfYear = crontab.month_of_year;
+    }
+    $scope.cancel = function () {
+        $modalInstance.close(null);
+    };
+
+    $scope.submit = function() {
+      $modalInstance.close($scope.schedule);
+    };
+    $scope.removeSchedule = function() {
+      // Sending remove parameter to schedule will disable it
+      $scope.schedule.remove = true;
+      $modalInstance.close($scope.schedule);
+    };
+    
+    $scope.changeRepeat = function(repeat) {
+      
+      switch(repeat){
+        case 'daily':
+          $scope.schedule.dayOfWeek = '*';
+          $scope.schedule.dayOfMonth = '*';
+          $scope.schedule.monthOfYear = '*';
+          break;
+
+        case 'weekly':
+          $scope.schedule.dayOfMonth = '*';
+          $scope.schedule.monthOfYear = '*';
+          break;
+
+        case 'monthly':
+          $scope.schedule.monthOfYear = '*';
+          break;
+      }
+    };
+});
+
+
+app.controller("MinionController", function($rootScope, $route, $scope, $http, $location, $modal) {
     $rootScope.signOut = function() {
         $http.get('/api/logout').success(function() {
             $rootScope.session = null;
@@ -59,6 +124,41 @@ app.controller("MinionController", function($rootScope, $route, $scope, $http, $
         });
     };
 
+    $rootScope.showScheduler = function (target, plan, crontab, scheduleEnabled) {
+        console.log(scheduleEnabled);
+        var items = {
+          crontab: crontab,
+          scheduleEnabled: scheduleEnabled
+        };
+        var d = $modal.open({
+            templateUrl: "static/partials/admin/scan-schedule-dialog.html?date=" + new Date(),
+            controller: "ScheduleController",
+            resolve: {
+              items: function ()  {
+                return items;
+              }
+            }
+        });
+
+        d.result.then(function(schedule) {
+            if (schedule) {
+              var data = {
+                target: target,
+                plan: plan, 
+                schedule: schedule
+              };
+
+              $http.put('api/scanschedule', data).
+                success(function(data, status) {
+                  // Success Handler
+                }).
+                error(function(data, status) {
+                  // Error handler
+                });
+            }
+        });
+        
+    };
     // $route is useful in the scope for knowing "active" tabs, for example.
     $rootScope.$route = $route;
 
@@ -494,6 +594,7 @@ app.controller("HistoryController", function($scope, $http, $location, $timeout)
     $scope.reload = function () {
         $http.get('/api/history').success(function(response, status, headers, config){
             $scope.history = response.data;
+            $scope.querySite=($location.search()).site;
         });
     };
 

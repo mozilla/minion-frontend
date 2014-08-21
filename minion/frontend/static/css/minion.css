@@ -12,7 +12,7 @@ body {
     max-height: 800px;
 }
 .table-borderless td, .table-borderless th {
-    border: 0;
+    border: None;
 }
 
 .warning-high {
@@ -85,9 +85,16 @@ body {
     padding: 7px 9px;
 }
 
+input.ng-invalid.ng-dirty {
+    border: 1px solid #fa787e;
+}
 
 .minion-btn {
     width: 60px;
+}
+
+.minion-btn-wide {
+    width: 110px;
 }
 
 .minion-issue-count-label {

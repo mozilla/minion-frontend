@@ -6,15 +6,15 @@
 var minionAdminGroupsModule = angular.module('minionAdminGroupsModule', []);
 
 
-minionAdminGroupsModule.controller("AdminAddGroupController", function ($scope, dialog, group) {
+minionAdminGroupsModule.controller("AdminAddGroupController", function ($scope, $modalInstance, group) {
     $scope.group = group;
     $scope.close = function(result){
-        dialog.close(group);
+        $modalInstance.close(group);
     };
 });
 
 
-minionAdminGroupsModule.controller("AdminGroupsController", function($scope, $routeParams, $http, $location, $dialog) {
+minionAdminGroupsModule.controller("AdminGroupsController", function($scope, $routeParams, $http, $location, $modal, $dialog) {
 
     $scope.navItems = app.navContext('admin');
 
@@ -42,16 +42,16 @@ minionAdminGroupsModule.controller("AdminGroupsController", function($scope, $ro
 
     $scope.addGroup = function(){
         var group = {name:"", description:""};
-        var d = $dialog.dialog({
+        var d = $modal.open({
             templateUrl: "static/partials/admin/add-group-dialog.html",
             controller: "AdminAddGroupController",
             resolve: {
                 group: function () {
-                    return angular.copy(group)
+                    return angular.copy(group);
                 }
             }
         });
-        d.open().then(function(group) {
+        d.result.then(function(group) {
             if(group) {
                 $http.post('/api/admin/groups', group).success(function(response) {
                     if (response.success) {
@@ -68,29 +68,29 @@ minionAdminGroupsModule.controller("AdminGroupsController", function($scope, $ro
 });
 
 
-minionAdminGroupsModule.controller("AdminAddUserController", function ($scope, dialog, users) {
+minionAdminGroupsModule.controller("AdminAddUserController", function ($scope, $modalInstance, users) {
     $scope.users = users;
     $scope.cancel = function() {
-        dialog.close(null);
+        $modalInstance.close(null);
     };
     $scope.submit = function(email){
-        dialog.close(email);
+        $modalInstance.close(email);
     };
 });
 
 
-minionAdminGroupsModule.controller("AdminAddSiteController", function ($scope, dialog, sites) {
+minionAdminGroupsModule.controller("AdminAddSiteController", function ($scope, $modalInstance, sites) {
     $scope.sites = sites;
     $scope.submit = function(site){
-        dialog.close(site);
+        $modalInstance.close(site);
     };
     $scope.cancel = function(site){
-        dialog.close(null);
+        $modalInstance.close(null);
     };
 });
 
 
-minionAdminGroupsModule.controller("AdminGroupController", function($scope, $routeParams, $http, $location, $dialog) {
+minionAdminGroupsModule.controller("AdminGroupController", function($scope, $routeParams, $http, $location, $modal, $dialog) {
 
     $scope.navItems = app.navContext('admin');
 
@@ -118,9 +118,9 @@ minionAdminGroupsModule.controller("AdminGroupController", function($scope, $rou
             });
             // Show the dialog
             var r = { users: function () { return users; } };
-            var d = $dialog.dialog({templateUrl: "static/partials/admin/add-user-dialog.html",
+            var d = $modal.open({templateUrl: "static/partials/admin/add-user-dialog.html",
                                     controller: "AdminAddUserController", resolve: r });
-            d.open().then(function(user) {
+            d.result.then(function(user) {
                 if (user) {
                     var patch = {addUsers:[user.email]};
                     var url = '/api/admin/groups/' + $routeParams.groupName;
@@ -155,11 +155,11 @@ minionAdminGroupsModule.controller("AdminGroupController", function($scope, $rou
             var sites = _.filter(response.data, function (site) {
                 return !_.contains($scope.group.sites, site.url);
             });
-            // Show the dialog
+            // Show the modal
             var r = { sites: function () { return sites; } };
-            var d = $dialog.dialog({templateUrl: "static/partials/admin/add-site-dialog.html",
+            var d = $modal.open({templateUrl: "static/partials/admin/add-site-modal.html",
                                     controller: "AdminAddSiteController", resolve: r });
-            d.open().then(function(site) {
+            d.result.then(function(site) {
                 if (site) {
                     var patch = {addSites:[site.url]};
                     var url = '/api/admin/groups/' + $routeParams.groupName;

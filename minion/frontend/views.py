@@ -881,3 +881,12 @@ def get_ws_issues():
         return jsonify(success=j["success"], issues=j["issues"])
     else:
         return jsonify(success=r.json()["success"], reason=r.json().get("reason"))
+
+
+@app.route("/api/scanschedule", methods=["PUT"])
+def scanschedule():
+  r = requests.post(config["backend-api"]["url"] + "/scanschedule",
+                    headers={"Content-Type": "application/json"},
+                    data=json.dumps(request.json))
+  r.raise_for_status()
+  return  str(r.text)

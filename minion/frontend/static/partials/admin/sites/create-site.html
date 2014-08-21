@@ -5,27 +5,27 @@
     <h1>Add Site</h1>
   </div>
 
-  <form>
     <div class="modal-body">
 
       <div ng-show="error" class="alert alert-error"><strong>Oh snap!</strong> {{error}}</div>
 
-      <div class="control-group">
-        <label class="control-label" for="inputUrl">URL</label>
-        <div class="controls">
-          <input type="text" ng-model="site.url" placeholder="http://" required ng-pattern="/^(http|https)://([a-z0-9][-a-z0-9]*)(\.[a-z0-9][-a-z0-9]*)+(:\d+)?$/">
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="inputUrl">URL</label>
+        <div class="col-sm-9">
+          <input class="form-control" type="text" ng-model="site.url" placeholder="http://" required ng-pattern="/^(http|https)://([a-z0-9][-a-z0-9]*)(\.[a-z0-9][-a-z0-9]*)+(:\d+)?$/">
         </div>
+        <div class="col-sm-1 hidden"></div>
       </div>
 
-      <div class="control-group">
-        <label class="control-label" for="inputPassword">Plans</label>
-        <div class="controls">
-          <select size="8" multiple ng-multiple="true" ng-model="site.plans" ng-options="p.name as p.name for p in plans">
+      <div class="form-group">
+        <label class="control-label col-sm-2" for="inputPassword">Plans</label>
+        <div class="col-sm-9">
+          <select class="form-control" size="8" multiple ng-multiple="true" ng-model="site.plans" ng-options="p.name as p.name for p in plans">
           </select>
         </div>
+        <div class="col-sm-1 hidden"></div>
       </div>
     </div>
-  </form>
 
   <div class="modal-footer">
     <button ng-click="cancel()" class="btn">Cancel</button>
