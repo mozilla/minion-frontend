@@ -130,6 +130,16 @@ def _backend_get_sites(url=None):
         return None
     return j.get('sites')
 
+
+def _backend_get_credInfo():
+    r = requests.get(config['backend-api']['url'] + "/credInfo")
+    r.raise_for_status()
+    j = r.json()
+    if not j.get('success'):
+        return None
+    return j.get('credInfo')
+
+
 def _backend_get_site(site_id):
     r = requests.get(config['backend-api']['url'] + "/sites/" + site_id)
     r.raise_for_status()
@@ -561,9 +571,10 @@ def get_api_admin_plugins():
 def get_api_admin_sites():
     # Retrieve user list from backend
     sites = _backend_get_sites()
+    credInfo = _backend_get_credInfo()
     if not sites:
         return jsonify(success=False, reason='unknown')
-    return jsonify(success=True, data=sites)
+    return jsonify(success=True, data=sites, credInfo=credInfo)
 
 @app.route("/api/admin/sites", methods=["POST"])
 @requires_session('administrator')
@@ -890,3 +901,14 @@ def scanschedule():
                     data=json.dumps(request.json))
   r.raise_for_status()
   return  str(r.text)
+
+
+
+@app.route("/api/setCredentials", methods=["PUT"])
+def setCredentials():
+  r = requests.post(config["backend-api"]["url"] + "/setCredentials",
+                    headers={"Content-Type": "application/json"},
+                    data=json.dumps(request.json))
+  r.raise_for_status()
+  j = r.json()
+  return  jsonify(success=j['success'], message=j['message'])

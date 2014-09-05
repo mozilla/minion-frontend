@@ -85,6 +85,12 @@ body {
     padding: 7px 9px;
 }
 
+/* Styling rules for placeholders */
+::-webkit-input-placeholder { font-style:italic; color:#999; }
+::-moz-placeholder { font-style:italic; color:#999; } /* firefox 19+ */
+:-ms-input-placeholder { font-style:italic; color:#999; } /* ie */
+input:-moz-placeholder { font-style:italic; color:#999; }
+
 input.ng-invalid.ng-dirty {
     border: 1px solid #fa787e;
 }

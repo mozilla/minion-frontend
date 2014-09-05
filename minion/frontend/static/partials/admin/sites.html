@@ -24,7 +24,11 @@
           <td>{{site.created | scan_datetime}}</td>
           <td>
             <ul>
-              <li ng-repeat="plan in site.plans">{{plan}}</li>
+              <li ng-repeat="plan in site.plans">
+                  <div style="width:40%">{{plan}}</div>
+                  <div ng-show="!credInfo[site.url][plan]" style="width:30%"><button class="btn btn-primary minion-btn-wide btn-xs" ng-click="setCredentials(site.url, plan)">Set Credentials</button></div>
+                  <div ng-show="credInfo[site.url][plan]" style="width:30%"><button class="btn btn-warning minion-btn-wide btn-xs" ng-click="setCredentials(site.url, plan)">Update Credentials</button></div>
+              </li>
             </ul>
           </td>
           <td>
