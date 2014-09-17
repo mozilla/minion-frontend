@@ -17,6 +17,10 @@ DEFAULT_FRONTEND_CONFIG = {
 
        'ldap_uri': 'ldaps://ldap.server/',
        'ldap_base': 'ou=test,dc=test_dc',
+
+       'ldap_check_authorized_groups': True,
+       'ldap_base_group': 'ou=group,dc=test_group',
+       'ldap_filter_group': '(object=Object)(test=Test)',
        'ldap_authorized_groups': ['groupTest1', 'groupTest2']
     }
 

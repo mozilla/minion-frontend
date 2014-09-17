@@ -437,7 +437,7 @@ def ldap_login(request):
     except ldap.LDAPError, e:
         return jsonify(success=False, reason="error")
 
-    auth = config['login_conf']['ldap_base'] + ",uid=%s" % username
+    auth = "uid=%s," % username + config['login_conf']['ldap_base']
 
     # Authentication
     try:
@@ -449,24 +449,30 @@ def ldap_login(request):
 
     # Retrieve mail
     searchScope = ldap.SCOPE_SUBTREE
-    retrieveAttributes = ["mail", "objectClass"]
+    retrieveAttributes = ["mail"]
     results = ld.search_s(auth, searchScope, attrlist=retrieveAttributes)
 
     try:
         mail = results[0][1]['mail'][0]
-        groups = results[0][1]['objectClass']
     except Exception as e:
         return jsonify(sucess=False, reason="error")
 
-    # Check if user in an authorized group
-    authorized = False
-    for group in groups:
-        if group in config['login_conf']['ldap_authorized_groups']:
-            authorized = True
-            break
+    if config['login_conf']['ldap_check_authorized_groups']:
+        # Check if user in an authorized group
+        base_group = config['login_conf']['ldap_base_group']
 
-    if not authorized:
-        return jsonify(sucess=False, reason="not_authorized")
+        authorized = False
+        for group in config['login_conf']['ldap_authorized_groups']:
+            filter_group = "(&(objectClass=groupOfNames)(member=uid=%s," % username + config['login_conf']['ldap_base']\
+                           + ")(cn= " + group + "))"
+            results = ld.search_s(base_group, searchScope, filter_group)
+
+            if len(results) > 0:
+                authorized = True
+                break
+
+        if not authorized:
+            return jsonify(sucess=False, reason="not_authorized")
 
     # Login
     user = login_or_create_user(mail)
