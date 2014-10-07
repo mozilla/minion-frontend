@@ -655,8 +655,8 @@ app.filter('session_duration', function () {
     return function(session, options) {
         var start, end;
         if (session.started && session.finished) {
-            start = moment(session.started);
-            end = moment(session.finished);
+            start = moment.unix(session.started);
+            end = moment.unix(session.finished);
             return end.from(start, true);
         } else {
             return undefined;
