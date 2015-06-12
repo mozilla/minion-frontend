@@ -1,9 +1,11 @@
 .coverage
 .coveragerc
+.vagrant
 pip-log.txt
-*.swp
 *.elc
+*.pid
 *.pyc
+*.swp
 *~
 build/*
 dist/*
