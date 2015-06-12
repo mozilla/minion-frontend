@@ -157,7 +157,7 @@ minionAdminGroupsModule.controller("AdminGroupController", function($scope, $rou
             });
             // Show the modal
             var r = { sites: function () { return sites; } };
-            var d = $modal.open({templateUrl: "static/partials/admin/add-site-modal.html",
+            var d = $modal.open({templateUrl: "static/partials/admin/add-site-dialog.html",
                                     controller: "AdminAddSiteController", resolve: r });
             d.result.then(function(site) {
                 if (site) {
