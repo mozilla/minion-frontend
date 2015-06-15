@@ -1,5 +1,6 @@
 .coverage
 .coveragerc
+.idea
 .vagrant
 pip-log.txt
 *.elc
