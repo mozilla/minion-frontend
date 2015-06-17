@@ -395,15 +395,11 @@ def api_session():
 
 @app.route("/api/login", methods=["GET"])
 def api_login():
-    return jsonify(success=True, data={'login_type': config['login_conf']['login_type']})
+    return jsonify(success=True, data={'login_type': config['login']['type']})
 
 @app.route("/api/login", methods=["POST"])
 def login():
-    if config['login_conf']['login_type'] == 'persona':
-        return persona_login(request)
-
-    elif config['login_conf']['login_type'] == 'ldap':
-        return ldap_login(request)
+	return globals()[config['login']['type'] + '_login'](request)
 
 def persona_login(request):
     if not request.json or 'assertion' not in request.json:
@@ -433,11 +429,11 @@ def ldap_login(request):
 
     # Initialize LDAP
     try:
-        ld = ldap.initialize(config['login_conf']['ldap_uri'])
+        ld = ldap.initialize(config['login']['ldap']['uri'])
     except ldap.LDAPError, e:
         return jsonify(success=False, reason="error")
 
-    auth = "uid=%s," % username + config['login_conf']['ldap_base']
+    auth = config['login']['ldap']['uid_filter'] + "=%s," % username + config['login']['ldap']['base']
 
     # Authentication
     try:
@@ -449,23 +445,25 @@ def ldap_login(request):
 
     # Retrieve mail
     searchScope = ldap.SCOPE_SUBTREE
-    retrieveAttributes = ["mail"]
-    results = ld.search_s(auth, searchScope, attrlist=retrieveAttributes)
+    results = ld.search_s(auth, searchScope, attrlist=[str(config['login']['ldap']['mail_filter'])])
 
     try:
-        mail = results[0][1]['mail'][0]
+        mail = results[0][1][config['login']['ldap']['mail_filter']][0]
     except Exception as e:
         return jsonify(sucess=False, reason="error")
 
-    if config['login_conf']['ldap_check_authorized_groups']:
+    if config['login']['ldap']['check_authorized_groups']:
         # Check if user in an authorized group
-        base_group = config['login_conf']['ldap_base_group']
+        group_base = config['login']['ldap']['group_base']
 
         authorized = False
-        for group in config['login_conf']['ldap_authorized_groups']:
-            filter_group = "(&(objectClass=groupOfNames)(member=uid=%s," % username + config['login_conf']['ldap_base']\
-                           + ")(cn= " + group + "))"
-            results = ld.search_s(base_group, searchScope, filter_group)
+        for group in config['login']['ldap']['authorized_groups']:
+            filter_group = "(&(objectClass=" + config['login']['ldap']['group_objectClass']+ ")"\
+					+ "(member=" + config['login']['ldap']['uid_filter'] + "=%s," %username \
+					+ config['login']['ldap']['base'] + ")"\
+					+ "(cn=%s))" % str(group)
+				
+	    results = ld.search_s(group_base, searchScope, filter_group)
 
             if len(results) > 0:
                 authorized = True
