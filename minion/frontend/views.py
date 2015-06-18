@@ -7,6 +7,7 @@ import functools
 import json
 import pprint
 import sys
+import ldap
 
 from flask import render_template, redirect, url_for, session, jsonify, request, session, Response, g
 
@@ -402,8 +403,15 @@ def robots():
 def api_session():
     return jsonify(success=True, data={'email': session['email'], 'role': session['role']})
 
+@app.route("/api/login", methods=["GET"])
+def api_login():
+    return jsonify(success=True, data={'login_type': config['login']['type']})
+
 @app.route("/api/login", methods=["POST"])
-def persona_login():
+def login():
+    return globals()[config['login']['type'] + '_login'](request)
+
+def persona_login(request):
     if not request.json or 'assertion' not in request.json:
         return jsonify(success=False)
     receipt = verify_assertion(request.json['assertion'], request.host)
@@ -423,6 +431,72 @@ def persona_login():
     session['email'] = user['email']
     session['role'] = user['role']
     return api_session()
+
+def ldap_login(request):
+    data = json.loads(request.data)
+    username = data['user']
+    password = data['password']
+
+    # Initialize LDAP
+    try:
+        ld = ldap.initialize(config['login']['ldap']['uri'])
+    except ldap.LDAPError, e:
+        return jsonify(success=False, reason="error")
+
+    # Active Directory (and others) don't require a full DN to bind (such as samAccountName=april)
+    if 'baseDN' in config['login']['ldap']:
+        auth_query = "{ldap[usernameAttribute]}={username},{ldap[baseDN]}".format(
+            ldap=config['login']['ldap'], username=username)
+    else:
+        auth_query = "{ldap[usernameAttribute]}={username}".format(ldap=config['login']['ldap'], username=username)
+
+    # Authentication
+    try:
+        ld.simple_bind_s(auth_query, password)
+    except ldap.LDAPError, e:
+        if e.message['desc'] == 'Invalid credentials':
+            return jsonify(success=False, reason="invalid_cred")
+        return jsonify(success=False, reason="error")
+
+    # Retrieve mail
+    results = ld.search_s(auth_query, ldap.SCOPE_SUBTREE, attrlist=[str(config['login']['ldap']['emailAttribute'])])
+    try:
+        mail = results[0][1][config['login']['ldap']['emailAttribute']][0]
+        user_dn = results[0][0]
+    except Exception as e:
+        return jsonify(sucess=False, reason="error")
+
+    # Check if user in an authorized group
+    if config['login']['ldap']['checkAuthorizedGroups']:
+        authorized = False
+        for group in config['login']['ldap']['authorizedGroups']:
+            group_query = "{ldap[groupMembershipAttribute]}={user_dn}".format(
+                ldap=config['login']['ldap'], user_dn=user_dn)
+
+            results = ld.search_s(group, ldap.SCOPE_BASE, group_query)
+
+            if len(results) > 0:
+                authorized = True
+                break
+
+        if not authorized:
+            return jsonify(success=False, reason="not_authorized")
+
+    # Unbind the connection with the ldap server
+    ld.unbind_s()
+
+    # Login
+    user = login_or_create_user(mail)
+
+    if not user:
+        return jsonify(success=False)
+    elif user.get('status') == "banned":
+        return jsonify(success=False, reason="banned")
+    session['email'] = user['email']
+    session['role'] = user['role']
+
+    return api_session()
+
 
 @app.route("/api/logout")
 def api_logout():

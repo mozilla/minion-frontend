@@ -5,12 +5,34 @@
 -->
 
 <div class="container" ng-controller="LoginController">
-  <form class="form-signin" id="signin-form">
+  <form class="form-signin" id="signin-form" name="signinform">
     <h2 class="form-signin-heading">Welcome to Minion</h2>
-    <p><b>Note:</b> This application requires Persona to sign in.</p>
-    <div class="alert alert-error alert-warning" ng-show="logInStatus == 'banned'">
-        <b>Oh snap!</b> You are banned so you cannot proceed to login.
+    <div class="alert alert-error" ng-show="logInStatus == 'banned'">
+        <strong>Error:</strong> User account banned
     </div>
-    <p><a class="btn btn-primary btn-lg" ng-click="signIn()"><i class="icon-user"></i> Sign in with Persona</a></p>
+
+    <div class="alert alert-error" ng-show="logInStatus == 'error'">
+        <strong>Error:</strong> An unknown error occured; please contact the administrator
+    </div>
+
+    <div class="alert alert-error" ng-show="logInStatus == 'not_authorized'">
+        <strong>Error:</strong> User account not authorized for login
+    </div>
+
+    <div class="alert alert-error" ng-show="logInStatus == 'invalid_cred'">
+        <strong>Error:</strong> Unknown username or password
+    </div>
+
+    <div ng-show="login_type == 'persona' && logInStatus != 'banned'">
+        <p><strong>Note:</strong> This application requires Persona to sign in.</p>
+        <p><a class="btn btn-large btn-primary" ng-click="signIn()"><i class="icon-user"></i> Sign in with Persona</a></p>
+    </div>
+
+    <div ng-show="login_type == 'ldap' && logInStatus != 'banned'">
+        <p>Username: <input type="text" ng-model="ldap.user" required /></p>
+        <p>Password: <input type="password" ng-model="ldap.password" required /></p>
+
+        <p><button class="btn btn-large btn-primary" ng-click="ldapSignIn()" ng-disabled="signinform.$invalid"><i class="icon-user"></i> Sign in</button></p>
+    </div>
   </form>
 </div>

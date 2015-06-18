@@ -394,11 +394,46 @@ app.run(function($rootScope, $location) {
 });
 
 app.controller("LoginController", function($scope, $rootScope, $location, $http) {
+
+    function login(data){
+        $http.post('/api/login', data).success(function(response) {
+            if (response.success) {
+                // Remember the session in the scope
+                $rootScope.session = response.data;
+                // Remember the session in local storage
+                localStorage.setItem('session.email', response.data.email);
+                localStorage.setItem('session.role', response.data.role);
+                localStorage.setItem('invitation.id', null);
+                // Go to either the nextPath or to the main page
+                var nextPath = sessionStorage.getItem('nextPath');
+                if (nextPath) {
+                    $location.path(nextPath).replace();
+                    sessionStorage.setItem(nextPath, null);
+                } else {
+                    $location.path("/").replace();
+                }
+            }
+            else {
+                $scope.logInStatus = response.reason;
+            }
+        });
+    }
+
     $scope.signIn = function() {
         navigator.id.request();
     };
 
+    $scope.ldapSignIn = function() {
+        var data = {user: $scope.ldap.user, password: $scope.ldap.password};
+        login(data);
+    };
+
     $scope.$on('$viewContentLoaded', function() {
+        $http.get("/api/login").success(function(response) {
+            if (response.success) {
+                $scope.login_type = response.data.login_type;
+                }});
+
         // When the login screen is loaded, we logout from Persona and kill our session
         // from both the root scope and from localStorage.
 
@@ -410,24 +445,8 @@ app.controller("LoginController", function($scope, $rootScope, $location, $http)
         navigator.id.watch({
             onlogin: function(assertion) {
                 var data = {assertion: assertion};
-                $http.post('/api/login', data).success(function(response) {
-                    if (response.success) {
-                        // Remember the session in the scope
-                        $rootScope.session = response.data;
-                        // Remember the session in local storage
-                        localStorage.setItem('session.email', response.data.email);
-                        localStorage.setItem('session.role', response.data.role);
-                        localStorage.setItem('invitation.id', null);
-                        // Go to either the nextPath or to the main page
-                        var nextPath = sessionStorage.getItem('nextPath');
-                        if (nextPath) {
-                            $location.path(nextPath).replace();
-                            sessionStorage.setItem(nextPath, null);
-                        } else {
-                            $location.path("/").replace();
-                        }
-                    }
-                });
+                login(data);
+
             },
             onlogout: function() {
                 // Not used
