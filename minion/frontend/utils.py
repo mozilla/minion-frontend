@@ -9,10 +9,13 @@ import os
 # ldap settings as follows:
 # uri -> URI to ldap server
 # baseDN -> baseDN for users (remove for Active Directory)
-# usernameAttribute -> typically uid in OpenLDAP or samAccountName in AD
+#
 # emailAttribute -> typically mail in OpenLDAP or userPrincipalName in AD
-# authorizedGroups -> list of groups where users are authorized to use Minion (if checkAuthorizedGroups is true)
 # groupMembershipAttribute -> typically member or uniqueMember
+# usernameAttribute -> typically uid in OpenLDAP or samAccountName in AD
+#
+# checkAuthorizedGroups -> if true (instead of false), require group membership in addition to valid user id
+# authorizedGroups -> list of groups where users are authorized to use Minion (if checkAuthorizedGroups is true)
 
 DEFAULT_FRONTEND_CONFIG = """
 {
@@ -30,8 +33,8 @@ DEFAULT_FRONTEND_CONFIG = """
             "emailAttribute": "mail",
             "groupMembershipAttribute": "member",
             "usernameAttribute": "uid",
-            "checkAuthorizedGroups": true,
 
+            "checkAuthorizedGroups": false,
             "authorizedGroups": [
                 "ou=groupTest1,ou=test,dc=test_dc",
                 "ou=groupTest2,ou=test,dc=test_dc"
