@@ -7,7 +7,8 @@ from setuptools import setup
 install_requires = [
     'flask>=0.9',
     'requests>=1.2.0',
-    'gunicorn>=0.17.4'
+    'gunicorn>=0.17.4',
+    'python-ldap>=2.4.15'
 ]
 
 setup(name="minion.frontend",

@@ -3,16 +3,46 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-import copy
 import json
 import os
 
+# ldap settings as follows:
+# uri -> URI to ldap server
+# baseDN -> baseDN for users (remove for Active Directory)
+#
+# emailAttribute -> typically mail in OpenLDAP or userPrincipalName in AD
+# groupMembershipAttribute -> typically member or uniqueMember
+# usernameAttribute -> typically uid in OpenLDAP or samAccountName in AD
+#
+# checkAuthorizedGroups -> if true (instead of false), require group membership in addition to valid user id
+# authorizedGroups -> list of groups where users are authorized to use Minion (if checkAuthorizedGroups is true)
 
-DEFAULT_FRONTEND_CONFIG = {
-    'backend-api': {
-        'url': 'http://127.0.0.1:8383'
+DEFAULT_FRONTEND_CONFIG = """
+{
+    "backend-api": {
+        "url": "http://127.0.0.1:8383"
+    },
+
+    "login": {
+        "type": "persona",
+
+        "ldap": {
+            "uri": "ldaps://ldap.server/",
+            "baseDN": "ou=test,dc=test_dc",
+
+            "emailAttribute": "mail",
+            "groupMembershipAttribute": "member",
+            "usernameAttribute": "uid",
+
+            "checkAuthorizedGroups": false,
+            "authorizedGroups": [
+                "ou=groupTest1,ou=test,dc=test_dc",
+                "ou=groupTest2,ou=test,dc=test_dc"
+            ]
+        }
     }
 }
+"""
 
 
 def _load_config(name):
@@ -34,4 +64,4 @@ def frontend_config():
     Load the frontend config from the two known locations. If it does
     not exist then return a copy of the default config.
     """
-    return _load_config("frontend.json") or copy.deepcopy(DEFAULT_FRONTEND_CONFIG)
+    return _load_config("frontend.json") or json.loads(DEFAULT_FRONTEND_CONFIG)
