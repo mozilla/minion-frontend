@@ -650,12 +650,15 @@ app.controller("ScanController", function($scope, $routeParams, $http, $location
                 var scan = response.data;
                 var issues = [];
                 $scope.timenow = Math.round(+new Date()/1000);
-                var issueCounts = {high: 0, medium: 0, low: 0, info: 0, error: 0};
+                var issueCounts = {critical: 0, high: 0, medium: 0, low: 0, info: 0, error: 0};
                 _.each(scan.sessions, function (session) {
                     _.each(session.issues, function (issue) {
                         issue.session = session;
                         issues.push(issue);
                         switch (issue.Severity) {
+                            case "Critical":
+                                issueCount.critical++;
+                                break;
                             case "High":
                                 issueCounts.high++;
                                 break;

@@ -30,10 +30,11 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
         <th>Plan</th>
         <th>Last Run</th>
         <th>State</th>
-        <th>High</th>
-        <th>Medium</th>
-        <th>Low</th>
-        <th>Info</th>
+        <th class="centered">Critical</th>
+        <th class="centered">High</th>
+        <th class="centered">Medium</th>
+        <th class="centered">Low</th>
+        <th class="centered">Info</th>
         <th></th>
       </tr>
     </thead>
@@ -42,10 +43,11 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
         <td>{{h.plan.name}}</td>
         <td>{{h.created | scan_datetime }}</td>
         <td>{{h.state || "-"}}</td>     
-        <td><span class="label warning-high minion-issue-count-label label-default">{{h.issues.high || "-"}}</span></td>
-        <td><span class="label warning-medium minion-issue-count-label label-default">{{h.issues.medium || "-"}}</span></td>
-        <td><span class="label warning-low minion-issue-count-label label-default">{{h.issues.low || "-"}}</span></td>
-        <td><span class="label warning-info minion-issue-count-label label-default">{{h.issues.info || "-"}}</span></td>
+        <td class="centered"><span class="label warning-critical minion-issue-count-label label-default">{{h.issues.critical || "-"}}</span></td>
+        <td class="centered"><span class="label warning-high minion-issue-count-label label-default">{{h.issues.high || "-"}}</span></td>
+        <td class="centered"><span class="label warning-medium minion-issue-count-label label-default">{{h.issues.medium || "-"}}</span></td>
+        <td class="centered"><span class="label warning-low minion-issue-count-label label-default">{{h.issues.low || "-"}}</span></td>
+        <td class="centered"><span class="label warning-info minion-issue-count-label label-default">{{h.issues.info || "-"}}</span></td>
         <td>
           <button class="btn btn-primary minion-btn btn-xs" ng-class="{disabled: !h.finished}" type="button" ng-click="openScan(h.id)">Details</button>
           <button class="btn btn-primary minion-btn btn-xs" type="button" ng-click="startScan(h.configuration.target, h.plan.name)" ng-show="h.state != 'STARTED' &amp;&amp; h.state != 'QUEUED'">Scan</button>

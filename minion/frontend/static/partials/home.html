@@ -38,10 +38,11 @@
             <th>Plan</th>
             <th>Last Run</th>
             <th>State</th>
-            <th>High</th>
-            <th>Medium</th>
-            <th>Low</th>
-            <th>Info</th>
+            <th class="centered">Critical</th>
+            <th class="centered">High</th>
+            <th class="centered">Medium</th>
+            <th class="centered">Low</th>
+            <th class="centered">Info</th>
             <th></th>
           </tr>
         </thead>
@@ -50,10 +51,11 @@
           <td><a ng-href="#!/plan/{{r.plan}}">{{r.plan}}</a></td>
           <td>{{(r.scan.created | scan_datetime) || "-" }}</td>
           <td>{{r.scan.state || "-"}}</td>
-          <td><span class="label warning-high minion-issue-count-label label-default">{{r.scan.issues.high || "-"}}</span></td>
-          <td><span class="label warning-medium minion-issue-count-label label-default">{{r.scan.issues.medium || "-"}}</span></td>
-          <td><span class="label warning-low minion-issue-count-label label-default">{{r.scan.issues.low || "-"}}</span><!--<td--></td>
-          <td><span class="label warning-info minion-issue-count-label label-default">{{r.scan.issues.info || "-"}}</span></td>
+          <td class="centered"><span class="label warning-critical minion-issue-count-label label-default">{{r.scan.issues.critical || "-"}}</span></td>
+          <td class="centered"><span class="label warning-high minion-issue-count-label label-default">{{r.scan.issues.high || "-"}}</span></td>
+          <td class="centered"><span class="label warning-medium minion-issue-count-label label-default">{{r.scan.issues.medium || "-"}}</span></td>
+          <td class="centered"><span class="label warning-low minion-issue-count-label label-default">{{r.scan.issues.low || "-"}}</span><!--<td--></td>
+          <td class="centered"><span class="label warning-info minion-issue-count-label label-default">{{r.scan.issues.info || "-"}}</span></td>
           <td>
             <button class="btn btn-primary minion-btn btn-xs" type="button" ng-click="openScan(r.scan.id)" ng-disabled="!r.scan">Details</button>
             <button class="btn btn-primary minion-btn btn-xs" type="button" ng-click="startScan(r.target, r.plan)" ng-show="r.scan.state != 'STARTED' &amp;&amp; r.scan.state != 'QUEUED'">Scan</button>
