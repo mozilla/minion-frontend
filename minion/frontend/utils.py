@@ -6,7 +6,7 @@
 import json
 import os
 
-# ldap settings as follows:
+# ldap settings as such:
 # uri -> URI to ldap server
 # baseDN -> baseDN for users (remove for Active Directory)
 #
@@ -17,51 +17,31 @@ import os
 # checkAuthorizedGroups -> if true (instead of false), require group membership in addition to valid user id
 # authorizedGroups -> list of groups where users are authorized to use Minion (if checkAuthorizedGroups is true)
 
-DEFAULT_FRONTEND_CONFIG = """
-{
-    "backend-api": {
-        "url": "http://127.0.0.1:8383"
-    },
+DEFAULT_CONFIG_PATH = "/etc/minion"
 
-    "login": {
-        "type": "persona",
-
-        "ldap": {
-            "uri": "ldaps://ldap.server/",
-            "baseDN": "ou=test,dc=test_dc",
-
-            "emailAttribute": "mail",
-            "groupMembershipAttribute": "member",
-            "usernameAttribute": "uid",
-
-            "checkAuthorizedGroups": false,
-            "authorizedGroups": [
-                "ou=groupTest1,ou=test,dc=test_dc",
-                "ou=groupTest2,ou=test,dc=test_dc"
-            ]
-        }
-    }
-}
-"""
-
-
-def _load_config(name):
+def _load_config(name, default_path=DEFAULT_CONFIG_PATH):
     """
     Load the named configuration file from either the system in
     /etc/minion or if that does not exist from ~/.minion. Returns None
     if neither exists. Throws an exception if the file could not be
     opened, read or parsed.
     """
-    if os.path.exists("/etc/minion/%s" % name):
-        with open("/etc/minion/%s" % name) as fp:
+    if os.path.exists(os.path.join(default_path, name)):
+        with open(os.path.join(default_path, name)) as fp:
             return json.load(fp)
     if os.path.exists(os.path.expanduser("~/.minion/%s" % name)):
         with open(os.path.expanduser("~/.minion/%s" % name)) as fp:
             return json.load(fp)
+
+    # Fallback to using the Minion defaults
+    cwfd = os.path.dirname(os.path.realpath(__file__))  # the directory of utils.py
+    jsonf = os.path.realpath(os.path.join(cwfd, '..', '..', 'etc', name))
+    with open(jsonf) as fp:
+        return json.load(fp)
 
 def frontend_config():
     """
     Load the frontend config from the two known locations. If it does
     not exist then return a copy of the default config.
     """
-    return _load_config("frontend.json") or json.loads(DEFAULT_FRONTEND_CONFIG)
+    return _load_config("frontend.json")
