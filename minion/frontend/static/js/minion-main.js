@@ -657,7 +657,7 @@ app.controller("ScanController", function($scope, $routeParams, $http, $location
                         issues.push(issue);
                         switch (issue.Severity) {
                             case "Critical":
-                                issueCount.critical++;
+                                issueCounts.critical++;
                                 break;
                             case "High":
                                 issueCounts.high++;
