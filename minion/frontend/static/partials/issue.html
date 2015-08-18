@@ -11,11 +11,11 @@
   <table class="table table-bordered">
     <tbody><tr>
       <td><b>Summary</b></td>
-      <td ng-bind-html-unsafe="issue.Summary|link_bugs"></td>
+      <td> {{ issue.Summary }}</td>
     </tr>
     <tr ng-show="issue.Classification.cwe_id || issue.Classification.wasc_id">
       <td><b>Classification</b></td>
-      <td ng-bind-html-unsafe="issue.Classification | classify_issue"></td>
+      <td ng-bind-html="issue.Classification | classify_issue"></td>
     </tr>
     <tr>
       <td><b>Severity</b></td>
@@ -42,7 +42,7 @@
 
   <div ng-show="issue.Description.length">
     <h3>Description</h3>
-    <p ng-bind-html-unsafe="issue.Description|text"></p>
+    <p ng-bind-html="issue.Description | text"></p>
   </div>
 
   <div ng-show="issue.URLs.length">

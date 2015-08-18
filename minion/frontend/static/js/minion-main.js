@@ -726,7 +726,7 @@ app.controller("SessionFailureController", function($scope, $routeParams, $http)
 
 // Filters
 
-app.filter('classify_issue', function() {
+app.filter('classify_issue', function($sce) {
     return function(input, options) {
         if (!input) {
             return undefined;
@@ -746,7 +746,7 @@ app.filter('classify_issue', function() {
                 + '">' + 'WASC ' + wasc_id + '</a>';
         }
 
-        return output1 + ' ' + output2;
+        return $sce.trustAsHtml(output1 + ' ' + output2);
     };
 });
 app.filter('moment', function () {
@@ -795,6 +795,7 @@ app.filter('session_duration', function () {
     };
 });
 
+// TODO: Attempt to figure out what st3fan was doing here, make it work with secure contexts
 app.filter('link_bugs', function () {
     return function(input, options) {
         if (!input) {
@@ -807,7 +808,7 @@ app.filter('link_bugs', function () {
     };
 });
 
-app.filter('text', function () {
+app.filter('text', function ($sce) {
     return function(input, options) {
         var result = "";
         if (input) {
@@ -816,7 +817,7 @@ app.filter('text', function () {
                 result += "<p>" + paragraphs[i] + "</p>";
             }
         }
-        return result;
+        return $sce.trustAsHtml(result);
     };
 });
 
