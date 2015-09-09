@@ -1,4 +1,4 @@
-This project contains the code for the Minion Frontend.  It provides an simple website to manage users and groups,
+This project contains the code for the Minion Frontend.  It provides a simple website to manage users and groups,
 manage sites to scan, and create and start scans.
 
 Setting up a Development Environment
