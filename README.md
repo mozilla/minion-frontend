@@ -1,5 +1,5 @@
-This project contains the code for the Minion Frontend.  It provides an simple HTML to manage users and groups,
-control sites, and create and start scans.
+This project contains the code for the Minion Frontend.  It provides an simple website to manage users and groups,
+manage sites to scan, and create and start scans.
 
 Setting up a Development Environment
 ------------------------------------
@@ -38,7 +38,7 @@ shell commands, to make working with Minion easier when running as the `minion` 
 # useradd -m minion
 # install -m 700 -o minion -g minion -d /run/minion -d /var/lib/minion -d /var/log/minion -d ~minion/.python-eggs
 
-# echo -e "\n# Automatically source minion-frontend virtualenv" >> ~minion.profile
+# echo -e "\n# Automatically source minion-frontend virtualenv" >> ~minion/.profile
 # echo -e "source /opt/minion/minion-env/bin/activate" >> ~minion/.profile
 
 # echo -e "\n# Minion convenience commands" >> ~minion/.bashrc
@@ -98,7 +98,7 @@ Configuring your Minion environment
 -----------------------------------
 
 By default, Minion will use the configuration file `frontend.json` to determine the authentication method as well as the
-location of the [Minion backend](https://github.com/mozilla/minion-backend). If you would like to change this file at all,
+location of the [Minion backend](https://github.com/mozilla/minion-backend) API. If you would like to change this file at all,
 copy it into `/etc/minion`, make your changes, and restart Minion.
 
 Minion currently supports both Persona and LDAP authentication, with Persona being the default authentication method. To
