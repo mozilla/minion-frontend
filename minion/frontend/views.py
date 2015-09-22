@@ -6,7 +6,7 @@ import functools
 import json
 import ldap
 
-from flask import render_template, redirect, url_for, jsonify, request, session, Response, g
+from flask import jsonify, request, session, Response, g
 
 from minion.frontend import app
 from minion.frontend.persona import verify_assertion
@@ -495,7 +495,10 @@ def ldap_login(request):
     return api_session()
 
 def oauth_login(request):
-    # return api_session()
+    """
+    If email and role have been set in the session (via an oauth login stream), return them in the API call. If 'reason'
+    has been set (as a result of a failed OAuth login), set it in the response to appear as an error and clear it out.
+    """
 
     if 'email' in session and 'role' in session:
         return api_session()
@@ -511,6 +514,10 @@ def api_logout():
 
 @app.route('/api/forcelogout')
 def api_force_logout():
+    """
+    A convenience call to be used by developers: it clears out the session internally and removes the session cookie
+    """
+
     session.clear()
     resp = Response('Deleting session cookie')
     resp.set_cookie('session', value='expired', path='/')
