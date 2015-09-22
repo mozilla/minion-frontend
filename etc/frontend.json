@@ -1,6 +1,6 @@
 {
     "backend-api": {
-        "url": "http://127.0.0.1:8383"
+        "url": "http://minion-backend:8383"
     },
 
     "login": {
@@ -19,6 +19,27 @@
                 "ou=groupTest1,ou=test,dc=test_dc",
                 "ou=groupTest2,ou=test,dc=test_dc"
             ]
+        },
+
+        "oauth": {
+            "providers": {
+                "facebook": {
+                     "client_id": "",
+                     "client_secret": ""
+                 },
+                "firefoxaccounts": {
+                    "client_id": "",
+                    "client_secret": ""
+                },
+                "github": {
+                    "client_id": "",
+                    "client_secret": ""
+                },
+                "google": {
+                    "client_id": "",
+                    "client_secret": ""
+                }
+            }
         }
     }
 }

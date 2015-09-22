@@ -68,9 +68,9 @@ app.controller("ScheduleController", function ($scope, $modalInstance, items) {
       $scope.schedule.remove = true;
       $modalInstance.close($scope.schedule);
     };
-    
+
     $scope.changeRepeat = function(repeat) {
-      
+
       switch(repeat){
         case 'daily':
           $scope.schedule.dayOfWeek = '*';
@@ -145,7 +145,7 @@ app.controller("MinionController", function($rootScope, $route, $scope, $http, $
             if (schedule) {
               var data = {
                 target: target,
-                plan: plan, 
+                plan: plan,
                 schedule: schedule
               };
 
@@ -165,7 +165,7 @@ app.controller("MinionController", function($rootScope, $route, $scope, $http, $
                 });
             }
         });
-        
+
     };
     // $route is useful in the scope for knowing "active" tabs, for example.
     $rootScope.$route = $route;
@@ -195,6 +195,13 @@ app.config(function($routeProvider, $locationProvider, $httpProvider) {
     $routeProvider.when("/login", {
         templateUrl: "static/partials/login.html",
         controller: "LoginController",
+        access: "public"
+    });
+
+    // Route for OAuth login completion
+    $routeProvider.when("/login/oauth", {
+       templateUrl: "static/partials/oauth.html",
+        controller: "OauthController",
         access: "public"
     });
 
@@ -393,6 +400,30 @@ app.run(function($rootScope, $location) {
     });
 });
 
+// A special post-Oauth controller, simply calls the backend to get the session information
+// If it's successful, it sets the localStorage info and sends them into the app. Otherwise,
+// it sends them back to the login screen
+app.controller("OauthController", function($scope, $rootScope, $location, $http) {
+    $scope.$on('$viewContentLoaded', function() {
+        $http.get('/api/session').success(function(response) {
+           if (response.success) {
+               localStorage.setItem('session.email', response.data.email);
+               localStorage.setItem('session.role', response.data.role);
+
+               $rootScope.session = {
+                   email: localStorage.getItem('session.email'),
+                   role: localStorage.getItem('session.role')
+               };
+
+               $location.path('/');
+           }
+           else {
+               $location.path('/login');
+           }
+        });
+    });
+});
+
 app.controller("LoginController", function($scope, $rootScope, $location, $http) {
 
     function login(data){
@@ -432,7 +463,20 @@ app.controller("LoginController", function($scope, $rootScope, $location, $http)
         $http.get("/api/login").success(function(response) {
             if (response.success) {
                 $scope.login_type = response.data.login_type;
-                }});
+
+                // If the login_type is 'oauth', we need to get the providers, and see if there were any previous
+                // failed login attempts
+
+                if ($scope.login_type === 'oauth') {
+                    $http.get('/api/login/oauth').success(function(response) {
+                        $scope.providers = response.data.providers;
+
+                        if (response.reason) {
+                            $scope.logInStatus = response.reason;
+                        }
+                    });
+                }
+            }});
 
         // When the login screen is loaded, we logout from Persona and kill our session
         // from both the root scope and from localStorage.

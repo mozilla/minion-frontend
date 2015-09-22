@@ -2,14 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import datetime
 import functools
 import json
-import pprint
-import sys
 import ldap
+import uuid
 
-from flask import render_template, redirect, url_for, session, jsonify, request, session, Response, g
+from flask import jsonify, request, session, Response, g
 
 from minion.frontend import app
 from minion.frontend.persona import verify_assertion
@@ -497,12 +495,51 @@ def ldap_login(request):
 
     return api_session()
 
+def oauth_login(request):
+    """
+    If email and role have been set in the session (via an oauth login stream), return them in the API call. If 'reason'
+    has been set (as a result of a failed OAuth login), set it in the response to appear as an error and clear it out.
+    """
+
+    if 'email' in session and 'role' in session:
+        return api_session()
+    elif 'reason' in session:
+        return jsonify(success=False, reason=session.pop('reason'))
+    else:
+        return jsonify(success=False)
 
 @app.route("/api/logout")
 def api_logout():
     session.clear()
     return jsonify(success=True)
 
+@app.route('/api/forcelogout')
+def api_force_logout():
+    """
+    A convenience call to be used by developers: it clears out the session internally and removes the session cookie
+    """
+    if request.args.get('token') and 'forcelogout-csrf' in session:
+        if request.args.get('token') == session.get('forcelogout-csrf'):
+            session.clear()
+
+            resp = Response('Deleted session cookie')
+            resp.set_cookie('session', value='expired', path='/')
+        else:
+            resp = Response('Invalid anti-CSRF token')
+    else:
+        # Set a CSRF token
+        token = str(uuid.uuid4())
+        session['forcelogout-csrf'] = token
+
+        # Create a link to kill the session, with the token in the URL
+        resp = Response("""
+        <a href="{base_url}?token={token}">Clear Minion session</a>
+        """.format(base_url=request.base_url, token=token))
+
+    # Make sure that no site is able to access this resource via XHR, even if enabled elsewhere
+    resp.headers['Access-Control-Allow-Origin'] = 'null'
+
+    return resp
 
 # #
 # # WARNING WARNING WARNING - Everything below is temporary and will likely not survive the next
