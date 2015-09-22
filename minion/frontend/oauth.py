@@ -13,8 +13,6 @@ from minion.frontend import app
 from minion.frontend.utils import frontend_config
 from minion.frontend.views import api_session, login_or_create_user
 
-import requests
-
 
 @app.route("/api/login/oauth", methods=["GET"])
 def get_api_login_oauth_providers():
