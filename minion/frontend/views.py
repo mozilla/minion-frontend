@@ -5,6 +5,7 @@
 import functools
 import json
 import ldap
+import uuid
 
 from flask import jsonify, request, session, Response, g
 
@@ -517,10 +518,27 @@ def api_force_logout():
     """
     A convenience call to be used by developers: it clears out the session internally and removes the session cookie
     """
+    if request.args.get('token') and 'forcelogout-csrf' in session:
+        if request.args.get('token') == session.get('forcelogout-csrf'):
+            session.clear()
 
-    session.clear()
-    resp = Response('Deleting session cookie')
-    resp.set_cookie('session', value='expired', path='/')
+            resp = Response('Deleted session cookie')
+            resp.set_cookie('session', value='expired', path='/')
+        else:
+            resp = Response('Invalid anti-CSRF token')
+    else:
+        # Set a CSRF token
+        token = str(uuid.uuid4())
+        session['forcelogout-csrf'] = token
+
+        # Create a link to kill the session, with the token in the URL
+        resp = Response("""
+        <a href="{base_url}?token={token}">Clear Minion session</a>
+        """.format(base_url=request.base_url, token=token))
+
+    # Make sure that no site is able to access this resource via XHR, even if enabled elsewhere
+    resp.headers['Access-Control-Allow-Origin'] = 'null'
+
     return resp
 
 # #
