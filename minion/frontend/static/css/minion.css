@@ -152,3 +152,7 @@ input.ng-invalid.ng-dirty {
     text-shadow: 2px 2px 2px #021124;
 }
 
+.oauth-icon {
+    height: 48px;
+    width: 48px;
+}

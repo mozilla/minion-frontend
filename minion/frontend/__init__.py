@@ -4,9 +4,9 @@
 
 from flask import Flask
 
-app = Flask(__name__);
+app = Flask(__name__)
 
-from minion.frontend import views
+from minion.frontend import oauth, views
 from minion.frontend.utils import frontend_config
 
 def configure_app(app, production=True, debug=True):

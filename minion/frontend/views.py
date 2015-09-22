@@ -2,14 +2,11 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-import datetime
 import functools
 import json
-import pprint
-import sys
 import ldap
 
-from flask import render_template, redirect, url_for, session, jsonify, request, session, Response, g
+from flask import render_template, redirect, url_for, jsonify, request, session, Response, g
 
 from minion.frontend import app
 from minion.frontend.persona import verify_assertion
@@ -497,12 +494,27 @@ def ldap_login(request):
 
     return api_session()
 
+def oauth_login(request):
+    # return api_session()
+
+    if 'email' in session and 'role' in session:
+        return api_session()
+    elif 'reason' in session:
+        return jsonify(success=False, reason=session.pop('reason'))
+    else:
+        return jsonify(success=False)
 
 @app.route("/api/logout")
 def api_logout():
     session.clear()
     return jsonify(success=True)
 
+@app.route('/api/forcelogout')
+def api_force_logout():
+    session.clear()
+    resp = Response('Deleting session cookie')
+    resp.set_cookie('session', value='expired', path='/')
+    return resp
 
 # #
 # # WARNING WARNING WARNING - Everything below is temporary and will likely not survive the next

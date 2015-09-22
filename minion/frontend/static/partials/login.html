@@ -12,7 +12,7 @@
     </div>
 
     <div class="alert alert-error" ng-show="logInStatus == 'error'">
-        <strong>Error:</strong> An unknown error occured; please contact the administrator
+        <strong>Error:</strong> An unknown error occurred; please contact the administrator
     </div>
 
     <div class="alert alert-error" ng-show="logInStatus == 'not_authorized'">
@@ -33,6 +33,15 @@
         <p>Password: <input type="password" ng-model="ldap.password" required /></p>
 
         <p><button class="btn btn-large btn-primary" ng-click="ldapSignIn()" ng-disabled="signinform.$invalid"><i class="icon-user"></i> Sign in</button></p>
+    </div>
+
+    <div ng-show="login_type == 'oauth' && logInStatus != 'banned'">
+        <div style="padding-bottom: 1em;"><strong>Choose a provider to sign in:</strong></div>
+        <span ng-repeat="provider in providers">
+            <a href="/ws/login/oauth/{{ provider }}">
+                <img ng-src="static/img/icons/{{ provider }}.svg" alt="Login with {{ provider }}" class="oauth-icon" />
+            </a>
+        </span>
     </div>
   </form>
 </div>
